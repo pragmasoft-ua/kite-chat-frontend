@@ -1,8 +1,10 @@
-# LitElement TypeScript starter
+# /human livechat
 
-This project includes a sample component using LitElement with TypeScript.
+This project includes **/human** livechat web component
 
-This template is generated from the `lit-starter-ts` package in [the main Lit
+Web component is built using LitElement with TypeScript and Tailwind CSS.
+
+Project is generated from the `lit-starter-ts` template in [the main Lit
 repo](https://github.com/lit/lit). Issues and PRs for this template should be
 filed in that repo.
 
