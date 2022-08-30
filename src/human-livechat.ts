@@ -14,7 +14,7 @@ import {customElement, property} from 'lit/decorators.js';
  * @slot - This element has a slot
  * @csspart button - The button
  */
-@customElement('my-element')
+@customElement('human-livechat')
 export class MyElement extends LitElement {
   static override styles = css`
     :host {
@@ -63,6 +63,6 @@ export class MyElement extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'my-element': MyElement;
+    'human-livechat': MyElement;
   }
 }

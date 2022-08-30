@@ -3,9 +3,11 @@
 /test/
 custom-elements.json
 # top level source
-my-element.js
-my-element.js.map
-my-element.d.ts
-my-element.d.ts.map
+human-livechat.js
+human-livechat.js.map
+human-livechat.d.ts
+human-livechat.d.ts.map
 # only generated for size check
-my-element.bundled.js
+human-livechat.bundled.js
+# vscode
+.vscode
