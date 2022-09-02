@@ -28,7 +28,9 @@ suite('human-livechat', () => {
   });
 
   test('renders with a set name', async () => {
-    const el = await fixture(html`<human-livechat name="Test"></human-livechat>`);
+    const el = await fixture(
+      html`<human-livechat name="Test"></human-livechat>`
+    );
     assert.shadowDom.equal(
       el,
       `
@@ -40,7 +42,9 @@ suite('human-livechat', () => {
   });
 
   test('handles a click', async () => {
-    const el = (await fixture(html`<human-livechat></human-livechat>`)) as MyElement;
+    const el: MyElement = await fixture(
+      html`<human-livechat></human-livechat>`
+    );
     const button = el.shadowRoot!.querySelector('button')!;
     button.click();
     await el.updateComplete;
@@ -55,7 +59,9 @@ suite('human-livechat', () => {
   });
 
   test('styling applied', async () => {
-    const el = (await fixture(html`<human-livechat></human-livechat>`)) as MyElement;
+    const el: MyElement = await fixture(
+      html`<human-livechat></human-livechat>`
+    );
     await el.updateComplete;
     assert.equal(getComputedStyle(el).paddingTop, '16px');
   });
