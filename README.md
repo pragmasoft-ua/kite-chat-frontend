@@ -105,6 +105,10 @@ This project includes a simple website generated with the [eleventy](11ty.dev) s
 
 To enable the site go to the GitHub settings and change the GitHub Pages &quot;Source&quot; setting to &quot;master branch /docs folder&quot;.</p>
 
+## Static Site is located here
+
+https://pragmasoft-ua.github.io/human-livechat-frontend/
+
 To build the site, run:
 
 ```bash

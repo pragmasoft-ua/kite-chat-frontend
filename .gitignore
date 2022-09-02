@@ -7,7 +7,7 @@ human-livechat.js
 human-livechat.js.map
 human-livechat.d.ts
 human-livechat.d.ts.map
-# only generated for size check
-human-livechat.bundled.js
+
+# human-livechat.bundled.js
 # vscode
-.vscode
+# .vscode
