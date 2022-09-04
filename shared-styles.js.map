@@ -1,1 +1,0 @@
-{"version":3,"file":"shared-styles.js","sourceRoot":"","sources":["src/shared-styles.ts"],"names":[],"mappings":"AAAA,OAAO,EAAC,GAAG,EAAC,MAAM,KAAK,CAAC;AAExB,MAAM,CAAC,MAAM,YAAY,GAAG,GAAG,CAAA;;;;CAI9B,CAAC","sourcesContent":["import {css} from 'lit';\n\nexport const sharedStyles = css`\n  @tailwind base;\n  @tailwind components;\n  @tailwind utilities;\n`;\n"]}

@@ -1,5 +1,6 @@
+.parcel-cache
 /node_modules/
-/lib/
+/dist/
 /test/
 custom-elements.json
 # top level source

@@ -1,11 +1,11 @@
 /* eslint-env node */
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ["./*.{html,js}"],
+  content: ['./src/*.{js,ts}'],
   theme: {
     extend: {
       colors: {
-        "primary-color": "var(--primary-color, theme(colors.blue.600))",
+        'primary-color': 'var(--primary-color, theme(colors.blue.600))',
       },
     },
   },

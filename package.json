@@ -1,23 +1,43 @@
 {
-  "name": "@pragmasoft-ukraine/human-livechat",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/pragmasoft-ukraine"
-  },
-  "files": [
-    "human-livechat.js"
-  ],
-  "types": ".human-livechat.d.ts",
+  "name": "@pragmasoft/human-livechat",
   "description": "human-livechat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
   "version": "2022.9.1",
-  "main": "human-livechat.js",
-  "module": "human-livechat.js",
+  "homepage": "https://pragmasoft-ua.github.io/human-livechat-frontend/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pragmasoft-ua/human-livechat-frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pragmasoft-ua/human-livechat-frontend/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/pragmasoft-ukraine"
+  },
+  "keywords": [
+    "livechat",
+    "webchat",
+    "support",
+    "Ukraine",
+    "web-components",
+    "lit-element",
+    "typescript",
+    "esm",
+    "parcel",
+    "tailwind"
+  ],
+  "source": "index.html",
+  "module": "dist/human-livechat.js",
+  "types": "dist/human-livechat.d.ts",
   "type": "module",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "build": "tsc",
-    "build:watch": "tsc --watch",
-    "clean": "rimraf human-livechat.{d.ts,d.ts.map,js,js.map} test/human-livechat.{d.ts,d.ts.map,js,js.map} test/human-livechat_test.{d.ts,d.ts.map,js,js.map}",
+    "start": "parcel",
+    "build": "parcel build",
+    "clean": "rimraf dist",
     "lint": "npm run lint:lit-analyzer && npm run lint:eslint",
     "lint:eslint": "eslint 'src/**/*.ts'",
     "lint:lit-analyzer": "lit-analyzer",
@@ -40,12 +60,6 @@
     "test:prod:watch": "MODE=prod wtr --watch",
     "checksize": "rollup -c ; cat human-livechat.bundled.js | gzip -9 | wc -c ; rm human-livechat.bundled.js"
   },
-  "keywords": [
-    "web-components",
-    "lit-element",
-    "typescript",
-    "lit"
-  ],
   "dependencies": {
     "lit": "^2.3.1"
   },
@@ -54,6 +68,7 @@
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
     "@custom-elements-manifest/analyzer": "^0.6.3",
     "@open-wc/testing": "^3.1.5",
+    "@parcel/transformer-inline-string": "^2.7.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
@@ -66,6 +81,7 @@
     "autoprefixer": "^10.4.8",
     "eslint": "^8.15.0",
     "lit-analyzer": "^1.2.1",
+    "parcel": "^2.7.0",
     "postcss": "^8.4.16",
     "prettier": "^2.6.2",
     "prettier-plugin-tailwindcss": "^0.1.13",
@@ -75,7 +91,7 @@
     "rollup-plugin-summary": "^1.4.3",
     "rollup-plugin-terser": "^7.0.2",
     "tailwindcss": "^3.1.8",
-    "typescript": "~4.7.4"
+    "typescript": "^4.8.2"
   },
   "customElements": "custom-elements.json"
 }

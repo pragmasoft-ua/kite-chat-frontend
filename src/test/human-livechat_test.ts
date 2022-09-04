@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-import {MyElement} from '../human-livechat.js';
+import {HumanLivechat} from '../human-livechat.js';
 
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
@@ -12,7 +12,7 @@ import {html} from 'lit/static-html.js';
 suite('human-livechat', () => {
   test('is defined', () => {
     const el = document.createElement('human-livechat');
-    assert.instanceOf(el, MyElement);
+    assert.instanceOf(el, HumanLivechat);
   });
 
   test('renders with default values', async () => {
@@ -42,7 +42,7 @@ suite('human-livechat', () => {
   });
 
   test('handles a click', async () => {
-    const el: MyElement = await fixture(
+    const el: HumanLivechat = await fixture(
       html`<human-livechat></human-livechat>`
     );
     const button = el.shadowRoot!.querySelector('button')!;
@@ -59,7 +59,7 @@ suite('human-livechat', () => {
   });
 
   test('styling applied', async () => {
-    const el: MyElement = await fixture(
+    const el: HumanLivechat = await fixture(
       html`<human-livechat></human-livechat>`
     );
     await el.updateComplete;

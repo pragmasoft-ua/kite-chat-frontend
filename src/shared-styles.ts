@@ -1,7 +1,6 @@
-import {css} from 'lit';
+import {css, unsafeCSS} from 'lit';
+import tailwindSharedStyles from 'bundle-text:./shared-styles.css';
 
 export const sharedStyles = css`
-  @tailwind base;
-  @tailwind components;
-  @tailwind utilities;
+  ${unsafeCSS(tailwindSharedStyles)}
 `;
