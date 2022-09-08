@@ -3,12 +3,4 @@
 /dist/
 /test/
 custom-elements.json
-# top level source
-human-livechat.js
-human-livechat.js.map
-human-livechat.d.ts
-human-livechat.d.ts.map
-
-# human-livechat.bundled.js
-# vscode
-# .vscode
+.vscode

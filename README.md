@@ -141,4 +141,23 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 
 ## TODO
 
-- Skypack packaging
+- ✅responsive dialog sizing/placement
+- ✅scroll snap
+- ✅dark/light theme
+- ✅primary color for text selection
+- ✅open/close animation
+- button hover animation
+- focus on textarea when dialog is opened
+- display links and button menus (as pills)
+- emoji keyboard https://emoji.julien-marcou.fr/
+- file upload
+- display images
+- message selection, contextual edit/delete menu items (next to close button)
+- keyboard shortcuts for buttons (send, close, attach file, edit, tab to focus)
+- custom variables for sizing, background pattern, ...?
+- button handlers
+- aria attributes for controls
+- virtual scrolling
+- remember input height
+- sticky dates
+- npm publishing, jspm/skypack cdn

@@ -7,6 +7,7 @@
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import {sharedStyles} from './shared-styles';
+import {classMap} from 'lit/directives/class-map.js';
 
 /**
  * An example element.
@@ -18,16 +19,16 @@ import {sharedStyles} from './shared-styles';
 @customElement('human-livechat')
 export class HumanLivechat extends LitElement {
   /**
-   * The name to say "Hello" to.
+   * opens chat dialog
    */
-  @property()
-  name = 'World';
+  @property({type: Boolean, reflect: true})
+  open = false;
 
   /**
    * The number of times the button has been clicked.
    */
-  @property({type: Number})
-  count = 0;
+  @property({reflect: true})
+  dialogTitle = '👩🏻/human';
 
   override render() {
     return html`
@@ -35,6 +36,7 @@ export class HumanLivechat extends LitElement {
         <div
           title="Show live chat dialog"
           class="human-toggle fixed right-4 bottom-4 z-30 h-12 w-12 cursor-pointer rounded-full bg-primary-color p-2 text-white shadow hover:text-opacity-80"
+          @click="${this._toggleOpen}"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -51,16 +53,20 @@ export class HumanLivechat extends LitElement {
           </svg>
         </div>
         <div
-          class="human-dialog invisible fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] flex-col rounded border border-neutral-200 bg-white text-black shadow-lg dark:border-neutral-600 dark:bg-neutral-800 dark:text-white/95"
+          class="human-dialog ${classMap({
+            'scale-y-100': this.open,
+            'scale-y-0': !this.open,
+          })} fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border border-neutral-200 bg-white text-black shadow-lg transition-transform selection:bg-primary-color selection:text-white dark:border-neutral-600 dark:bg-neutral-800 dark:text-white/95"
         >
           <header
             class="flex h-12 select-none flex-row items-center justify-between rounded-t bg-primary-color p-2 text-white/95"
           >
-            <h3 class="human-title flex-1">👩🏻/human</h3>
+            <h3 class="human-title flex-1">${this.dialogTitle}</h3>
             <span
               data-close
               title="Close"
               class="cursor-pointer rounded-full bg-white bg-opacity-0 py-2 px-2.5 leading-none hover:bg-opacity-30"
+              @click="${this.hide}"
               >✕</span
             >
           </header>
@@ -288,17 +294,19 @@ export class HumanLivechat extends LitElement {
     `,
   ];
 
-  private _onClick() {
-    this.count++;
-    this.dispatchEvent(new CustomEvent('count-changed'));
+  private _toggleOpen() {
+    this.open = !this.open;
+    this.dispatchEvent(new CustomEvent(this.open ? 'show' : 'hide'));
   }
 
-  /**
-   * Formats a greeting
-   * @param name The name to say "Hello" to
-   */
-  sayHello(name: string): string {
-    return `Hello, ${name}`;
+  hide() {
+    this.open = false;
+    this.dispatchEvent(new CustomEvent('hide'));
+  }
+
+  show() {
+    this.open = true;
+    this.dispatchEvent(new CustomEvent('show'));
   }
 }
 
