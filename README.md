@@ -1,6 +1,6 @@
-# /human livechat
+# /humane chat
 
-This project includes **/human** livechat web component
+This project includes **/humane** chat web component
 
 Web component is built using LitElement with TypeScript and Tailwind CSS.
 
@@ -107,7 +107,7 @@ To enable the site go to the GitHub settings and change the GitHub Pages &quot;S
 
 ## Static Site is located here
 
-https://pragmasoft-ua.github.io/human-livechat-frontend/
+https://pragmasoft-ua.github.io/humane-chat-frontend/
 
 To build the site, run:
 
@@ -146,7 +146,8 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅dark/light theme
 - ✅primary color for text selection
 - ✅open/close animation
-- button hover animation
+- ✅button handlers
+- buttons click animation
 - focus on textarea when dialog is opened
 - display links and button menus (as pills)
 - emoji keyboard https://emoji.julien-marcou.fr/
@@ -155,7 +156,6 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - message selection, contextual edit/delete menu items (next to close button)
 - keyboard shortcuts for buttons (send, close, attach file, edit, tab to focus)
 - custom variables for sizing, background pattern, ...?
-- button handlers
 - aria attributes for controls
 - virtual scrolling
 - remember input height

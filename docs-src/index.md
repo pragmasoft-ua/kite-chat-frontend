@@ -1,27 +1,27 @@
 ---
 layout: page.11ty.cjs
-title: <human-livechat> ⌲ Home
+title: <humane-chat> ⌲ Home
 ---
 
-# &lt;human-livechat>
+# &lt;humane-chat>
 
-`<human-livechat>` is an awesome element. It's a great introduction to building web components with LitElement, with nice documentation site as well.
+`<humane-chat>` is an awesome element. It's a great introduction to building web components with LitElement, with nice documentation site as well.
 
 ## As easy as HTML
 
 <section class="columns">
   <div>
 
-`<human-livechat>` is just an HTML element. You can it anywhere you can use HTML!
+`<humane-chat>` is just an HTML element. You can it anywhere you can use HTML!
 
 ```html
-<human-livechat></human-livechat>
+<humane-chat></humane-chat>
 ```
 
   </div>
   <div>
 
-<human-livechat></human-livechat>
+<humane-chat></humane-chat>
 
   </div>
 </section>
@@ -31,16 +31,16 @@ title: <human-livechat> ⌲ Home
 <section class="columns">
   <div>
 
-`<human-livechat>` can be configured with attributed in plain HTML.
+`<humane-chat>` can be configured with attributed in plain HTML.
 
 ```html
-<human-livechat name="HTML"></human-livechat>
+<humane-chat name="HTML"></humane-chat>
 ```
 
   </div>
   <div>
 
-<human-livechat name="HTML"></human-livechat>
+<humane-chat name="HTML"></humane-chat>
 
   </div>
 </section>
@@ -50,7 +50,7 @@ title: <human-livechat> ⌲ Home
 <section class="columns">
   <div>
 
-`<human-livechat>` can be used with declarative rendering libraries like Angular, React, Vue, and lit-html
+`<humane-chat>` can be used with declarative rendering libraries like Angular, React, Vue, and lit-html
 
 ```js
 import {html, render} from 'lit-html';
@@ -59,8 +59,8 @@ const name = 'lit-html';
 
 render(
   html`
-    <h2>This is a &lt;human-livechat&gt;</h2>
-    <human-livechat .name=${name}></human-livechat>
+    <h2>This is a &lt;humane-chat&gt;</h2>
+    <humane-chat .name=${name}></humane-chat>
   `,
   document.body
 );
@@ -69,8 +69,8 @@ render(
   </div>
   <div>
 
-<h2>This is a &lt;human-livechat&gt;</h2>
-<human-livechat name="lit-html"></human-livechat>
+<h2>This is a &lt;humane-chat&gt;</h2>
+<humane-chat name="lit-html"></humane-chat>
 
   </div>
 </section>

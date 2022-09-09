@@ -1,22 +1,22 @@
 {
-  "name": "@pragmasoft/human-livechat",
-  "description": "human-livechat web component",
+  "name": "@pragmasoft/humane-chat",
+  "description": "humane-chat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
   "version": "2022.9.1",
-  "homepage": "https://pragmasoft-ua.github.io/human-livechat-frontend/",
+  "homepage": "https://pragmasoft-ua.github.io/humane-chat-frontend/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pragmasoft-ua/human-livechat-frontend.git"
+    "url": "git+https://github.com/pragmasoft-ua/humane-chat-frontend.git"
   },
   "bugs": {
-    "url": "https://github.com/pragmasoft-ua/human-livechat-frontend/issues"
+    "url": "https://github.com/pragmasoft-ua/humane-chat-frontend/issues"
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/pragmasoft-ukraine"
   },
   "keywords": [
-    "livechat",
+    "chat",
     "webchat",
     "support",
     "Ukraine",
@@ -28,9 +28,6 @@
     "tailwind"
   ],
   "source": "index.html",
-  "module": "dist/human-livechat.js",
-  "types": "dist/human-livechat.d.ts",
-  "type": "module",
   "files": [
     "dist"
   ],
@@ -46,7 +43,7 @@
     "docs:clean": "rimraf docs",
     "docs:gen": "eleventy --config=.eleventy.cjs",
     "docs:gen:watch": "eleventy --config=.eleventy.cjs --watch",
-    "docs:build": "rollup -c --file docs/human-livechat.bundled.js",
+    "docs:build": "rollup -c --file docs/humane-chat.bundled.js",
     "docs:assets": "cp node_modules/prismjs/themes/prism-okaidia.css docs/",
     "docs:serve": "wds --root-dir=docs --node-resolve --watch",
     "analyze": "cem analyze --litelement --globs \"src/**/*.ts\"",
@@ -58,19 +55,31 @@
     "test:watch": "wtr --watch",
     "test:prod": "MODE=prod wtr",
     "test:prod:watch": "MODE=prod wtr --watch",
-    "checksize": "rollup -c ; cat human-livechat.bundled.js | gzip -9 | wc -c ; rm human-livechat.bundled.js"
+    "checksize": "rollup -c ; cat humane-chat.bundled.js | gzip -9 | wc -c ; rm humane-chat.bundled.js",
+    "storybook": "start-storybook -p 6006",
+    "build-storybook": "build-storybook"
   },
   "dependencies": {
+    "@swc/helpers": "^0.4.11",
     "lit": "^2.3.1"
   },
   "devDependencies": {
     "@11ty/eleventy": "^1.0.1",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
+    "@babel/core": "^7.19.0",
     "@custom-elements-manifest/analyzer": "^0.6.3",
     "@open-wc/testing": "^3.1.5",
+    "@parcel/packager-ts": "^2.7.0",
     "@parcel/transformer-inline-string": "^2.7.0",
+    "@parcel/transformer-typescript-types": "^2.7.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
     "@rollup/plugin-replace": "^4.0.0",
+    "@storybook/addon-actions": "^6.5.10",
+    "@storybook/addon-essentials": "^6.5.10",
+    "@storybook/addon-links": "^6.5.10",
+    "@storybook/builder-webpack4": "^6.5.10",
+    "@storybook/manager-webpack4": "^6.5.10",
+    "@storybook/web-components": "^6.5.10",
     "@typescript-eslint/eslint-plugin": "^5.25.0",
     "@typescript-eslint/parser": "^5.25.0",
     "@web/dev-server": "^0.1.31",
@@ -79,8 +88,11 @@
     "@web/test-runner-playwright": "^0.8.8",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "autoprefixer": "^10.4.8",
+    "babel-loader": "^8.2.5",
     "eslint": "^8.15.0",
+    "eslint-plugin-storybook": "^0.6.4",
     "lit-analyzer": "^1.2.1",
+    "lit-html": "^2.3.1",
     "parcel": "^2.7.0",
     "postcss": "^8.4.16",
     "prettier": "^2.6.2",
@@ -91,7 +103,7 @@
     "rollup-plugin-summary": "^1.4.3",
     "rollup-plugin-terser": "^7.0.2",
     "tailwindcss": "^3.1.8",
-    "typescript": "^4.8.2"
+    "typescript": "~4.7"
   },
   "customElements": "custom-elements.json"
 }

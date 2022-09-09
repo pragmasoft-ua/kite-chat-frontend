@@ -4,19 +4,19 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-import {HumanLivechat} from '../human-livechat.js';
+import {HumaneChat} from '../humane-chat.js';
 
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
 
-suite('human-livechat', () => {
+suite('humane-chat', () => {
   test('is defined', () => {
-    const el = document.createElement('human-livechat');
-    assert.instanceOf(el, HumanLivechat);
+    const el = document.createElement('humane-chat');
+    assert.instanceOf(el, HumaneChat);
   });
 
   test('renders with default values', async () => {
-    const el = await fixture(html`<human-livechat></human-livechat>`);
+    const el = await fixture(html`<humane-chat></humane-chat>`);
     assert.shadowDom.equal(
       el,
       `
@@ -28,9 +28,7 @@ suite('human-livechat', () => {
   });
 
   test('renders with a set name', async () => {
-    const el = await fixture(
-      html`<human-livechat name="Test"></human-livechat>`
-    );
+    const el = await fixture(html`<humane-chat name="Test"></humane-chat>`);
     assert.shadowDom.equal(
       el,
       `
@@ -42,9 +40,7 @@ suite('human-livechat', () => {
   });
 
   test('handles a click', async () => {
-    const el: HumanLivechat = await fixture(
-      html`<human-livechat></human-livechat>`
-    );
+    const el: HumaneChat = await fixture(html`<humane-chat></humane-chat>`);
     const button = el.shadowRoot!.querySelector('button')!;
     button.click();
     await el.updateComplete;
@@ -59,9 +55,7 @@ suite('human-livechat', () => {
   });
 
   test('styling applied', async () => {
-    const el: HumanLivechat = await fixture(
-      html`<human-livechat></human-livechat>`
-    );
+    const el: HumaneChat = await fixture(html`<humane-chat></humane-chat>`);
     await el.updateComplete;
     assert.equal(getComputedStyle(el).paddingTop, '16px');
   });

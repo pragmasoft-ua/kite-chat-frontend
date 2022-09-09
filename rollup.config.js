@@ -11,9 +11,9 @@ import replace from '@rollup/plugin-replace';
 import postcss from 'rollup-plugin-postcss';
 
 export default {
-  input: 'human-livechat.js',
+  input: 'humane-chat.js',
   output: {
-    file: 'human-livechat.bundled.js',
+    file: 'humane-chat.bundled.js',
     format: 'esm',
   },
   onwarn(warning) {

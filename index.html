@@ -2,16 +2,34 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>&lt;human-livechat> Demo</title>
+    <title>&lt;humane-chat> Demo</title>
     <script type="module" src="./src/index.ts"></script>
     <style>
       :root {
-        --primary-color: orange;
+        --primary-color: lch(60% 70 140);
+        font-family: sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: lch(10% 0 0);
+          color: white;
+        }
+      }
+
+      h1 {
+        background-color: var(--primary-color);
+        color: white;
+        display: block;
+        margin: 1em auto;
+        padding: 1em;
+        width: fit-content;
+        text-transform: capitalize;
       }
     </style>
   </head>
   <body>
-    <h1>Human Live chat preview</h1>
-    <human-livechat> </human-livechat>
+    <h1>Humane chat preview</h1>
+    <humane-chat open title="👩🏻Людяна підтримка"></humane-chat>
   </body>
 </html>

@@ -20,7 +20,7 @@ module.exports = function (data) {
     <script src="/node_modules/lit/polyfill-support.js"></script>
     <script type="module" src="${relative(
       page.url,
-      '/human-livechat.bundled.js'
+      '/humane-chat.bundled.js'
     )}"></script>
   </head>
   <body>

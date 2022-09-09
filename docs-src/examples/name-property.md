@@ -1,15 +1,15 @@
 ---
 layout: example.11ty.cjs
-title: <human-livechat> ⌲ Examples ⌲ Name Property
+title: <humane-chat> ⌲ Examples ⌲ Name Property
 tags: example
 name: Name Property
 description: Setting the name property
 ---
 
-<human-livechat name="Earth"></human-livechat>
+<humane-chat name="Earth"></humane-chat>
 
 <h3>HTML</h3>
 
 ```html
-<human-livechat name="Earth"></human-livechat>
+<humane-chat name="Earth"></humane-chat>
 ```
