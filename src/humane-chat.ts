@@ -153,8 +153,7 @@ export class HumaneChat extends LitElement {
   }
 
   private _toggleOpen() {
-    this.open = !this.open;
-    this.dispatchEvent(new CustomEvent(this.open ? 'show' : 'hide'));
+    this.open ? this.hide() : this.show();
   }
 
   private _send() {
@@ -163,7 +162,9 @@ export class HumaneChat extends LitElement {
       'beforeend',
       `<p data-time="00:00 AM" class="msg out">${this.textarea.value}</p>`
     );
+    this.lastElementChild?.scrollIntoView();
     this.textarea.value = '';
+    this.textarea.focus();
     this._handleEnabled();
   }
 
@@ -178,6 +179,7 @@ export class HumaneChat extends LitElement {
 
   show() {
     this.open = true;
+    this.textarea.focus();
     this.dispatchEvent(new CustomEvent('show'));
   }
 
