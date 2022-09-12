@@ -6,7 +6,7 @@
     <script type="module" src="./src/index.ts"></script>
     <style>
       :root {
-        --primary-color: lch(60% 70 140);
+        --humane-primary-color: lch(60% 70 140);
         font-family: sans-serif;
       }
 
@@ -18,7 +18,7 @@
       }
 
       h1 {
-        background-color: var(--primary-color);
+        background-color: var(--humane-primary-color);
         color: white;
         display: block;
         margin: 1em auto;
@@ -30,6 +30,42 @@
   </head>
   <body>
     <h1>Humane chat preview</h1>
-    <humane-chat open title="👩🏻Людяна підтримка"></humane-chat>
+    <label for="incoming">Incoming message</label>
+    <textarea
+      id="incoming"
+      placeholder="Type incoming message"
+      autocomplete="on"
+      spellcheck="true"
+      wrap="soft"
+    ></textarea>
+    <button id="receive">Simulate incoming message</button>
+    <button id="open">Open</button>
+    <button id="close">Close</button>
+    <humane-chat open title="👩🏻Людяна підтримка">
+      <humane-msg>Hi</humane-msg>
+      <humane-msg status="read">Hello</humane-msg>
+      <humane-msg> Have you heard about Coding and Stuff?</humane-msg>
+      <humane-msg status="delivered">
+        Yeah I know, they post awesome coding tutorials
+      </humane-msg>
+      <humane-msg>But did you know they have a youtube channel?</humane-msg>
+      <humane-msg status="sent">
+        Yeah I also subscribed to their channel
+      </humane-msg>
+    </humane-chat>
+    <script defer>
+      const chat = document.querySelector('humane-chat');
+      const textarea = document.querySelector('textarea');
+      const receive = document.querySelector('#receive');
+      const open = document.querySelector('#open');
+      const close = document.querySelector('#close');
+
+      document.addEventListener('send', console.log);
+
+      receive.addEventListener('click', () => chat.incoming(textarea.value));
+
+      open.addEventListener('click', () => chat.show());
+      close.addEventListener('click', () => chat.hide());
+    </script>
   </body>
 </html>

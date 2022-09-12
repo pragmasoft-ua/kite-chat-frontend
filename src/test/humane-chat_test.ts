@@ -1,13 +1,14 @@
 /**
  * @license
- * Copyright 2021 Google LLC
- * SPDX-License-Identifier: BSD-3-Clause
+ * Copyright 2022 Dmytro Zemnytskyi <pragmasoft@gmail.com>
+ * LGPLv3
  */
 
 import {HumaneChat} from '../humane-chat.js';
 
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
+import './..';
 
 suite('humane-chat', () => {
   test('is defined', () => {

@@ -148,16 +148,18 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅open/close animation
 - ✅button handlers
 - ✅focus on textarea when dialog is opened
+- ✅keyboard shortcut for send
+- property converter for date property (toISOString)
+- events
 - switch to monorepo with pnpm build
 - use absolute instead of fixed positioning to facilitate storybook stories
-- keyboard shortcuts for buttons (send, close, attach file, edit, tab to focus)
+- keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - file upload
 - display images
 - message selection, contextual edit/delete menu items (next to close button)
 - buttons click animation
 - display links and button menus (as pills)
 - localization
-- events
 - emoji keyboard https://emoji.julien-marcou.fr/
 - custom variables for sizing, background pattern, ...?
 - aria attributes for controls
