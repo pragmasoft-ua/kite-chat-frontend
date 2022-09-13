@@ -157,7 +157,7 @@ export class HumaneChat extends LitElement {
   private _send() {
     if (this.textarea.value?.length > 0) {
       const msg = this.textarea.value;
-      const status = Status.unknown;
+      const status = Status.UNKNOWN;
       const datetime = new Date();
       const msgId = randomStringId();
       console.debug('send', msg);
