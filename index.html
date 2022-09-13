@@ -4,6 +4,8 @@
     <meta charset="utf-8" />
     <title>&lt;humane-chat> Demo</title>
     <script type="module" src="./src/index.ts"></script>
+    <script type="module" src="./src/controller.ts"></script>
+
     <style>
       :root {
         --humane-primary-color: lch(60% 70 140);
@@ -21,26 +23,46 @@
         background-color: var(--humane-primary-color);
         color: white;
         display: block;
-        margin: 1em auto;
-        padding: 1em;
+        margin: 1rem auto;
+        padding: 1rem;
         width: fit-content;
-        text-transform: capitalize;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        accent-color: var(--humane-primary-color);
+        row-gap: 1rem;
+        width: 30rem;
+        margin: 1rem auto;
+      }
+
+      main > button {
+        background-color: var(--humane-primary-color);
+        color: white;
+        padding: 0.5rem;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
       }
     </style>
   </head>
   <body>
-    <h1>Humane chat preview</h1>
-    <label for="incoming">Incoming message</label>
-    <textarea
-      id="incoming"
-      placeholder="Type incoming message"
-      autocomplete="on"
-      spellcheck="true"
-      wrap="soft"
-    ></textarea>
-    <button id="receive">Simulate incoming message</button>
-    <button id="open">Open</button>
-    <button id="close">Close</button>
+    <h1>&lt;humane-chat&gt; preview</h1>
+    <main>
+      <label for="incoming">Type message to send</label>
+      <textarea
+        id="incoming"
+        rows="5"
+        placeholder="Type message"
+        autocomplete="on"
+        spellcheck="true"
+        wrap="soft"
+      ></textarea>
+      <button id="receive">Send to chat</button>
+      <button id="open">Open</button>
+      <button id="close">Close</button>
+    </main>
     <humane-chat open title="👩🏻Людяна підтримка">
       <humane-msg>Hi</humane-msg>
       <humane-msg status="read">Hello</humane-msg>
@@ -53,19 +75,5 @@
         Yeah I also subscribed to their channel
       </humane-msg>
     </humane-chat>
-    <script defer>
-      const chat = document.querySelector('humane-chat');
-      const textarea = document.querySelector('textarea');
-      const receive = document.querySelector('#receive');
-      const open = document.querySelector('#open');
-      const close = document.querySelector('#close');
-
-      document.addEventListener('send', console.log);
-
-      receive.addEventListener('click', () => chat.incoming(textarea.value));
-
-      open.addEventListener('click', () => chat.show());
-      close.addEventListener('click', () => chat.hide());
-    </script>
   </body>
 </html>

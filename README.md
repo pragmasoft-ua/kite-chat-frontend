@@ -149,13 +149,14 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅button handlers
 - ✅focus on textarea when dialog is opened
 - ✅keyboard shortcut for send
-- property converter for date property (toISOString)
-- events
+- ✅events
+- ✅property converter for datetime property
+- unread N badge on toggle button, autoopen on incoming attr
 - switch to monorepo with pnpm build
 - use absolute instead of fixed positioning to facilitate storybook stories
-- keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - file upload
 - display images
+- keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - message selection, contextual edit/delete menu items (next to close button)
 - buttons click animation
 - display links and button menus (as pills)
