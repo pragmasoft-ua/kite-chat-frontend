@@ -26,7 +26,10 @@ const closeBtn = requiredElement('#close');
 const colorpicker = requiredElement('#colorpicker');
 const root = document.documentElement;
 
-document.addEventListener('humane-chat.send', (e) => alert(e.detail.msg));
+document.addEventListener('humane-chat.send', (e) => {
+  const shouldPrevent = !confirm(e.detail.msg);
+  if (shouldPrevent) e.preventDefault();
+});
 
 sendToChatBtn.addEventListener('click', () => chat.incoming(textarea.value));
 openBtn.addEventListener('click', () => chat.show());
