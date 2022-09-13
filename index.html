@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>&lt;humane-chat> Demo</title>
+    <title>&lt;humane-chat&gt; demo</title>
     <script type="module" src="./src/index.ts"></script>
     <script type="module" src="./src/controller.ts"></script>
 
@@ -20,8 +20,7 @@
       }
 
       h1 {
-        background-color: var(--humane-primary-color);
-        color: white;
+        color: var(--humane-primary-color);
         display: block;
         margin: 1rem auto;
         padding: 1rem;
@@ -37,10 +36,16 @@
         margin: 1rem auto;
       }
 
-      main > button {
+      main section {
+        display: flex;
+        column-gap: 1rem;
+      }
+
+      main button {
         background-color: var(--humane-primary-color);
         color: white;
         padding: 0.5rem;
+        width: fit-content;
         border: none;
         border-radius: 3px;
         cursor: pointer;
@@ -48,7 +53,7 @@
     </style>
   </head>
   <body>
-    <h1>&lt;humane-chat&gt; preview</h1>
+    <h1>&lt;humane-chat&gt; demo</h1>
     <main>
       <label for="incoming">Type message to send</label>
       <textarea
@@ -59,9 +64,14 @@
         spellcheck="true"
         wrap="soft"
       ></textarea>
-      <button id="receive">Send to chat</button>
-      <button id="open">Open</button>
-      <button id="close">Close</button>
+      <section>
+        <button id="send">Send to chat</button>
+        <button id="open">Open</button>
+        <button id="close">Close</button>
+      </section>
+      <label for="colorpicker"
+        >Customize color: <input type="color" id="colorpicker" value="#1aa738"
+      /></label>
     </main>
     <humane-chat open title="👩🏻Людяна підтримка">
       <humane-msg>Hi</humane-msg>

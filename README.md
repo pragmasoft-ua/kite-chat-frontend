@@ -29,7 +29,7 @@ npm run build
 To watch files and rebuild when the files are modified, run the following command in a separate shell:
 
 ```bash
-npm run build:watch
+npm start
 ```
 
 Both the TypeScript compiler and lit-analyzer are configured to be very strict. You may want to change `tsconfig.json` to make them less strict.
@@ -152,6 +152,7 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅events
 - ✅property converter for datetime property
 - unread N badge on toggle button, autoopen on incoming attr
+- smarter datetime format or change display on click from time to date and back
 - switch to monorepo with pnpm build
 - use absolute instead of fixed positioning to facilitate storybook stories
 - file upload

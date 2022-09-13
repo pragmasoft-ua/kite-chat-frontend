@@ -14,7 +14,7 @@ import humaneChatStyles from 'bundle-text:./humane-chat.css';
 import {randomStringId} from './random-string-id';
 import {Status} from './humane-msg';
 
-export type THumaneMessage = {
+export type HumaneMessageOutgoing = {
   msg: string;
   msgId: string;
   chatId: string;
@@ -195,7 +195,7 @@ export class HumaneChat extends LitElement {
       const status = Status.UNKNOWN;
       const datetime = new Date().toISOString();
       const msgId = randomStringId();
-      const e = new CustomEvent<THumaneMessage>('humane-chat.send', {
+      const e = new CustomEvent<HumaneMessageOutgoing>('humane-chat.send', {
         bubbles: true,
         composed: true,
         cancelable: true,
