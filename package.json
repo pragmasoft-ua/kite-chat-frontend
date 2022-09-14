@@ -28,6 +28,7 @@
     "tailwind"
   ],
   "source": "index.html",
+  "type": "module",
   "files": [
     "dist"
   ],

@@ -1,4 +1,3 @@
-/// <reference path="./parcel.d.ts"/>
 /**
  * @license
  * Copyright 2022 Dmytro Zemnytskyi <pragmasoft@gmail.com>
@@ -12,16 +11,7 @@ import {classMap} from 'lit/directives/class-map.js';
 
 import humaneChatStyles from 'bundle-text:./humane-chat.css';
 import {randomStringId} from './random-string-id';
-import {Status} from './humane-msg';
-
-export type HumaneMessageOutgoing = {
-  msg: string;
-  msgId: string;
-  chatId: string;
-  userId: string;
-  datetime: string;
-  status: Status;
-};
+import {HumaneMessage, Status} from './humane-types';
 
 const componentStyles = css`
   ${unsafeCSS(humaneChatStyles)}
@@ -195,7 +185,7 @@ export class HumaneChat extends LitElement {
       const status = Status.UNKNOWN;
       const datetime = new Date().toISOString();
       const msgId = randomStringId();
-      const e = new CustomEvent<HumaneMessageOutgoing>('humane-chat.send', {
+      const e = new CustomEvent<HumaneMessage>('humane-chat.send', {
         bubbles: true,
         composed: true,
         cancelable: true,
@@ -243,7 +233,11 @@ export class HumaneChat extends LitElement {
     this.textarea.focus();
   }
 
-  incoming(msg: string, msgId = randomStringId(), datetime = new Date()) {
+  incoming(
+    msg: string,
+    msgId = randomStringId(),
+    datetime = new Date().toISOString()
+  ) {
     this.insertAdjacentHTML(
       'beforeend',
       `<humane-msg msgId="${msgId}" datetime="${datetime}">${msg}</humane-msg>`

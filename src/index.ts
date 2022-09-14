@@ -1,5 +1,7 @@
-import {HumaneChat, HumaneMessageOutgoing} from './humane-chat';
+import {HumaneChat} from './humane-chat';
 import {HumaneMsg} from './humane-msg';
+import {HumaneMessage} from './humane-types';
+
 declare global {
   interface HTMLElementTagNameMap {
     'humane-chat': HumaneChat;
@@ -9,7 +11,7 @@ declare global {
   interface DocumentEventMap {
     'humane-chat.hide': CustomEvent;
     'humane-chat.show': CustomEvent;
-    'humane-chat.send': CustomEvent<HumaneMessageOutgoing>;
+    'humane-chat.send': CustomEvent<HumaneMessage>;
   }
 }
 

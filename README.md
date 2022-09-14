@@ -151,6 +151,7 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅keyboard shortcut for send
 - ✅events
 - ✅property converter for datetime property
+- shared worker
 - unread N badge on toggle button, autoopen on incoming attr
 - smarter datetime format or change display on click from time to date and back
 - switch to monorepo with pnpm build

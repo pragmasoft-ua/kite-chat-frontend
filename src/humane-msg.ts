@@ -1,4 +1,3 @@
-/// <reference path="./parcel.d.ts"/>
 /**
  * @license
  * Copyright 2022 Dmytro Zemnytskyi <pragmasoft@gmail.com>
@@ -12,22 +11,16 @@ import {customElement, property} from 'lit/decorators.js';
 
 import humaneMsgStyles from 'bundle-text:./humane-msg.css';
 import {randomStringId} from './random-string-id';
+import {Status} from './humane-types';
 
 const componentStyles = css`
   ${unsafeCSS(humaneMsgStyles)}
 `;
 
-export enum Status {
-  UNKNOWN = 'unknown',
-  SENT = 'sent',
-  DELIVERED = 'delivered',
-  READ = 'read',
-}
-
-const relativeTimeFormat = new Intl.RelativeTimeFormat(
-  navigator.languages as string[],
-  {style: 'narrow', numeric: 'auto'}
-);
+// const relativeTimeFormat = new Intl.RelativeTimeFormat(
+//   navigator.languages as string[],
+//   {style: 'narrow', numeric: 'auto'}
+// );
 
 const hhmmLocalizedFormat = new Intl.DateTimeFormat(
   navigator.languages as string[],
