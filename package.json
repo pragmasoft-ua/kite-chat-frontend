@@ -31,7 +31,8 @@
   "targets": {
     "docs": {
       "source": "index.html",
-      "distDir": "./docs"
+      "distDir": "./docs",
+      "publicUrl": "/humane-chat-frontend"
     },
     "esm": {
       "source": "src/index.ts",
