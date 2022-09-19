@@ -1,9 +1,9 @@
 {
-  "name": "@pragmasoft/humane-chat",
+  "name": "@pragmasoft-ukraine/humane-chat-component",
   "description": "humane-chat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2022.9.1",
+  "version": "2022.9.3",
   "homepage": "https://pragmasoft-ua.github.io/humane-chat-frontend/",
   "repository": {
     "type": "git",
@@ -13,11 +13,12 @@
     "url": "https://github.com/pragmasoft-ua/humane-chat-frontend/issues"
   },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com/pragmasoft-ukraine"
+    "registry": "https://registry.npmjs.org/pragmasoft-ukraine"
   },
   "keywords": [
     "chat",
     "webchat",
+    "livechat",
     "support",
     "Ukraine",
     "web-components",
@@ -27,8 +28,25 @@
     "parcel",
     "tailwind"
   ],
-  "source": "index.html",
-  "type": "module",
+  "targets": {
+    "docs": {
+      "source": "index.html",
+      "distDir": "./docs"
+    },
+    "esm": {
+      "source": "src/index.ts",
+      "outputFormat": "esmodule",
+      "isLibrary": false,
+      "includeNodeModules": true
+    },
+    "lib": {
+      "source": "src/index.ts",
+      "outputFormat": "commonjs",
+      "isLibrary": true,
+      "includeNodeModules": false,
+      "sourceMap": false
+    }
+  },
   "files": [
     "dist"
   ],
@@ -107,5 +125,6 @@
     "tailwindcss": "^3.1.8",
     "typescript": "~4.7"
   },
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "customElements": "custom-elements.json"
 }

@@ -2,5 +2,6 @@
 /node_modules/
 /dist/
 /test/
+/storybook-static/
 custom-elements.json
 .vscode

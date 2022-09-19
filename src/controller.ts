@@ -1,4 +1,4 @@
-import {HumaneChat} from './humane-chat';
+import {HumaneChatElement} from './';
 import {
   ConnectedPayload,
   ErrorPayload,
@@ -39,7 +39,7 @@ sharedWorker.port.onmessage = (e: MessageEvent<Payload>) => {
   }
 };
 
-const chat: HumaneChat = requiredElement('humane-chat');
+const chat: HumaneChatElement = requiredElement('humane-chat');
 const textarea: HTMLTextAreaElement = requiredElement('textarea');
 const sendToChatBtn = requiredElement('#send');
 const openBtn = requiredElement('#open');

@@ -4,7 +4,7 @@
  * LGPLv3
  */
 
-import {HumaneChat} from '../humane-chat.js';
+import {HumaneChatElement} from '../humane-chat.js';
 
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
@@ -13,7 +13,7 @@ import './..';
 suite('humane-chat', () => {
   test('is defined', () => {
     const el = document.createElement('humane-chat');
-    assert.instanceOf(el, HumaneChat);
+    assert.instanceOf(el, HumaneChatElement);
   });
 
   test('renders with default values', async () => {
@@ -41,7 +41,9 @@ suite('humane-chat', () => {
   });
 
   test('handles a click', async () => {
-    const el: HumaneChat = await fixture(html`<humane-chat></humane-chat>`);
+    const el: HumaneChatElement = await fixture(
+      html`<humane-chat></humane-chat>`
+    );
     const button = el.shadowRoot!.querySelector('button')!;
     button.click();
     await el.updateComplete;
@@ -56,7 +58,9 @@ suite('humane-chat', () => {
   });
 
   test('styling applied', async () => {
-    const el: HumaneChat = await fixture(html`<humane-chat></humane-chat>`);
+    const el: HumaneChatElement = await fixture(
+      html`<humane-chat></humane-chat>`
+    );
     await el.updateComplete;
     assert.equal(getComputedStyle(el).paddingTop, '16px');
   });

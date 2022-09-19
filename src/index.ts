@@ -1,11 +1,11 @@
-import {HumaneChat} from './humane-chat';
-import {HumaneMsg} from './humane-msg';
+import {HumaneChatElement} from './humane-chat';
+import {HumaneMsgElement} from './humane-msg';
 import {HumaneMessage} from './humane-types';
 
 declare global {
   interface HTMLElementTagNameMap {
-    'humane-chat': HumaneChat;
-    'humane-msg': HumaneMsg;
+    'humane-chat': HumaneChatElement;
+    'humane-msg': HumaneMsgElement;
   }
 
   interface DocumentEventMap {
@@ -15,5 +15,5 @@ declare global {
   }
 }
 
-export {HumaneChat} from './humane-chat';
-export {HumaneMsg} from './humane-msg';
+export {HumaneChatElement} from './humane-chat';
+export {HumaneMsgElement} from './humane-msg';
