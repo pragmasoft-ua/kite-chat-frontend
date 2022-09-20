@@ -105,7 +105,11 @@ This project includes a simple website generated with the [eleventy](11ty.dev) s
 
 To enable the site go to the GitHub settings and change the GitHub Pages &quot;Source&quot; setting to &quot;master branch /docs folder&quot;.</p>
 
-## Static Site is located here
+## Script to include component from CDN
+
+`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/humane-chat-component@2022.9.4/dist/index.mjs"></script>`
+
+## Static Site with demo is located here
 
 https://pragmasoft-ua.github.io/humane-chat-frontend/
 
