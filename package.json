@@ -12,41 +12,41 @@
   "bugs": {
     "url": "https://github.com/pragmasoft-ua/humane-chat-frontend/issues"
   },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/pragmasoft-ukraine"
-  },
   "keywords": [
+    "humane",
     "chat",
     "webchat",
     "livechat",
     "support",
     "Ukraine",
-    "web-components",
-    "lit-element",
-    "typescript",
-    "esm",
-    "parcel",
-    "tailwind"
+    "web-components"
   ],
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "sideEffects": [
+    "./src/humane-*.ts",
+    "./src/controller.ts",
+    "./src/index.ts"
+  ],
+  "browserslist": "> 0.5%, last 2 versions, not dead",
   "targets": {
     "docs": {
       "source": "index.html",
       "distDir": "./docs",
-      "publicUrl": "/humane-chat-frontend"
+      "publicUrl": "./"
     },
-    "esm": {
-      "source": "src/index.ts",
-      "outputFormat": "esmodule",
-      "isLibrary": false,
+    "module": {
       "includeNodeModules": true
     },
-    "lib": {
-      "source": "src/index.ts",
-      "outputFormat": "commonjs",
-      "isLibrary": true,
-      "includeNodeModules": false,
-      "sourceMap": false
-    }
+    "main": {}
   },
   "files": [
     "dist"
@@ -75,26 +75,24 @@
     "test:watch": "wtr --watch",
     "test:prod": "MODE=prod wtr",
     "test:prod:watch": "MODE=prod wtr --watch",
-    "checksize": "rollup -c ; cat humane-chat.bundled.js | gzip -9 | wc -c ; rm humane-chat.bundled.js",
     "storybook": "start-storybook -p 6006",
     "build-storybook": "build-storybook"
   },
   "dependencies": {
     "@swc/helpers": "^0.4.11",
-    "lit": "^2.3.1",
     "nanoid": "^4.0.0"
+  },
+  "peerDependencies": {
+    "lit": "^2.3.1"
   },
   "devDependencies": {
     "@11ty/eleventy": "^1.0.1",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
-    "@babel/core": "^7.19.0",
     "@custom-elements-manifest/analyzer": "^0.6.3",
     "@open-wc/testing": "^3.1.5",
     "@parcel/packager-ts": "^2.7.0",
     "@parcel/transformer-inline-string": "^2.7.0",
     "@parcel/transformer-typescript-types": "^2.7.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-replace": "^4.0.0",
     "@storybook/addon-actions": "^6.5.10",
     "@storybook/addon-essentials": "^6.5.10",
     "@storybook/addon-links": "^6.5.10",
@@ -109,7 +107,6 @@
     "@web/test-runner-playwright": "^0.8.8",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "autoprefixer": "^10.4.8",
-    "babel-loader": "^8.2.5",
     "eslint": "^8.15.0",
     "eslint-plugin-storybook": "^0.6.4",
     "lit-analyzer": "^1.2.1",
@@ -119,13 +116,8 @@
     "prettier": "^2.6.2",
     "prettier-plugin-tailwindcss": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rollup": "^2.73.0",
-    "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-summary": "^1.4.3",
-    "rollup-plugin-terser": "^7.0.2",
     "tailwindcss": "^3.1.8",
     "typescript": "~4.7"
   },
-  "browserslist": "> 0.5%, last 2 versions, not dead",
   "customElements": "custom-elements.json"
 }

@@ -13,6 +13,8 @@ import humaneChatStyles from 'bundle-text:./humane-chat.css';
 import {randomStringId} from './random-string-id';
 import {HumaneMessage, Status} from './humane-types';
 
+console.debug('humane-chat loaded');
+
 const componentStyles = css`
   ${unsafeCSS(humaneChatStyles)}
 `;

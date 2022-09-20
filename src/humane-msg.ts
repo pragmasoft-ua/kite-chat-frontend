@@ -13,6 +13,8 @@ import humaneMsgStyles from 'bundle-text:./humane-msg.css';
 import {randomStringId} from './random-string-id';
 import {Status} from './humane-types';
 
+console.debug('humane-msg loaded');
+
 const componentStyles = css`
   ${unsafeCSS(humaneMsgStyles)}
 `;

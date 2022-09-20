@@ -1,4 +1,3 @@
-import {HumaneChatElement} from './';
 import {
   ConnectedPayload,
   ErrorPayload,
@@ -6,6 +5,8 @@ import {
   Payload,
   PayloadType,
 } from './humane-types';
+
+import {HumaneChatElement} from './humane-chat';
 
 const requiredElement = <T extends HTMLElement = HTMLElement>(
   selector: string

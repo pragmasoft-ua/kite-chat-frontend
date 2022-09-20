@@ -15,5 +15,6 @@ declare global {
   }
 }
 
-export {HumaneChatElement} from './humane-chat';
-export {HumaneMsgElement} from './humane-msg';
+export * from './humane-chat';
+export * from './humane-msg';
+export * from './humane-types';
