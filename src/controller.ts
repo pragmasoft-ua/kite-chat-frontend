@@ -1,9 +1,9 @@
 import {
-  ConnectedPayload,
-  ErrorPayload,
-  HumaneMessage,
-  Payload,
-  PayloadType,
+  ConnectedMsg,
+  ErrorMsg,
+  PayloadMsg,
+  HumaneMsg,
+  MsgType,
 } from './humane-types';
 
 import {HumaneChatElement} from './humane-chat';
@@ -24,17 +24,17 @@ const sharedWorker = new SharedWorker(
   }
 );
 
-sharedWorker.port.onmessage = (e: MessageEvent<Payload>) => {
+sharedWorker.port.onmessage = (e: MessageEvent<HumaneMsg>) => {
   const payload = e.data;
   if (!payload) throw new Error('no payload');
   switch (payload.type) {
-    case PayloadType.MSG:
+    case MsgType.MSG:
       handleIncomingMessage(payload);
       break;
-    case PayloadType.CONNECTED:
+    case MsgType.CONNECTED:
       handleConnected(payload);
       break;
-    case PayloadType.ERROR:
+    case MsgType.ERROR:
       handleError(payload);
       break;
   }
@@ -50,12 +50,12 @@ const root = document.documentElement;
 
 document.addEventListener('humane-chat.send', (e) => {
   const payload = e.detail;
-  sharedWorker.port.postMessage({type: PayloadType.MSG, ...payload});
+  sharedWorker.port.postMessage({type: MsgType.MSG, ...payload});
 });
 
 addEventListener('beforeunload', () =>
   sharedWorker.port.postMessage({
-    type: PayloadType.DISCONNECTED,
+    type: MsgType.DISCONNECTED,
     userId: chat.userId,
   })
 );
@@ -71,18 +71,18 @@ colorpicker.addEventListener('input', (e) => {
 
 sharedWorker.port.start();
 sharedWorker.port.postMessage({
-  type: PayloadType.CONNECTED,
+  type: MsgType.CONNECTED,
   userId: chat.userId,
 });
 
-function handleIncomingMessage(incoming: HumaneMessage) {
+function handleIncomingMessage(incoming: PayloadMsg) {
   chat.incoming(incoming.msg, incoming.msgId, incoming.datetime);
 }
 
-function handleConnected(connected: ConnectedPayload) {
+function handleConnected(connected: ConnectedMsg) {
   console.log('Connected', connected.userId);
 }
 
-function handleError(e: ErrorPayload) {
+function handleError(e: ErrorMsg) {
   console.error(e.code, e.reason);
 }

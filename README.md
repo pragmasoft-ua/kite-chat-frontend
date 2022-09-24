@@ -155,15 +155,20 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅keyboard shortcut for send
 - ✅events
 - ✅property converter for datetime property
-- shared worker
-- unread N badge on toggle button, autoopen on incoming attr
-- smarter datetime format or change display on click from time to date and back
+- ✅shared worker
+- ✅npm publishing, unpkg cdn
 - switch to monorepo with pnpm build
-- use absolute instead of fixed positioning to facilitate storybook stories
+- storybook - use absolute instead of fixed positioning to facilitate storybook stories (may be not needed)
 - file upload
 - display images
+- new N (unread) badge on toggle button, autoopen on incoming attr
+- smarter datetime format or change display on click from time to date and back
+- cache session in worker to survive page reloads
 - keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - message selection, contextual edit/delete menu items (next to close button)
+- clipboard api
+- Web push
+- BroadcastChannel
 - buttons click animation
 - display links and button menus (as pills)
 - localization
@@ -173,4 +178,8 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - virtual scrolling
 - remember input height
 - sticky dates
-- npm publishing, jspm/skypack cdn
+- Conversation context (page url, ip, browser lang, time, timezone, location)
+- github sponsorship
+- automate npm publish with github actions
+- playwright e2e tests
+- use temporal polyfill for timestamp

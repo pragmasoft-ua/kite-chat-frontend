@@ -1,22 +1,40 @@
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <link rel="icon" type="image/svg+xml" href="/kite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&lt;humane-chat> Demo</title>
-    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
-    <script src="../node_modules/lit/polyfill-support.js"></script>
-    <script type="module" src="../humane-chat.js"></script>
     <style>
-      p {
-        border: solid 1px blue;
-        padding: 8px;
+      :root {
+        --humane-primary-color: #808080;
+        font-family: sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #333;
+          color: white;
+        }
       }
     </style>
+    <script
+      type="module"
+      src="https://unpkg.com/@pragmasoft-ukraine/humane-chat-component@2022.9.4/dist/index.mjs"
+    ></script>
   </head>
   <body>
-    <humane-chat>
-      <p>This is child content</p>
+    <humane-chat open title="👩🏻Людяна підтримка">
+      <humane-msg>Hi</humane-msg>
+      <humane-msg status="read">Hello</humane-msg>
+      <humane-msg> Have you heard about Coding and Stuff?</humane-msg>
+      <humane-msg status="delivered">
+        Yeah I know, they post awesome coding tutorials
+      </humane-msg>
+      <humane-msg>But did you know they have a youtube channel?</humane-msg>
+      <humane-msg status="sent">
+        Yeah I also subscribed to their channel
+      </humane-msg>
     </humane-chat>
   </body>
 </html>

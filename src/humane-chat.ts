@@ -11,7 +11,7 @@ import {classMap} from 'lit/directives/class-map.js';
 
 import humaneChatStyles from 'bundle-text:./humane-chat.css';
 import {randomStringId} from './random-string-id';
-import {HumaneMessage, Status} from './humane-types';
+import {PayloadMsg, MsgStatus} from './humane-types';
 
 console.debug('humane-chat loaded');
 
@@ -184,10 +184,10 @@ export class HumaneChatElement extends LitElement {
   private _send() {
     if (this.textarea.value?.length > 0) {
       const msg = this.textarea.value;
-      const status = Status.UNKNOWN;
+      const status = MsgStatus.UNKNOWN;
       const datetime = new Date().toISOString();
       const msgId = randomStringId();
-      const e = new CustomEvent<HumaneMessage>('humane-chat.send', {
+      const e = new CustomEvent<PayloadMsg>('humane-chat.send', {
         bubbles: true,
         composed: true,
         cancelable: true,

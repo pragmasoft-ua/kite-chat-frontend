@@ -1,40 +1,47 @@
-export enum Status {
-  UNKNOWN = 'unknown',
-  SENT = 'sent',
-  DELIVERED = 'delivered',
-  READ = 'read',
+export const enum MsgStatus {
+  UNKNOWN = 0,
+  SENT = 1,
+  DELIVERED = 2,
+  READ = 3,
 }
 
-export type HumaneMessage = {
-  msg: string;
+export type PayloadMsg<TPayload> = {
   msgId: string;
   chatId: string;
   userId: string;
-  datetime: string;
-  status?: Status;
+  timestamp: Date;
+  status?: MsgStatus;
+  payload: TPayload;
 };
 
-export const enum PayloadType {
-  MSG = 'msg',
-  CONNECTED = 'connected',
-  DISCONNECTED = 'disconnected',
-  ERROR = 'error',
+export const enum MsgType {
+  CONNECTED = 0,
+  DISCONNECTED = 1,
+  ERROR = 2,
+  PLAINTEXT = 3,
 }
 
-export type HumaneMessagePayload = {type: PayloadType.MSG} & HumaneMessage;
-export type ConnectedPayload = {type: PayloadType.CONNECTED; userId: string};
-export type DisconnectedPayload = {
-  type: PayloadType.DISCONNECTED;
+export type ConnectedMsg = {
+  type: MsgType.CONNECTED;
+  chatId: string;
   userId: string;
 };
-export type ErrorPayload = {
-  type: PayloadType.ERROR;
+export type DisconnectedMsg = {
+  type: MsgType.DISCONNECTED;
+  chatId: string;
+  userId: string;
+};
+export type ErrorMsg = {
+  type: MsgType.ERROR;
   reason: string;
   code: number;
 };
+export type PlaintextMsg = {
+  type: MsgType.PLAINTEXT;
+} & PayloadMsg<string>;
 
-export type Payload =
-  | HumaneMessagePayload
-  | ConnectedPayload
-  | DisconnectedPayload
-  | ErrorPayload;
+export type HumaneMsg =
+  | ConnectedMsg
+  | DisconnectedMsg
+  | ErrorMsg
+  | PlaintextMsg;

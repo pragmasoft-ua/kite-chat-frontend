@@ -11,7 +11,7 @@ import {customElement, property} from 'lit/decorators.js';
 
 import humaneMsgStyles from 'bundle-text:./humane-msg.css';
 import {randomStringId} from './random-string-id';
-import {Status} from './humane-types';
+import {MsgStatus} from './humane-types';
 
 console.debug('humane-msg loaded');
 
@@ -67,7 +67,7 @@ export class HumaneMsgElement extends LitElement {
    * in this case message is formatted as an outgoing message
    */
   @property({reflect: true})
-  status?: Status;
+  status?: MsgStatus;
 
   override render() {
     return html` <slot></slot

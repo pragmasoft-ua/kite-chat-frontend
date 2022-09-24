@@ -8,7 +8,7 @@ console.log('loaded');
 // connection. This will be opened only once.
 // const ws = new WebSocket("ws://localhost:3001");
 
-import {HumaneMessagePayload, Payload, PayloadType} from './humane-types';
+import {PlaintextMsg, HumaneMsg, MsgType} from './humane-types';
 
 // Create a broadcast channel to notify about state changes
 // const broadcastChannel = new BroadcastChannel('humane-chat');
@@ -48,25 +48,25 @@ const idToPortMap: Map<string, MessagePort> = new Map();
 self.onconnect = (e: MessageEvent) => {
   console.log('onconnect');
   const port = e.ports[0];
-  port.onmessage = (e: MessageEvent<Payload>) => {
+  port.onmessage = (e: MessageEvent<HumaneMsg>) => {
     const payload = e.data;
     if (!payload) throw new Error('no payload');
     console.debug('onmessage', JSON.stringify(payload));
     switch (payload.type) {
-      case PayloadType.MSG:
+      case MsgType.MSG:
         handleIncomingMessage(payload);
         break;
-      case PayloadType.CONNECTED:
+      case MsgType.CONNECTED:
         handleConnected(payload.userId, port);
         break;
-      case PayloadType.DISCONNECTED:
+      case MsgType.DISCONNECTED:
         handleDisconnected(payload.userId);
         break;
     }
   };
 };
 
-function handleIncomingMessage(payload: HumaneMessagePayload) {
+function handleIncomingMessage(payload: PlaintextMsg) {
   idToPortMap.forEach((port, userId) => {
     if (userId != payload.userId) {
       try {
@@ -82,7 +82,7 @@ function handleIncomingMessage(payload: HumaneMessagePayload) {
 function handleConnected(userId: string, port: MessagePort) {
   idToPortMap.set(userId, port);
   port.postMessage({
-    type: PayloadType.CONNECTED,
+    type: MsgType.CONNECTED,
     userId,
   });
 }
