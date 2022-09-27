@@ -22,8 +22,8 @@ const componentStyles = css`
 /**
  * HumaneChat is an embeddable livechat component
  *
- * @fires {CustomEvent} show - Chat window opens
- * @fires {CustomEvent} hide - Chat window closes
+ * @fires {CustomEvent} humane-chat.show - Chat window opens
+ * @fires {CustomEvent} humane-chat.hide - Chat window closes
  * @attr {Boolean} open - displays chat window if true or only toggle button if false or missing
  * @slot {"humane-msg" | "p"} - humane-chat component contains chat messages as nested subcomponents, allowing server-side rendering
  * @cssvar --humane-primary-color - accent color, styles toggle button, title bar, text selection, cursor
@@ -183,11 +183,11 @@ export class HumaneChatElement extends LitElement {
 
   private _send() {
     if (this.textarea.value?.length > 0) {
-      const msg = this.textarea.value;
+      const payload = this.textarea.value;
       const status = MsgStatus.UNKNOWN;
-      const datetime = new Date().toISOString();
+      const timestamp = new Date();
       const msgId = randomStringId();
-      const e = new CustomEvent<PayloadMsg>('humane-chat.send', {
+      const e = new CustomEvent<PayloadMsg<string>>('humane-chat.send', {
         bubbles: true,
         composed: true,
         cancelable: true,
@@ -196,8 +196,8 @@ export class HumaneChatElement extends LitElement {
           userId: this.userId,
           msgId,
           status,
-          datetime,
-          msg,
+          timestamp,
+          payload,
         },
       });
       this.dispatchEvent(e);
@@ -206,7 +206,7 @@ export class HumaneChatElement extends LitElement {
       }
       this.insertAdjacentHTML(
         'beforeend',
-        `<humane-msg status="${status}" msgId="${msgId}" datetime="${datetime}">${msg}</humane-msg>`
+        `<humane-msg status="${status}" msgId="${msgId}" timestamp="${timestamp}">${payload}</humane-msg>`
       );
       this.lastElementChild?.scrollIntoView();
       this.textarea.value = '';

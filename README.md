@@ -183,3 +183,4 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - automate npm publish with github actions
 - playwright e2e tests
 - use temporal polyfill for timestamp
+- https://github.com/43081j/postcss-lit
