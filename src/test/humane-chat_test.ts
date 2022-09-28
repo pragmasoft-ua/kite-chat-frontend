@@ -8,7 +8,7 @@ import {HumaneChatElement} from '../humane-chat.js';
 
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
-import './..';
+import '../../packages/humane-chat-component/src';
 
 suite('humane-chat', () => {
   test('is defined', () => {

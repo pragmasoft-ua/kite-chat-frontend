@@ -1,18 +1,4 @@
-export const enum MsgStatus {
-  UNKNOWN = 0,
-  SENT = 1,
-  DELIVERED = 2,
-  READ = 3,
-}
-
-export type PayloadMsg<TPayload> = {
-  msgId: string;
-  chatId: string;
-  userId: string;
-  timestamp: Date;
-  status?: MsgStatus;
-  payload: TPayload;
-};
+import {PayloadMsg} from '@pragmasoft-ukraine/humane-chat-component';
 
 export const enum MsgType {
   CONNECTED = 0,
@@ -36,6 +22,7 @@ export type ErrorMsg = {
   reason: string;
   code: number;
 };
+
 export type PlaintextMsg = {
   type: MsgType.PLAINTEXT;
 } & PayloadMsg<string>;

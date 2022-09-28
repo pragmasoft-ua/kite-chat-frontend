@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "rootDir": "./src",
+    "plugins": [
+      {
+        "name": "ts-lit-plugin",
+        "strict": true
+      }
+    ]
+  },
+  "extends": "../../tsconfig.json",
+  "include": ["./src/**/*.ts"]
+}

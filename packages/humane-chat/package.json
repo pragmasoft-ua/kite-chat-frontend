@@ -1,0 +1,59 @@
+{
+  "name": "@pragmasoft-ukraine/humane-chat",
+  "description": "humane-chat frontend",
+  "license": "LGPL3.0",
+  "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
+  "keywords": [
+    "humane",
+    "chat",
+    "webchat",
+    "livechat",
+    "support",
+    "Ukraine",
+    "web-components"
+  ],
+  "files": [
+    "dist"
+  ],
+  "source": "src/index.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": [
+    "./src/humane-*.ts",
+    "./src/index.ts"
+  ],
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "targets": {
+    "docs": {
+      "source": "index.html",
+      "distDir": "./docs",
+      "publicUrl": "./"
+    },
+    "module": {
+      "includeNodeModules": true
+    },
+    "main": {}
+  },
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build",
+    "clean": "rimraf dist",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@msgpack/msgpack": "^2.8.0",
+    "@pragmasoft-ukraine/humane-chat-component": "workspace:*",
+    "@swc/helpers": "^0.4.11"
+  }
+}

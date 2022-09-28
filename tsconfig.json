@@ -8,7 +8,7 @@
     // "sourceMap": true,
     // "inlineSources": true,
     // "outDir": "./",
-    "rootDir": "./src",
+    // "rootDir": "./src",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -22,14 +22,6 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
     "noEmit": true,
-    "skipLibCheck": true,
-    "plugins": [
-      {
-        "name": "ts-lit-plugin",
-        "strict": true
-      }
-    ]
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": []
+    "skipLibCheck": true
+  }
 }

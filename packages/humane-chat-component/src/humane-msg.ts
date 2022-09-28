@@ -3,7 +3,6 @@
  * Copyright 2022 Dmytro Zemnytskyi <pragmasoft@gmail.com>
  * LGPLv3
  *
- * @slot - humane-msg component contains message text (possibly formatted)
  */
 
 import {LitElement, html, css, unsafeCSS} from 'lit';
@@ -11,7 +10,7 @@ import {customElement, property} from 'lit/decorators.js';
 
 import humaneMsgStyles from 'bundle-text:./humane-msg.css';
 import {randomStringId} from './random-string-id';
-import {MsgStatus} from './humane-types';
+import {MsgStatus} from './humane-payload';
 
 console.debug('humane-msg loaded');
 
@@ -34,6 +33,8 @@ const hhmmLocalizedFormat = new Intl.DateTimeFormat(
 
 /**
  * Styled chat message component. Presence of the <pre>status</pre> attribute means outgoing message.
+ *
+ *  @slot - humane-msg component contains message text (possibly formatted)
  */
 @customElement('humane-msg')
 export class HumaneMsgElement extends LitElement {
@@ -60,14 +61,14 @@ export class HumaneMsgElement extends LitElement {
       return hhmmLocalizedFormat.format(d);
     },
   })
-  datetime = hhmmLocalizedFormat.format(new Date());
+  timestamp = hhmmLocalizedFormat.format(new Date());
 
   /**
    * Status of the outgoing message; Optional, if present, must be one of 'sent' | 'delivered' | 'read';
    * in this case message is formatted as an outgoing message
    */
   @property({reflect: true})
-  status?: MsgStatus;
+  status?: keyof typeof MsgStatus;
 
   override render() {
     return html` <slot></slot
@@ -79,7 +80,7 @@ export class HumaneMsgElement extends LitElement {
   }
 
   private _renderTimestamp() {
-    return this.datetime ? html`<time>${this.datetime}</time>` : null;
+    return this.timestamp ? html`<time>${this.timestamp}</time>` : null;
   }
   static override styles = componentStyles;
 }

@@ -1,12 +1,12 @@
 import {
   ConnectedMsg,
   ErrorMsg,
-  PayloadMsg,
   HumaneMsg,
   MsgType,
+  PlaintextMsg,
 } from './humane-types';
 
-import {HumaneChatElement} from './humane-chat';
+import {HumaneChatElement} from '@pragmasoft-ukraine/humane-chat-component';
 
 const requiredElement = <T extends HTMLElement = HTMLElement>(
   selector: string
@@ -75,7 +75,7 @@ sharedWorker.port.postMessage({
   userId: chat.userId,
 });
 
-function handleIncomingMessage(incoming: PayloadMsg<string>) {
+function handleIncomingMessage(incoming: PlaintextMsg) {
   chat.incoming(
     incoming.payload,
     incoming.msgId,

@@ -11,7 +11,7 @@ import {classMap} from 'lit/directives/class-map.js';
 
 import humaneChatStyles from 'bundle-text:./humane-chat.css';
 import {randomStringId} from './random-string-id';
-import {PayloadMsg, MsgStatus} from './humane-types';
+import {PayloadMsg, MsgStatus} from './humane-payload';
 
 console.debug('humane-chat loaded');
 
@@ -184,7 +184,7 @@ export class HumaneChatElement extends LitElement {
   private _send() {
     if (this.textarea.value?.length > 0) {
       const payload = this.textarea.value;
-      const status = MsgStatus.UNKNOWN;
+      const status = MsgStatus.unknown;
       const timestamp = new Date();
       const msgId = randomStringId();
       const e = new CustomEvent<PayloadMsg<string>>('humane-chat.send', {
@@ -238,11 +238,11 @@ export class HumaneChatElement extends LitElement {
   incoming(
     msg: string,
     msgId = randomStringId(),
-    datetime = new Date().toISOString()
+    timestamp = new Date().toISOString()
   ) {
     this.insertAdjacentHTML(
       'beforeend',
-      `<humane-msg msgId="${msgId}" datetime="${datetime}">${msg}</humane-msg>`
+      `<humane-msg msgId="${msgId}" timestamp="${timestamp}">${msg}</humane-msg>`
     );
     this.show();
     this.lastElementChild?.scrollIntoView();

@@ -1,6 +1,5 @@
 .parcel-cache
-/node_modules/
-/dist/
-/test/
+**/node_modules/
+**/dist/
 /storybook-static/
 .env
