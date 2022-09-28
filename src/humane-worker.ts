@@ -3,7 +3,7 @@
 
 declare const self: SharedWorkerGlobalScope;
 
-console.log('loaded');
+console.log('loaded', process.env.WS);
 // Open a connection. This is a common
 // connection. This will be opened only once.
 // const ws = new WebSocket("ws://localhost:3001");
@@ -53,7 +53,7 @@ self.onconnect = (e: MessageEvent) => {
     if (!payload) throw new Error('no payload');
     console.debug('onmessage', JSON.stringify(payload));
     switch (payload.type) {
-      case MsgType.MSG:
+      case MsgType.PLAINTEXT:
         handleIncomingMessage(payload);
         break;
       case MsgType.CONNECTED:

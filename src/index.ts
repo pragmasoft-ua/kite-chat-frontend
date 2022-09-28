@@ -11,7 +11,7 @@ declare global {
   interface DocumentEventMap {
     'humane-chat.hide': CustomEvent;
     'humane-chat.show': CustomEvent;
-    'humane-chat.send': CustomEvent<PayloadMsg>;
+    'humane-chat.send': CustomEvent<PayloadMsg<string>>;
   }
 }
 

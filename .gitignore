@@ -3,5 +3,4 @@
 /dist/
 /test/
 /storybook-static/
-custom-elements.json
-.vscode
+.env

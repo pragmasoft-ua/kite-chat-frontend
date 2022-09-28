@@ -28,7 +28,7 @@ sharedWorker.port.onmessage = (e: MessageEvent<HumaneMsg>) => {
   const payload = e.data;
   if (!payload) throw new Error('no payload');
   switch (payload.type) {
-    case MsgType.MSG:
+    case MsgType.PLAINTEXT:
       handleIncomingMessage(payload);
       break;
     case MsgType.CONNECTED:
@@ -50,7 +50,7 @@ const root = document.documentElement;
 
 document.addEventListener('humane-chat.send', (e) => {
   const payload = e.detail;
-  sharedWorker.port.postMessage({type: MsgType.MSG, ...payload});
+  sharedWorker.port.postMessage({type: MsgType.PLAINTEXT, ...payload});
 });
 
 addEventListener('beforeunload', () =>
@@ -75,8 +75,12 @@ sharedWorker.port.postMessage({
   userId: chat.userId,
 });
 
-function handleIncomingMessage(incoming: PayloadMsg) {
-  chat.incoming(incoming.msg, incoming.msgId, incoming.datetime);
+function handleIncomingMessage(incoming: PayloadMsg<string>) {
+  chat.incoming(
+    incoming.payload,
+    incoming.msgId,
+    incoming.timestamp.toISOString()
+  );
 }
 
 function handleConnected(connected: ConnectedMsg) {
