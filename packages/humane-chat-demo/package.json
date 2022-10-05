@@ -1,0 +1,17 @@
+{
+  "name": "@pragmasoft-ukraine/humane-chat-demo",
+  "description": "humane-chat frontend",
+  "license": "LGPL3.0",
+  "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
+  "version": "2022.9.5",
+  "source": "index.html",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "start": "parcel",
+    "build": "parcel build",
+    "clean": "rimraf dist"
+  },
+  "dependencies": {
+    "@pragmasoft-ukraine/humane-chat": "workspace:*"
+  }
+}

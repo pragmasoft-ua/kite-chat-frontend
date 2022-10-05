@@ -2,8 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="humane-backend" content="ws://localhost:8080/chats/test" />
     <title>&lt;humane-chat&gt; demo</title>
-    <script type="module" src="./src/docs.ts"></script>
 
     <style>
       :root {
@@ -84,5 +84,8 @@
         Yeah I also subscribed to their channel
       </humane-msg>
     </humane-chat>
+    <script type="module">
+      import '@pragmasoft-ukraine/humane-chat';
+    </script>
   </body>
 </html>

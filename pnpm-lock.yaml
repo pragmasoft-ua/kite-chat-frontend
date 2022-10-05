@@ -119,6 +119,12 @@ importers:
       lit: 2.3.1
       nanoid: 4.0.0
 
+  packages/humane-chat-demo:
+    specifiers:
+      '@pragmasoft-ukraine/humane-chat': workspace:*
+    dependencies:
+      '@pragmasoft-ukraine/humane-chat': link:../humane-chat
+
 packages:
 
   /@11ty/dependency-tree/2.0.1:

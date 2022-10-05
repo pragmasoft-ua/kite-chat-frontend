@@ -3,6 +3,15 @@
   "description": "humane-chat frontend",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
+  "version": "2022.9.5",
+  "homepage": "https://pragmasoft-ua.github.io/humane-chat-frontend/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pragmasoft-ua/humane-chat-frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pragmasoft-ua/humane-chat-frontend/issues"
+  },
   "keywords": [
     "humane",
     "chat",
@@ -15,35 +24,28 @@
   "files": [
     "dist"
   ],
+  "type": "module",
   "source": "src/index.ts",
-  "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js"
+      "import": "./dist/index.mjs"
     }
   },
   "publishConfig": {
     "access": "public"
   },
   "sideEffects": [
-    "./src/humane-*.ts",
+    "./src/humane-*",
     "./src/index.ts"
   ],
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "targets": {
-    "docs": {
-      "source": "index.html",
-      "distDir": "./docs",
-      "publicUrl": "./"
-    },
     "module": {
       "includeNodeModules": true
-    },
-    "main": {}
+    }
   },
   "scripts": {
     "start": "parcel",

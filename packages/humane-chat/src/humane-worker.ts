@@ -9,6 +9,7 @@ console.log('loaded', process.env.WS);
 // const ws = new WebSocket("ws://localhost:3001");
 
 import {PlaintextMsg, HumaneMsg, MsgType} from './humane-types';
+import {deflateHumaneMsg, inflateHumaneMsg} from './serialization';
 
 // Create a broadcast channel to notify about state changes
 // const broadcastChannel = new BroadcastChannel('humane-chat');
