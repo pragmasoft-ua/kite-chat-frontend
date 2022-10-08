@@ -107,7 +107,7 @@ To enable the site go to the GitHub settings and change the GitHub Pages &quot;S
 
 ## Script to include component from CDN
 
-`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/humane-chat-component@2022.9.4/dist/index.mjs"></script>`
+`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/humane-chat@2022.9.5/dist/index.mjs"></script>`
 
 ## Static Site with demo is located here
 

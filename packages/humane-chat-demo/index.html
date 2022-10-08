@@ -35,7 +35,7 @@
         margin: 1rem auto;
       }
 
-      main section {
+      main .buttons {
         display: flex;
         column-gap: 1rem;
       }
@@ -63,7 +63,7 @@
         spellcheck="true"
         wrap="soft"
       ></textarea>
-      <section>
+      <section class="buttons">
         <button id="send">Send to chat</button>
         <button id="open">Open</button>
         <button id="close">Close</button>
@@ -71,6 +71,8 @@
       <label for="colorpicker"
         >Primary color: <input type="color" id="colorpicker" value="#808080"
       /></label>
+      <label for="outgoing">Outgoing messages:</label>
+      <section id="outgoing"></section>
     </main>
     <humane-chat open title="👩🏻Людяна підтримка">
       <humane-msg>Hi</humane-msg>
@@ -84,8 +86,6 @@
         Yeah I also subscribed to their channel
       </humane-msg>
     </humane-chat>
-    <script type="module">
-      import '@pragmasoft-ukraine/humane-chat';
-    </script>
+    <script type="module" src="./src/index.ts"></script>
   </body>
 </html>

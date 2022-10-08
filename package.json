@@ -3,7 +3,7 @@
   "description": "humane-chat monorepo",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2022.9.5",
+  "version": "2022.10.1",
   "homepage": "https://pragmasoft-ua.github.io/humane-chat-frontend/",
   "repository": {
     "type": "git",
@@ -24,6 +24,9 @@
   "workspaces": [
     "./packages/*"
   ],
+  "scripts": {
+    "clean": "pnpm -r clean"
+  },
   "devDependencies": {
     "@11ty/eleventy": "^1.0.1",
     "@11ty/eleventy-plugin-syntaxhighlight": "^4.0.0",
@@ -31,8 +34,11 @@
     "@custom-elements-manifest/analyzer": "^0.6.3",
     "@jest/globals": "^29.0.3",
     "@open-wc/testing": "^3.1.5",
+    "@parcel/config-default": "^2.7.0",
     "@parcel/core": "^2.7.0",
+    "@parcel/optimizer-blob-url": "^2.7.0",
     "@parcel/packager-ts": "^2.7.0",
+    "@parcel/transformer-inline": "^2.7.0",
     "@parcel/transformer-inline-string": "^2.7.0",
     "@parcel/transformer-typescript-types": "^2.7.0",
     "@storybook/addon-actions": "^6.5.12",

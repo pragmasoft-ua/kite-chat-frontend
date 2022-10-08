@@ -3,7 +3,7 @@
   "description": "humane-chat frontend",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2022.9.5",
+  "version": "2022.10.1",
   "source": "index.html",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {

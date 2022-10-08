@@ -6,18 +6,14 @@ import {
   PlaintextMsg,
 } from './humane-types';
 
-import {HumaneChatElement} from '@pragmasoft-ukraine/humane-chat-component';
+import {randomStringId} from '@pragmasoft-ukraine/humane-chat-component';
 
-const requiredElement = <T extends HTMLElement = HTMLElement>(
-  selector: string
-): T => {
-  const el = document.querySelector<T>(selector);
-  if (!el) throw new Error(`Element '${selector}' is missing`);
-  return el;
-};
+const userId = randomStringId();
+
+console.debug('Install sharedWorker');
 
 const sharedWorker = new SharedWorker(
-  new URL('humane-worker.ts', import.meta.url),
+  new URL('blob-url:./humane-worker.ts', import.meta.url),
   {
     type: 'module',
     name: '👩🏻/humane chat worker',
@@ -40,43 +36,23 @@ sharedWorker.port.onmessage = (e: MessageEvent<HumaneMsg>) => {
   }
 };
 
-const chat: HumaneChatElement = requiredElement('humane-chat');
-const textarea: HTMLTextAreaElement = requiredElement('textarea');
-const sendToChatBtn = requiredElement('#send');
-const openBtn = requiredElement('#open');
-const closeBtn = requiredElement('#close');
-const colorpicker = requiredElement('#colorpicker');
-const root = document.documentElement;
-
-document.addEventListener('humane-chat.send', (e) => {
-  const payload = e.detail;
-  sharedWorker.port.postMessage({type: MsgType.PLAINTEXT, ...payload});
-});
-
 addEventListener('beforeunload', () =>
   sharedWorker.port.postMessage({
     type: MsgType.DISCONNECTED,
-    userId: chat.userId,
+    userId,
   })
 );
 
-sendToChatBtn.addEventListener('click', () => chat.incoming(textarea.value));
-openBtn.addEventListener('click', () => chat.show());
-closeBtn.addEventListener('click', () => chat.hide());
-colorpicker.addEventListener('input', (e) => {
-  const target = e.target as HTMLInputElement;
-  const color = target.value;
-  root.style.setProperty('--humane-primary-color', color);
-});
-
 sharedWorker.port.start();
+
 sharedWorker.port.postMessage({
   type: MsgType.CONNECTED,
-  userId: chat.userId,
+  userId,
 });
 
 function handleIncomingMessage(incoming: PlaintextMsg) {
-  chat.incoming(
+  console.log(
+    'Incoming',
     incoming.payload,
     incoming.msgId,
     incoming.timestamp.toISOString()
