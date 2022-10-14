@@ -12,6 +12,6 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@pragmasoft-ukraine/humane-chat": "workspace:*"
+    "@pragmasoft-ukraine/humane-chat": "^2022.10.1"
   }
 }

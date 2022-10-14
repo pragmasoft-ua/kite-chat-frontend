@@ -5,11 +5,11 @@
  */
 
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
-import {sharedStyles} from './shared-styles';
+import {customElement, property, query, state} from 'lit/decorators';
 import {classMap} from 'lit/directives/class-map.js';
+import {sharedStyles} from './shared-styles';
 
-import humaneChatStyles from 'bundle-text:./humane-chat.css';
+import humaneChatStyles from './humane-chat.css?raw';
 import {randomStringId} from './random-string-id';
 import {PayloadMsg, MsgStatus} from './humane-payload';
 
@@ -63,7 +63,7 @@ export class HumaneChatElement extends LitElement {
       <div class="humane">
         <div
           title="Show live chat dialog"
-          class="humane-toggle fixed right-4 bottom-4 z-30 h-12 w-12 cursor-pointer rounded-full bg-primary-color p-2 text-white shadow hover:text-opacity-80"
+          class="humane-toggle bg-primary-color fixed right-4 bottom-4 z-30 h-12 w-12 cursor-pointer rounded-full p-2 text-white shadow hover:text-opacity-80"
           @click="${this._toggleOpen}"
         >
           <svg
@@ -84,10 +84,10 @@ export class HumaneChatElement extends LitElement {
           class="humane-dialog ${classMap({
             'scale-y-100': this.open,
             'scale-y-0': !this.open,
-          })} fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border border-neutral-200 bg-white text-black shadow-lg transition-transform selection:bg-primary-color selection:text-white dark:border-neutral-600 dark:bg-neutral-800 dark:text-white/95"
+          })} selection:bg-primary-color fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border border-neutral-200 bg-white text-black shadow-lg transition-transform selection:text-white dark:border-neutral-600 dark:bg-neutral-800 dark:text-white/95"
         >
           <header
-            class="flex h-12 select-none flex-row items-center justify-between rounded-t bg-primary-color p-2 text-white/95"
+            class="bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-white/95"
           >
             <h3 class="humane-title flex-1">${this.title || '👩🏻/humane'}</h3>
             <span
@@ -125,7 +125,7 @@ export class HumaneChatElement extends LitElement {
               spellcheck="true"
               wrap="soft"
               placeholder="Type a message"
-              class="max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent caret-primary-color outline-none"
+              class="caret-primary-color max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
               @input=${this._handleEnabled}
               @keyup=${this._handleKeyUp}
             ></textarea>

@@ -4,12 +4,8 @@
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "declaration": true,
-    "declarationMap": true,
-    // "sourceMap": true,
-    // "inlineSources": true,
-    // "outDir": "./",
-    // "rootDir": "./src",
     "strict": true,
+    "strictBindCallApply": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noImplicitReturns": true,
@@ -19,9 +15,12 @@
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "useDefineForClassFields": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
     "noEmit": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "strictPropertyInitialization": false
   }
 }

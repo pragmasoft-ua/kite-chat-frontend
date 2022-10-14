@@ -1,6 +1,6 @@
-import {HumaneChatElement} from './humane-chat';
-import {HumaneMsgElement} from './humane-msg';
-import {PayloadMsg} from './humane-payload';
+import type {HumaneChatElement} from './humane-chat';
+import type {HumaneMsgElement} from './humane-msg';
+import type {PayloadMsg} from './humane-payload';
 
 declare global {
   interface HTMLElementTagNameMap {

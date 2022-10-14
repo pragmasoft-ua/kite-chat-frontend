@@ -1,7 +1,10 @@
 /* eslint-env node */
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['**/*.ts'],
+  content: [
+    '../humane-chat-component/src/humane-chat.ts',
+    '../humane-chat-component/src/humane-msg.ts',
+  ],
   theme: {
     extend: {
       colors: {

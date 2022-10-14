@@ -1,5 +1,5 @@
 import '@pragmasoft-ukraine/humane-chat'; // imported for side effect, registering web components
-import {HumaneChatElement} from '@pragmasoft-ukraine/humane-chat';
+import type {HumaneChatElement} from '@pragmasoft-ukraine/humane-chat-component';
 
 const requiredElement = <T extends HTMLElement = HTMLElement>(
   selector: string

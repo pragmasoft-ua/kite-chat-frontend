@@ -1,10 +1,11 @@
-import {
+import type {
   ConnectedMsg,
   ErrorMsg,
   HumaneMsg,
-  MsgType,
   PlaintextMsg,
 } from './humane-types';
+
+import {MsgType} from './humane-types';
 
 import {randomStringId} from '@pragmasoft-ukraine/humane-chat-component';
 

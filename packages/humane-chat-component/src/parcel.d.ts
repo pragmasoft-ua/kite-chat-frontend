@@ -1,4 +1,4 @@
-declare module 'bundle-text:*' {
+declare module '*?raw' {
   const value: string;
   export default value;
 }

@@ -8,7 +8,8 @@ console.log('loaded', process.env.WS);
 // connection. This will be opened only once.
 // const ws = new WebSocket("ws://localhost:3001");
 
-import {PlaintextMsg, HumaneMsg, MsgType} from './humane-types';
+import type {PlaintextMsg, HumaneMsg} from './humane-types';
+import {MsgType} from './humane-types';
 import {deflateHumaneMsg, inflateHumaneMsg} from './serialization';
 
 // Create a broadcast channel to notify about state changes

@@ -23,7 +23,7 @@ This sample uses the TypeScript compiler to produce JavaScript that runs in mode
 To build the JavaScript version of your component:
 
 ```bash
-npm run build
+npm run build -ws
 ```
 
 To watch files and rebuild when the files are modified, run the following command in a separate shell:
@@ -157,8 +157,8 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅property converter for datetime property
 - ✅shared worker
 - ✅npm publishing, unpkg cdn
-- switch to monorepo with pnpm build
-- storybook - use absolute instead of fixed positioning to facilitate storybook stories (may be not needed)
+- ✅switch to monorepo with pnpm build - came back to npm because storybook seems has problems with pnpm links
+- ✅storybook
 - file upload
 - display images
 - new N (unread) badge on toggle button, autoopen on incoming attr
@@ -184,3 +184,4 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - playwright e2e tests
 - use temporal polyfill for timestamp
 - https://github.com/43081j/postcss-lit
+- document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test)

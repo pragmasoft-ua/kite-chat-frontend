@@ -8,7 +8,7 @@
 import {LitElement, html, css, unsafeCSS} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
-import humaneMsgStyles from 'bundle-text:./humane-msg.css';
+import humaneMsgStyles from './humane-msg.css?raw';
 import {randomStringId} from './random-string-id';
 import {MsgStatus} from './humane-payload';
 
@@ -33,6 +33,8 @@ const hhmmLocalizedFormat = new Intl.DateTimeFormat(
 
 /**
  * Styled chat message component. Presence of the <pre>status</pre> attribute means outgoing message.
+ *  @attr status
+ *  @attr timestamp
  *
  *  @slot - humane-msg component contains message text (possibly formatted)
  */

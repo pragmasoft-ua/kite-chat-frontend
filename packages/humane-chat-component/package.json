@@ -5,6 +5,9 @@
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
   "version": "2022.10.1",
   "homepage": "https://pragmasoft-ua.github.io/humane-chat-frontend/",
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pragmasoft-ua/humane-chat-frontend.git"
@@ -19,30 +22,32 @@
     "livechat",
     "support",
     "Ukraine",
-    "web-components"
+    "web-components",
+    "lit"
   ],
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "custom-elements.json"
   ],
-  "type": "module",
   "source": "src/index.ts",
-  "module": "dist/index.js",
-  "webcomponent": "dist/humane-chat-component.js",
+  "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "publishConfig": {
-    "access": "public"
-  },
+  "webcomponent": "dist/humane-chat-component.js",
+  "customElements": "custom-elements.json",
   "sideEffects": [
-    "./src/humane-*.ts"
+    "./src/humane-chat.ts",
+    "./src/humane-msg.ts"
   ],
   "targets": {
-    "module": {
+    "main": {
       "context": "browser",
       "isLibrary": true
     },
     "webcomponent": {
       "context": "browser",
-      "isLibrary": false
+      "isLibrary": false,
+      "outputFormat": "esmodule"
     }
   },
   "scripts": {
@@ -60,8 +65,8 @@
     "docs:build": "rollup -c --file docs/humane-chat.bundled.js",
     "docs:assets": "cp node_modules/prismjs/themes/prism-okaidia.css docs/",
     "docs:serve": "wds --root-dir=docs --node-resolve --watch",
-    "analyze": "cem analyze --litelement --globs \"src/**/*.ts\"",
-    "analyze:watch": "cem analyze --litelement --globs \"src/**/*.ts\" --watch",
+    "analyze": "cem analyze --litelement --globs \"src/humane-chat.ts\" \"src/humane-msg.ts\"",
+    "analyze:watch": "cem analyze --litelement --globs \"src/humane-chat.ts\" \"src/humane-msg.ts\" --watch",
     "serve": "wds --watch",
     "serve:prod": "MODE=prod npm run serve",
     "test": "jest",
@@ -75,8 +80,20 @@
   },
   "dependencies": {
     "@swc/helpers": "^0.4.11",
-    "lit": "^2.3.1",
+    "lit": "^2.4.0",
     "nanoid": "^4.0.0"
   },
-  "customElements": "custom-elements.json"
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.18.6",
+    "@babel/plugin-proposal-decorators": "^7.19.3",
+    "@babel/preset-env": "^7.19.4",
+    "@babel/preset-typescript": "^7.18.6",
+    "@custom-elements-manifest/analyzer": "^0.6.3",
+    "@storybook/addon-essentials": "^6.5.12",
+    "@storybook/builder-webpack5": "^6.5.12",
+    "@storybook/manager-webpack5": "^6.5.12",
+    "@storybook/web-components": "^6.5.12",
+    "postcss-loader": "^7.0.1",
+    "ts-lit-plugin": "^1.2.1"
+  }
 }
