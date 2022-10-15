@@ -37,7 +37,10 @@ const Template: Story<HumaneChatProps> = ({
 }) => html`<humane-chat
   ?open=${open}
   title=${ifDefined(title)}
-  style=${styleMap({'--humane-primary-color': primaryColor})}
+  style=${styleMap({
+    '--humane-primary-color': primaryColor,
+    'font-family': 'sans-serif',
+  })}
 >
   <humane-msg>Hi</humane-msg>
   <humane-msg status="read">Hello</humane-msg>

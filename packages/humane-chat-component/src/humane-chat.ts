@@ -5,7 +5,7 @@
  */
 
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
 

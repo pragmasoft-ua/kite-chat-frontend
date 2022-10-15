@@ -6,10 +6,15 @@
   "version": "2022.10.1",
   "source": "index.html",
   "browserslist": "> 0.5%, last 2 versions, not dead",
+  "targets": {
+    "default": {
+      "distDir": "../../docs"
+    }
+  },
   "scripts": {
     "start": "parcel",
     "build": "parcel build",
-    "clean": "rimraf dist"
+    "clean": "rimraf ../../docs"
   },
   "dependencies": {
     "@pragmasoft-ukraine/humane-chat": "^2022.10.1"
