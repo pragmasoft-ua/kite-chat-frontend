@@ -7,6 +7,11 @@ declare global {
     'humane-chat': HumaneChatElement;
     'humane-msg': HumaneMsgElement;
   }
+  interface HTMLElementEventMap {
+    'humane-chat.hide': CustomEvent;
+    'humane-chat.show': CustomEvent;
+    'humane-chat.send': CustomEvent<PayloadMsg<string>>;
+  }
 
   interface DocumentEventMap {
     'humane-chat.hide': CustomEvent;

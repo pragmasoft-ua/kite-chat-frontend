@@ -4,11 +4,9 @@
  * LGPLv3
  */
 
-import {HumaneChatElement} from '../humane-chat.js';
-
 import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
-import '../../packages/humane-chat-component/src';
+import {HumaneChatElement} from '@pragmasoft-ukraine/humane-chat-component';
 
 suite('humane-chat', () => {
   test('is defined', () => {

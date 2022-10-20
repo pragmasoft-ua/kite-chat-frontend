@@ -1,6 +1,6 @@
 import {PayloadMsg} from '@pragmasoft-ukraine/humane-chat-component';
 
-export const enum MsgType {
+export enum MsgType {
   CONNECTED = 0,
   DISCONNECTED = 1,
   ERROR = 2,
@@ -9,12 +9,12 @@ export const enum MsgType {
 
 export type ConnectedMsg = {
   type: MsgType.CONNECTED;
-  chatId: string;
+  endpoint: string;
   userId: string;
 };
+
 export type DisconnectedMsg = {
   type: MsgType.DISCONNECTED;
-  chatId: string;
   userId: string;
 };
 export type ErrorMsg = {

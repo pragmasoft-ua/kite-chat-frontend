@@ -22,30 +22,25 @@
     "web-components"
   ],
   "files": [
-    "dist"
+    "dist",
+    "types"
   ],
   "type": "module",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "module": "dist/humane-chat.js",
+  "types": "types/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
-  "targets": {
-    "default": {
-      "source": "src/index.ts",
-      "context": "browser",
-      "isLibrary": false
-    }
-  },
   "scripts": {
-    "start": "parcel",
-    "build": "parcel build",
-    "clean": "rimraf dist",
+    "start": "vite",
+    "build": "concurrently \"npm:tsc\" \"npm:build:module\"",
+    "tsc": "tsc -b",
+    "build:module": "vite build",
+    "clean": "rimraf dist types tsconfig.tsbuildinfo",
     "test": "jest"
   },
   "dependencies": {
     "@msgpack/msgpack": "^2.8.0",
-    "@pragmasoft-ukraine/humane-chat-component": "^2022.10.1",
-    "@swc/helpers": "^0.4.11"
+    "@pragmasoft-ukraine/humane-chat-component": "*"
   }
 }

@@ -14,7 +14,7 @@ module.exports = {
     );
     newRules.push({
       test: /\.css/i,
-      resourceQuery: /raw/,
+      resourceQuery: /inline/,
       type: 'asset/source',
       use: ['postcss-loader'],
     });

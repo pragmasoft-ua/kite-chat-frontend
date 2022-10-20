@@ -8,7 +8,7 @@
 import {LitElement, html, css, unsafeCSS} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
-import humaneMsgStyles from './humane-msg.css?raw';
+import humaneMsgStyles from './humane-msg.css?inline';
 import {randomStringId} from './random-string-id';
 import {MsgStatus} from './humane-payload';
 

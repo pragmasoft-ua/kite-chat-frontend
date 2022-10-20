@@ -3,92 +3,131 @@
 
 declare const self: SharedWorkerGlobalScope;
 
-console.log('loaded', process.env.WS);
-// Open a connection. This is a common
-// connection. This will be opened only once.
-// const ws = new WebSocket("ws://localhost:3001");
-
-import type {PlaintextMsg, HumaneMsg} from './humane-types';
+import {CHANNEL_NAME, SUBPROTOCOL} from './shared-constants';
+import type {
+  PlaintextMsg,
+  HumaneMsg,
+  ConnectedMsg,
+  DisconnectedMsg,
+} from './humane-types';
 import {MsgType} from './humane-types';
-import {deflateHumaneMsg, inflateHumaneMsg} from './serialization';
+import {deserializeHumaneMsg, serializeHumaneMsg} from './serialization';
+import {MessagePort} from 'worker_threads';
+
+console.log('shared worker loaded');
+
+let ws: WebSocket | null;
+let userId: string | null = null;
+const tabPorts = new Set<MessagePort>();
 
 // Create a broadcast channel to notify about state changes
-// const broadcastChannel = new BroadcastChannel('humane-chat');
-
-// Mapping to keep track of ports. You can think of ports as
-// mediums through we can communicate to and from tabs.
-// This is a map from a uuid assigned to each context(tab)
-// to its Port. This is needed because Port API does not have
-// any identifier we can use to identify messages coming from it.
-const idToPortMap: Map<string, MessagePort> = new Map();
-
-// Let all connected contexts(tabs) know about state cahnges
-// ws.onopen = () =>
-//   broadcastChannel.postMessage({type: 'WSState', state: ws.readyState});
-// ws.onclose = () =>
-//   broadcastChannel.postMessage({type: 'WSState', state: ws.readyState});
-
-// When we receive data from the server.
-// ws.onmessage = ({data}) => {
-//   console.log(data);
-//   // Construct object to be passed to handlers
-//   const parsedData = {data: JSON.parse(data), type: 'message'};
-//   if (!parsedData.data.from) {
-//     // Broadcast to all contexts(tabs). This is because
-//     // no particular id was set on the from field here.
-//     // We're using this field to identify which tab sent
-//     // the message
-//     broadcastChannel.postMessage(parsedData);
-//   } else {
-//     // Get the port to post to using the uuid, ie send to
-//     // expected tab only.
-//     idToPortMap[parsedData.data.from].postMessage(parsedData);
-//   }
-// };
+const broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
 
 // Event handler called when a tab tries to connect to this worker.
-self.onconnect = (e: MessageEvent) => {
+self.onconnect = onWorkerConnect;
+
+function onWorkerConnect(e: MessageEvent) {
   console.log('onconnect');
   const port = e.ports[0];
-  port.onmessage = (e: MessageEvent<HumaneMsg>) => {
-    const payload = e.data;
-    if (!payload) throw new Error('no payload');
-    console.debug('onmessage', JSON.stringify(payload));
-    switch (payload.type) {
-      case MsgType.PLAINTEXT:
-        handleIncomingMessage(payload);
-        break;
-      case MsgType.CONNECTED:
-        handleConnected(payload.userId, port);
-        break;
-      case MsgType.DISCONNECTED:
-        handleDisconnected(payload.userId);
-        break;
-    }
-  };
-};
+  port.onmessage = onWorkerMessage;
+  port.onmessageerror = console.error;
+}
 
-function handleIncomingMessage(payload: PlaintextMsg) {
-  idToPortMap.forEach((port, userId) => {
-    if (userId != payload.userId) {
-      try {
-        port.postMessage(payload);
-      } catch (e) {
-        console.error(e);
-        handleDisconnected(userId);
-      }
+function onWorkerMessage(e: MessageEvent<HumaneMsg>) {
+  const p = e.target as unknown as MessagePort;
+  const payload = e.data;
+  if (!payload) throw new Error('no payload');
+  console.debug('onmessage', JSON.stringify(payload));
+  switch (payload.type) {
+    case MsgType.PLAINTEXT:
+      onTabMessage(payload, p);
+      break;
+    case MsgType.CONNECTED:
+      onTabConnected(payload, p);
+      break;
+    case MsgType.DISCONNECTED:
+      onTabDisconnected(payload, p);
+      break;
+  }
+}
+
+const READY_STATES = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
+
+function onTabMessage(payload: PlaintextMsg, port: MessagePort) {
+  if (!ws || ws.readyState !== ws.OPEN) {
+    // OPEN == 1
+    console.error(
+      `Cannot send, websocket is not connected there's ${
+        tabPorts.size
+      } tabs, ws state is ${ws ? READY_STATES[ws.readyState] : 'MISSING'}`
+    );
+    return;
+  }
+  const arrayBuffer = serializeHumaneMsg(payload);
+  ws.send(arrayBuffer);
+  tabPorts.forEach((tabPort) => {
+    if (tabPort !== port) {
+      port.postMessage(payload);
     }
   });
 }
 
-function handleConnected(userId: string, port: MessagePort) {
-  idToPortMap.set(userId, port);
-  port.postMessage({
+function onTabConnected(payload: ConnectedMsg, port: MessagePort) {
+  const endpoint = payload.endpoint;
+  tabPorts.add(port);
+  console.debug('onTabConnected', tabPorts.size);
+  if (!ws) {
+    ws = new WebSocket(endpoint, SUBPROTOCOL);
+    ws.binaryType = 'arraybuffer';
+    ws.onmessage = onWsMessage;
+    ws.onopen = onWsOpen;
+    ws.onclose = onWsClose;
+    ws.onerror = onWsError;
+    userId = payload.userId;
+  } else if (ws.url !== endpoint) {
+    console.warn(
+      `worker already connected to ${ws.url} and cannot be reconnected to ${endpoint}`
+    );
+  }
+  port.postMessage(payload);
+}
+
+function onTabDisconnected(_payload: DisconnectedMsg, port: MessagePort) {
+  port.close();
+  tabPorts.delete(port);
+  const tabsCount = tabPorts.size;
+  console.debug('onTabDisconnected', tabsCount);
+  if (tabsCount === 0) {
+    ws?.close(200, 'no more open tabs');
+  }
+}
+
+function onWsMessage(event: MessageEvent) {
+  const humaneMsg = deserializeHumaneMsg(event.data);
+  broadcastChannel.postMessage(humaneMsg);
+}
+
+function onWsOpen() {
+  console.debug('onWsOpen');
+  const payload: ConnectedMsg = {
     type: MsgType.CONNECTED,
-    userId,
-  });
+    userId: userId!,
+    endpoint: SUBPROTOCOL,
+  };
+  const arrayBuffer = serializeHumaneMsg(payload);
+  ws?.send(arrayBuffer); // broadcastChannel.postMessage({type: 'WSState', state: ws?.readyState});
+  // TODO flush queue
 }
 
-function handleDisconnected(userId: string) {
-  idToPortMap.delete(userId);
+function onWsClose() {
+  console.debug('onWsClose');
+  // broadcastChannel.postMessage({type: 'WSState', state: ws?.readyState});
+  ws = null;
+  userId = null;
+}
+
+function onWsError() {
+  console.debug('onWsError');
+  ws = null;
+  userId = null;
 }

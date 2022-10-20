@@ -153,6 +153,8 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅property converter for datetime property
 - ✅shared worker
 - ✅npm publishing, unpkg cdn
+- BUG: content window does not scroll properly
+- BUG: @base tailwind styles are not applicable in the context of wc (html, body)
 - switch to monorepo with pnpm build
 - storybook - use absolute instead of fixed positioning to facilitate storybook stories (may be not needed)
 - file upload

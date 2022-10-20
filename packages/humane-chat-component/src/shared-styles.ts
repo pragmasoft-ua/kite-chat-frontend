@@ -1,6 +1,5 @@
-/// <reference path="./parcel.d.ts"/>
 import {css, unsafeCSS} from 'lit';
-import tailwindSharedStyles from './shared-styles.css?raw';
+import tailwindSharedStyles from './shared-styles.css?inline';
 
 export const sharedStyles = css`
   ${unsafeCSS(tailwindSharedStyles)}

@@ -1,5 +1,4 @@
-.parcel-cache
 **/node_modules/
-**/dist/
-/storybook-static/
-.env
+packages/*/dist/
+packages/*/types/
+packages/*/tsconfig.tsbuildinfo

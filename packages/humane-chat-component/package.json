@@ -3,7 +3,7 @@
   "description": "humane-chat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2022.10.1",
+  "version": "2022.10.2",
   "homepage": "https://pragmasoft-ua.github.io/humane-chat-frontend/",
   "publishConfig": {
     "access": "public"
@@ -27,33 +27,25 @@
   ],
   "files": [
     "dist",
+    "types",
     "README.md",
     "custom-elements.json"
   ],
-  "source": "src/index.ts",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "webcomponent": "dist/humane-chat-component.js",
+  "main": "dist/index.mjs",
+  "types": "types/index.d.ts",
+  "exports": "./dist/index.mjs",
   "customElements": "custom-elements.json",
   "sideEffects": [
     "./src/humane-chat.ts",
     "./src/humane-msg.ts"
   ],
-  "targets": {
-    "main": {
-      "context": "browser",
-      "isLibrary": true
-    },
-    "webcomponent": {
-      "context": "browser",
-      "isLibrary": false,
-      "outputFormat": "esmodule"
-    }
-  },
   "scripts": {
-    "start": "parcel",
-    "build": "parcel build",
-    "clean": "rimraf dist",
+    "start": "vite",
+    "build": "concurrently \"npm:tsc\" \"npm:build:*\" \"npm:analyze\"",
+    "tsc": "tsc -b",
+    "build:module": "vite build",
+    "build:bundle": "vite build -c vite.bundled.config.ts",
+    "clean": "rimraf dist types tsconfig.tsbuildinfo custom-elements.json",
     "lint": "npm run lint:lit-analyzer && npm run lint:eslint",
     "lint:eslint": "eslint 'src/**/*.ts'",
     "lint:lit-analyzer": "lit-analyzer",
@@ -67,8 +59,6 @@
     "docs:serve": "wds --root-dir=docs --node-resolve --watch",
     "analyze": "cem analyze --litelement --globs \"src/humane-chat.ts\" \"src/humane-msg.ts\"",
     "analyze:watch": "cem analyze --litelement --globs \"src/humane-chat.ts\" \"src/humane-msg.ts\" --watch",
-    "serve": "wds --watch",
-    "serve:prod": "MODE=prod npm run serve",
     "test": "jest",
     "test:all": "npm run test:dev && npm run test:prod",
     "test:dev": "wtr",
@@ -79,7 +69,6 @@
     "build-storybook": "build-storybook"
   },
   "dependencies": {
-    "@swc/helpers": "^0.4.11",
     "lit": "^2.4.0",
     "nanoid": "^4.0.0"
   },

@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "composite": true,
+    "outDir": "./types",
     "rootDir": "./src",
     "plugins": [
       {
@@ -9,6 +11,6 @@
     ]
   },
   "extends": "../../tsconfig.json",
-  "include": ["./src/**/*.ts"],
-  "exclude": ["src/**/*.stories.ts"]
+  "include": ["./src"],
+  "exclude": ["./src/**/*.stories.ts"]
 }

@@ -1,4 +1,4 @@
-import {
+import type {
   ConnectedMsg,
   DisconnectedMsg,
   ErrorMsg,
@@ -6,6 +6,7 @@ import {
   MsgType,
   PlaintextMsg,
 } from './humane-types';
+import {Decoder, Encoder} from '@msgpack/msgpack';
 
 const inflaterFactory = (fields: string[]) => (raw: unknown[]) =>
   raw.reduce<Record<string, unknown>>((obj, field, index) => {
@@ -21,20 +22,20 @@ const deflaterFactory = (fields: string[]) => (obj: Record<string, unknown>) =>
 
 const CONNECTED_MSG_FIELDS: Array<keyof ConnectedMsg> = [
   'type',
-  'chatId',
+  'endpoint',
   'userId',
 ];
 
-const DISCONNECTED_MSG_FIELDS: Array<keyof DisconnectedMsg> =
-  CONNECTED_MSG_FIELDS;
+const DISCONNECTED_MSG_FIELDS: Array<keyof DisconnectedMsg> = [
+  'type',
+  'userId',
+];
 
 const ERROR_MSG_FIELDS: Array<keyof ErrorMsg> = ['type', 'reason', 'code'];
 
 const PLAINTEXT_MSG_FIELDS: Array<keyof PlaintextMsg> = [
   'type',
   'msgId',
-  'chatId',
-  'userId',
   'timestamp',
   'status',
   'payload',
@@ -54,11 +55,25 @@ const HUMANE_MSG_DEFLATERS = [
   deflaterFactory(PLAINTEXT_MSG_FIELDS),
 ];
 
-export const inflateHumaneMsg = (raw: unknown[]): HumaneMsg => {
+const inflateHumaneMsg = (raw: unknown[]): HumaneMsg => {
   const msgType = raw[0] as MsgType;
   return HUMANE_MSG_INFLATERS[msgType](raw) as HumaneMsg;
 };
 
-export const deflateHumaneMsg = (msg: HumaneMsg): unknown[] => {
+const deflateHumaneMsg = (msg: HumaneMsg): unknown[] => {
   return HUMANE_MSG_DEFLATERS[msg.type](msg);
+};
+
+const encoder = new Encoder();
+const decoder = new Decoder();
+
+export const deserializeHumaneMsg = (buffer: ArrayBuffer): HumaneMsg => {
+  const raw = decoder.decode(buffer);
+  return inflateHumaneMsg(raw as unknown[]);
+};
+
+export const serializeHumaneMsg = (msg: HumaneMsg): ArrayBuffer => {
+  const deflated = deflateHumaneMsg(msg);
+  const encoded = encoder.encode(deflated);
+  return encoded.buffer;
 };

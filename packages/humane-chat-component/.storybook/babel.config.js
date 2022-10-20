@@ -5,9 +5,12 @@ const modules = process.env.BABEL_MODE === 'cjs' ? 'auto' : false;
 // FIXME: optional chaining introduced in chrome 80, not supported by wepback4
 // https://github.com/webpack/webpack/issues/10227#issuecomment-642734920
 const targets =
-  process.env.BABEL_MODE === 'modern' ? { chrome: '79' } : 'defaults';
+  process.env.BABEL_MODE === 'modern' ? {chrome: '79'} : 'defaults';
 
 module.exports = {
+  assumptions: {
+    setPublicClassFields: true,
+  },
   presets: [
     [
       '@babel/preset-env',
@@ -28,6 +31,6 @@ module.exports = {
         decoratorsBeforeExport: true,
       },
     ],
-    ['@babel/plugin-proposal-class-properties', { loose: false }],
+    ['@babel/plugin-proposal-class-properties', {loose: false}],
   ],
 };

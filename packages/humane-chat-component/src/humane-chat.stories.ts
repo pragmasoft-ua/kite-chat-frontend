@@ -12,17 +12,17 @@ export default {
   component: 'humane-chat',
   // More on argTypes: https://storybook.js.org/docs/web-components/api/argtypes
   argTypes: {
-    title: {control: 'text'},
+    heading: {control: 'text'},
     primaryColor: {control: 'color'},
-    onMessage: {action: 'onClick'},
+    onMessage: {action: 'onMessage'},
     open: {control: 'boolean'},
   },
 };
 
 type HumaneChatProps = {
-  title?: string;
-  primaryColor?: string;
   open?: boolean;
+  heading?: string;
+  primaryColor?: string;
   onMessage?(
     this: HumaneChatElement,
     event: CustomEvent<PayloadMsg<string>>
@@ -32,15 +32,17 @@ type HumaneChatProps = {
 // More on component templates: https://storybook.js.org/docs/web-components/writing-stories/introduction#using-args
 const Template: Story<HumaneChatProps> = ({
   open,
-  title,
+  heading,
   primaryColor,
+  onMessage,
 }) => html`<humane-chat
   ?open=${open}
-  title=${ifDefined(title)}
+  heading=${ifDefined(heading)}
   style=${styleMap({
     '--humane-primary-color': primaryColor,
     'font-family': 'sans-serif',
   })}
+  @humane-chat.send=${onMessage}
 >
   <humane-msg>Hi</humane-msg>
   <humane-msg status="read">Hello</humane-msg>
@@ -54,9 +56,10 @@ const Template: Story<HumaneChatProps> = ({
   </humane-msg>
 </humane-chat>`;
 
-export const Primary = Template.bind({});
+export const Chat = Template.bind({});
 // More on args: https://storybook.js.org/docs/web-components/writing-stories/args
-Primary.args = {
+Chat.args = {
   open: true,
-  title: 'test title',
+  heading: '🪁 k1te chat',
+  primaryColor: '#336',
 };

@@ -3,7 +3,9 @@
     "target": "ESNext",
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "isolatedModules": true,
     "declaration": true,
+    "declarationMap": true,
     "strict": true,
     "strictBindCallApply": true,
     "noUnusedLocals": true,
@@ -18,9 +20,18 @@
     "useDefineForClassFields": false,
     "forceConsistentCasingInFileNames": true,
     "noImplicitOverride": true,
-    "noEmit": true,
+    "emitDeclarationOnly": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
-    "strictPropertyInitialization": false
-  }
+    "strictPropertyInitialization": false,
+    "paths": {
+      "@pragmasoft-ukraine/*": ["./packages/*/"]
+    },
+    "types": ["vite/client", "@types/jest"]
+  },
+  "references": [
+    {"path": "packages/humane-chat-component"},
+    {"path": "packages/humane-chat"},
+    {"path": "packages/humane-chat-demo"}
+  ]
 }

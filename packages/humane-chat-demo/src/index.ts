@@ -1,5 +1,12 @@
-import '@pragmasoft-ukraine/humane-chat'; // imported for side effect, registering web components
-import type {HumaneChatElement} from '@pragmasoft-ukraine/humane-chat-component';
+import {HumaneChat} from '@pragmasoft-ukraine/humane-chat';
+
+const base = new URL(import.meta.url);
+const endpoint = new URL(`ws://${base.host}${import.meta.env.WS}`);
+
+console.log('endpoint', endpoint);
+
+const humaneChat = new HumaneChat({endpoint, createIfMissing: true});
+addEventListener('beforeunload', () => humaneChat.disconnect());
 
 const requiredElement = <T extends HTMLElement = HTMLElement>(
   selector: string
@@ -9,7 +16,6 @@ const requiredElement = <T extends HTMLElement = HTMLElement>(
   return el;
 };
 
-const chat: HumaneChatElement = requiredElement('humane-chat');
 const textarea: HTMLTextAreaElement = requiredElement('textarea');
 const sendToChatBtn = requiredElement('#send');
 const openBtn = requiredElement('#open');
@@ -18,7 +24,7 @@ const colorpicker = requiredElement('#colorpicker');
 const outgoing = requiredElement('section#outgoing');
 const root = document.documentElement;
 
-document.addEventListener('humane-chat.send', (e) => {
+humaneChat.element?.addEventListener('humane-chat.send', (e: CustomEvent) => {
   const payload = e.detail;
   outgoing.insertAdjacentHTML(
     'beforeend',
@@ -26,9 +32,11 @@ document.addEventListener('humane-chat.send', (e) => {
   );
 });
 
-sendToChatBtn.addEventListener('click', () => chat.incoming(textarea.value));
-openBtn.addEventListener('click', () => chat.show());
-closeBtn.addEventListener('click', () => chat.hide());
+sendToChatBtn.addEventListener('click', () =>
+  humaneChat.element?.incoming(textarea.value)
+);
+openBtn.addEventListener('click', () => humaneChat.element?.show());
+closeBtn.addEventListener('click', () => humaneChat.element?.hide());
 colorpicker.addEventListener('input', (e) => {
   const target = e.target as HTMLInputElement;
   const color = target.value;
