@@ -16,6 +16,10 @@ Install dependencies:
 npm i
 ```
 
+This project uses npm [workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) and typescript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html).
+
+You need to run `npm run tsc` before you start working on the project in your IDE to prebuild type definitions for incremental builds, otherwise you may experience typescript module resolution errors.
+
 ## Build
 
 This sample uses the TypeScript compiler to produce JavaScript that runs in modern browsers.
@@ -191,3 +195,10 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 chrome://inspect/#workers
 
 about:debugging#/runtime/this-firefox
+
+## Storybook
+
+Tried storybook builder vite. Version 6.x depends on webpack4 manager, which has problems with outdated crypto on
+node >16, whereas new storybook version as of 7.0.0-alpha.40 does not support web components.
+
+So far, the only working version is based on webpack5

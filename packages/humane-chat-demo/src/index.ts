@@ -1,7 +1,8 @@
 import {HumaneChat} from '@pragmasoft-ukraine/humane-chat';
 
 const base = new URL(import.meta.url);
-const endpoint = new URL(`ws://${base.host}${import.meta.env.WS}`);
+const endpoint = new URL(`ws://${base.host}${import.meta.env.VITE_WS_ENDPOINT}`)
+  .href;
 
 console.log('endpoint', endpoint);
 

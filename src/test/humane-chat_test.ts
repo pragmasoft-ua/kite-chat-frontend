@@ -8,7 +8,7 @@ import {fixture, assert} from '@open-wc/testing';
 import {html} from 'lit/static-html.js';
 import {HumaneChatElement} from '@pragmasoft-ukraine/humane-chat-component';
 
-suite('humane-chat', () => {
+describe('humane-chat', () => {
   test('is defined', () => {
     const el = document.createElement('humane-chat');
     assert.instanceOf(el, HumaneChatElement);
