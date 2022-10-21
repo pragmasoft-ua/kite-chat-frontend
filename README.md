@@ -192,9 +192,16 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 
 ## Debug workers
 
-chrome://inspect/#workers
+[Chrome chrome://inspect/#workers](chrome://inspect/#workers)
 
-about:debugging#/runtime/this-firefox
+[Firefox about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)
+
+Chat library uses inline module type shared worker for communication with the backend.
+
+Firefox as of now does not support module type workers, so if you plan to debug worker in development mode `npm start`
+please use Chrome only.
+
+Production build bundles worker module and deps to iife so production library created with `npm run build` is compatible with all modern browsers.
 
 ## Storybook
 

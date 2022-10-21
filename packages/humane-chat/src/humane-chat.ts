@@ -73,7 +73,7 @@ export class HumaneChat {
       throw new Error('Not connected');
     }
     this.humaneWorker.port.postMessage({
-      type: MsgType.CONNECTED,
+      type: MsgType.PLAINTEXT,
       ...msg.detail,
     });
   }

@@ -24,9 +24,6 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "strictPropertyInitialization": false,
-    "paths": {
-      "@pragmasoft-ukraine/*": ["./packages/*/"]
-    },
     "types": ["vite/client", "jest"]
   },
   "references": [

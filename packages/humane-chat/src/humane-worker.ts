@@ -1,6 +1,8 @@
 // https://joshuatz.com/posts/2021/strongly-typed-service-workers/
 /// <reference lib="webworker" />
 
+declare const WS_CLOSE_REASON_GONE_AWAY = 1001;
+
 declare const self: SharedWorkerGlobalScope;
 
 import {CHANNEL_NAME, SUBPROTOCOL} from './shared-constants';
@@ -37,7 +39,7 @@ function onWorkerMessage(e: MessageEvent<HumaneMsg>) {
   const p = e.target as unknown as MessagePort;
   const payload = e.data;
   if (!payload) throw new Error('no payload');
-  console.debug('onmessage', JSON.stringify(payload));
+  console.debug('onWorkerMessage', JSON.stringify(payload));
   switch (payload.type) {
     case MsgType.PLAINTEXT:
       onTabMessage(payload, p);
@@ -98,7 +100,8 @@ function onTabDisconnected(_payload: DisconnectedMsg, port: MessagePort) {
   const tabsCount = tabPorts.size;
   console.debug('onTabDisconnected', tabsCount);
   if (tabsCount === 0) {
-    ws?.close(200, 'no more open tabs');
+    // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4
+    ws?.close(WS_CLOSE_REASON_GONE_AWAY, 'all active tabs closed');
   }
 }
 

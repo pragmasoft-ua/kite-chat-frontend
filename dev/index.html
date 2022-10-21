@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/kite.svg" />
+    <link rel="icon" type="image/svg+xml" href="kite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>&lt;humane-chat> Demo</title>
     <style>
@@ -18,43 +18,16 @@
         }
       }
     </style>
-    <script
-      type="module"
-      src="https://unpkg.com/@pragmasoft-ukraine/humane-chat@2022.10.1/dist/index.js"
-    ></script>
   </head>
   <body>
     <h1>&lt;humane-chat&gt; demo</h1>
-    <main>
-      <label for="incoming">Type message to send:</label>
-      <textarea
-        id="incoming"
-        rows="5"
-        placeholder="Type message"
-        autocomplete="on"
-        spellcheck="true"
-        wrap="soft"
-      ></textarea>
-      <section>
-        <button id="send">Send to chat</button>
-        <button id="open">Open</button>
-        <button id="close">Close</button>
-      </section>
-      <label for="colorpicker"
-        >Primary color: <input type="color" id="colorpicker" value="#808080"
-      /></label>
-    </main>
-    <humane-chat open title="👩🏻Людяна підтримка">
-      <humane-msg>Hi</humane-msg>
-      <humane-msg status="read">Hello</humane-msg>
-      <humane-msg> Have you heard about Coding and Stuff?</humane-msg>
-      <humane-msg status="delivered">
-        Yeah I know, they post awesome coding tutorials
-      </humane-msg>
-      <humane-msg>But did you know they have a youtube channel?</humane-msg>
-      <humane-msg status="sent">
-        Yeah I also subscribed to their channel
-      </humane-msg>
-    </humane-chat>
+    <script type="module">
+      import {HumaneChat} from 'https://unpkg.com/@pragmasoft-ukraine/humane-chat@2022.10.2/dist/humane-chat.js';
+      const humaneChat = new HumaneChat({
+        endpoint: 'ws://localhost:8080/api/chat',
+        createIfMissing: true,
+      });
+      addEventListener('beforeunload', () => humaneChat.disconnect());
+    </script>
   </body>
 </html>

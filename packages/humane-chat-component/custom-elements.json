@@ -39,6 +39,19 @@
             },
             {
               "kind": "field",
+              "name": "title"
+            },
+            {
+              "kind": "field",
+              "name": "heading",
+              "type": {
+                "text": "string"
+              },
+              "default": "'🪁 k1te chat'",
+              "attribute": "heading"
+            },
+            {
+              "kind": "field",
               "name": "textarea",
               "type": {
                 "text": "HTMLTextAreaElement"
@@ -136,6 +149,14 @@
               "name": "open",
               "default": "false",
               "fieldName": "open"
+            },
+            {
+              "name": "heading",
+              "type": {
+                "text": "string"
+              },
+              "default": "'🪁 k1te chat'",
+              "fieldName": "heading"
             }
           ],
           "superclass": {
