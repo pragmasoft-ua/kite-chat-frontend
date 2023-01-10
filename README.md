@@ -189,6 +189,7 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - use temporal polyfill for timestamp
 - https://github.com/43081j/postcss-lit
 - document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test)
+- consider dockerz html template
 
 ## Debug workers
 

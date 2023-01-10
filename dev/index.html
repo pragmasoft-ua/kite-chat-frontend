@@ -24,7 +24,7 @@
     <script type="module">
       import {HumaneChat} from 'https://unpkg.com/@pragmasoft-ukraine/humane-chat@2022.10.2/dist/humane-chat.js';
       const humaneChat = new HumaneChat({
-        endpoint: 'ws://localhost:8080/api/chat',
+        endpoint: 'wss://1194-81-17-143-177.eu.ngrok.io/chats/pragmasoft',
         createIfMissing: true,
       });
       addEventListener('beforeunload', () => humaneChat.disconnect());

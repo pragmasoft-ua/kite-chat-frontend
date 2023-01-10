@@ -32,7 +32,7 @@ const DEFAULT_OPTS: Partial<HumaneChatOptions> = {
   open: false,
 };
 
-const HUMANE_USER_ID_STORE_KEY = 'HUMANE_USER_ID';
+const HUMANE_CLIENT_ID_STORE_KEY = 'HUMANE_CLIENT_ID';
 
 export class HumaneChat {
   protected readonly opts: HumaneChatOptions;
@@ -59,10 +59,10 @@ export class HumaneChat {
   }
 
   protected persistentRandomId(): string {
-    let savedId = localStorage.getItem(HUMANE_USER_ID_STORE_KEY);
+    let savedId = localStorage.getItem(HUMANE_CLIENT_ID_STORE_KEY);
     if (!savedId) {
       savedId = randomStringId();
-      localStorage.setItem(HUMANE_USER_ID_STORE_KEY, savedId);
+      localStorage.setItem(HUMANE_CLIENT_ID_STORE_KEY, savedId);
     }
     return savedId;
   }
