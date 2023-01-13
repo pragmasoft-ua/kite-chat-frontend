@@ -178,7 +178,8 @@ export class KiteChat {
   }
 
   protected onMessageAck(ack: MessageAck) {
-    this.element?.ack(ack.messageId, ack.destiationMessageId, ack.timestamp);
+    // TODO this.element?.ack(ack.messageId, ack.destiationMessageId, ack.timestamp);
+    console.debug(ack);
   }
 
   protected onErrorMessage(e: ErrorResponse) {

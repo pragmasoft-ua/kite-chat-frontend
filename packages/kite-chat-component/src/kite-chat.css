@@ -1,20 +1,22 @@
-textarea {
+textarea,
+main {
   scrollbar-width: thin;
 }
 
-textarea::-webkit-scrollbar {
+textarea::-webkit-scrollbar,
+main::-webkit-scrollbar {
   width: 3px;
   height: 3px;
 }
 
-textarea::-webkit-scrollbar-track {
+textarea::-webkit-scrollbar-track,
+main::-webkit-scrollbar-track {
   background: transparent;
 }
 
-textarea::-webkit-scrollbar-thumb {
-  background-color: theme('colors.neutral.500') / 50;
-  border-radius: 3px;
-  border: transparent;
+textarea::-webkit-scrollbar-thumb,
+main::-webkit-scrollbar-thumb {
+  background-color: theme('colors.neutral.500');
 }
 
 .kite-dialog > main {

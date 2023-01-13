@@ -1,6 +1,7 @@
 # 🪁 Kite chat
 
 This project includes **kite-chat** web component
+and a protocol driver to communicate with the chat backend.
 
 Web component is built using LitElement with TypeScript and Tailwind CSS.
 
@@ -27,7 +28,7 @@ This sample uses the TypeScript compiler to produce JavaScript that runs in mode
 To build the JavaScript version of your component:
 
 ```bash
-npm run build -ws
+npm run build
 ```
 
 To watch files and rebuild when the files are modified, run the following command in a separate shell:
@@ -111,7 +112,7 @@ To enable the site go to the GitHub settings and change the GitHub Pages &quot;S
 
 ## Script to include component from CDN
 
-`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat@2022.9.5/dist/index.mjs"></script>`
+`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat@2023.1.1/dist/index.mjs"></script>`
 
 ## Static Site with demo is located here
 
@@ -163,6 +164,8 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅npm publishing, unpkg cdn
 - ✅switch to monorepo with pnpm build - came back to npm because storybook seems has problems with pnpm links
 - ✅storybook
+- documentation (Readme, jsdoc)
+- for some reason npm run tsc generates types twice. consider extending separate base tsconfig?
 - file upload
 - display images
 - new N (unread) badge on toggle button, autoopen on incoming attr

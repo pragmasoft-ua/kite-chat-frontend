@@ -6,6 +6,7 @@
     "isolatedModules": true,
     "declaration": true,
     "declarationMap": true,
+    "outDir": "./types",
     "strict": true,
     "strictBindCallApply": true,
     "noUnusedLocals": true,

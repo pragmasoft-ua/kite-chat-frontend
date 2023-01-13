@@ -37,14 +37,8 @@ export class KiteChatElement extends LitElement {
   @property({type: Boolean, reflect: true})
   open = false;
 
-  override set title(newTitle: string) {
-    const oldTitle = super.title;
-    super.title = newTitle;
-    this.requestUpdate('title', oldTitle);
-  }
-
   @property()
-  heading = '🪁 k1te chat';
+  heading = '🪁Kite chat';
 
   @query('textarea')
   private textarea!: HTMLTextAreaElement;
@@ -200,7 +194,7 @@ export class KiteChatElement extends LitElement {
         'beforeend',
         `<kite-msg status="${status}" msgId="${msgId}" timestamp="${timestamp}">${payload}</kite-msg>`
       );
-      this.lastElementChild?.scrollIntoView();
+      this.lastElementChild?.scrollIntoView(false);
       this.textarea.value = '';
       this.textarea.focus();
       this._handleEnabled();
@@ -236,8 +230,8 @@ export class KiteChatElement extends LitElement {
       'beforeend',
       `<kite-msg msgId="${msgId}" timestamp="${timestamp}">${msg}</kite-msg>`
     );
+    this.lastElementChild?.scrollIntoView(false);
     this.show();
-    this.lastElementChild?.scrollIntoView();
   }
 
   static override styles = [sharedStyles, componentStyles];

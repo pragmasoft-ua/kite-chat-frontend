@@ -1,0 +1,282 @@
+{
+  "schemaVersion": "1.0.0",
+  "readme": "",
+  "modules": [
+    {
+      "kind": "javascript-module",
+      "path": "src/kite-chat.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "KiteChat is an embeddable livechat component",
+          "name": "KiteChatElement",
+          "cssParts": [
+            {
+              "description": "The toggle button TODO implement",
+              "name": "toggle"
+            }
+          ],
+          "slots": [
+            {
+              "type": {
+                "text": "\"kite-msg\" | \"p\""
+              },
+              "description": "kite-chat component contains chat messages as nested subcomponents, allowing server-side rendering",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "open",
+              "type": {
+                "text": "boolean"
+              },
+              "default": "false",
+              "description": "opens chat dialog",
+              "attribute": "open",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "heading",
+              "type": {
+                "text": "string"
+              },
+              "default": "'🪁Kite chat'",
+              "attribute": "heading"
+            },
+            {
+              "kind": "field",
+              "name": "textarea",
+              "type": {
+                "text": "HTMLTextAreaElement"
+              },
+              "privacy": "private"
+            },
+            {
+              "kind": "field",
+              "name": "sendEnabled",
+              "type": {
+                "text": "boolean"
+              },
+              "privacy": "private",
+              "default": "false"
+            },
+            {
+              "kind": "method",
+              "name": "_toggleOpen",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_send",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_handleKeyUp",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "KeyboardEvent"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_handleEnabled",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "hide"
+            },
+            {
+              "kind": "method",
+              "name": "show"
+            },
+            {
+              "kind": "method",
+              "name": "incoming",
+              "parameters": [
+                {
+                  "name": "msg",
+                  "type": {
+                    "text": "string"
+                  }
+                },
+                {
+                  "name": "msgId",
+                  "default": "randomStringId()"
+                },
+                {
+                  "name": "timestamp",
+                  "default": "new Date().toISOString()"
+                }
+              ]
+            }
+          ],
+          "events": [
+            {
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Chat window opens",
+              "name": "kite-chat.show"
+            },
+            {
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Chat window closes",
+              "name": "kite-chat.hide"
+            }
+          ],
+          "attributes": [
+            {
+              "type": {
+                "text": "boolean"
+              },
+              "description": "opens chat dialog",
+              "name": "open",
+              "default": "false",
+              "fieldName": "open"
+            },
+            {
+              "name": "heading",
+              "type": {
+                "text": "string"
+              },
+              "default": "'🪁Kite chat'",
+              "fieldName": "heading"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "kite-chat",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "KiteChatElement",
+          "declaration": {
+            "name": "KiteChatElement",
+            "module": "src/kite-chat.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "kite-chat",
+          "declaration": {
+            "name": "KiteChatElement",
+            "module": "src/kite-chat.ts"
+          }
+        }
+      ]
+    },
+    {
+      "kind": "javascript-module",
+      "path": "src/kite-msg.ts",
+      "declarations": [
+        {
+          "kind": "class",
+          "description": "Styled chat message component. Presence of the <pre>status</pre> attribute means outgoing message.",
+          "name": "KiteMsgElement",
+          "slots": [
+            {
+              "description": "kite-msg component contains message text (possibly formatted)",
+              "name": ""
+            }
+          ],
+          "members": [
+            {
+              "kind": "field",
+              "name": "msgId",
+              "description": "Message id, optional, autogenerated with nanoid if not provided",
+              "attribute": "msgId",
+              "reflects": true
+            },
+            {
+              "kind": "field",
+              "name": "timestamp",
+              "description": "Timestamp as an ISO formatted string; optional, defaults to current time",
+              "attribute": "timestamp"
+            },
+            {
+              "kind": "field",
+              "name": "status",
+              "type": {
+                "text": "keyof typeof MsgStatus | undefined"
+              },
+              "description": "Status of the outgoing message; Optional, if present, must be one of 'sent' | 'delivered' | 'read';\nin this case message is formatted as an outgoing message",
+              "attribute": "status",
+              "reflects": true
+            },
+            {
+              "kind": "method",
+              "name": "_renderStatus",
+              "privacy": "private"
+            },
+            {
+              "kind": "method",
+              "name": "_renderTimestamp",
+              "privacy": "private"
+            }
+          ],
+          "attributes": [
+            {
+              "name": "status",
+              "type": {
+                "text": "keyof typeof MsgStatus | undefined"
+              },
+              "description": "Status of the outgoing message; Optional, if present, must be one of 'sent' | 'delivered' | 'read';\nin this case message is formatted as an outgoing message",
+              "fieldName": "status"
+            },
+            {
+              "name": "timestamp",
+              "description": "Timestamp as an ISO formatted string; optional, defaults to current time",
+              "fieldName": "timestamp"
+            },
+            {
+              "name": "msgId",
+              "description": "Message id, optional, autogenerated with nanoid if not provided",
+              "fieldName": "msgId"
+            }
+          ],
+          "superclass": {
+            "name": "LitElement",
+            "package": "lit"
+          },
+          "tagName": "kite-msg",
+          "customElement": true
+        }
+      ],
+      "exports": [
+        {
+          "kind": "js",
+          "name": "KiteMsgElement",
+          "declaration": {
+            "name": "KiteMsgElement",
+            "module": "src/kite-msg.ts"
+          }
+        },
+        {
+          "kind": "custom-element-definition",
+          "name": "kite-msg",
+          "declaration": {
+            "name": "KiteMsgElement",
+            "module": "src/kite-msg.ts"
+          }
+        }
+      ]
+    }
+  ]
+}
