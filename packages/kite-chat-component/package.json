@@ -3,7 +3,7 @@
   "description": "kite-chat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2022.10.2",
+  "version": "2023.1.1",
   "homepage": "https://pragmasoft-ua.github.io/kite-chat-frontend/",
   "publishConfig": {
     "access": "public"

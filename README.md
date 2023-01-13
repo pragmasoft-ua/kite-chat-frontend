@@ -1,4 +1,4 @@
-# 🪁 chat
+# 🪁 Kite chat
 
 This project includes **kite-chat** web component
 

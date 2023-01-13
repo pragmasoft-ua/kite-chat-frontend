@@ -1,6 +1,8 @@
-# 🪁 chat web component
+# 🪁 Kite chat web component
 
-This project includes **kite-chat** web component
+This project includes **kite-chat** web component,
+which can be used independently of the kite-chat backend with any other backend
+and networking protocol.
 
 Web component is built using LitElement with TypeScript and Tailwind CSS.
 
