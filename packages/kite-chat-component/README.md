@@ -1,12 +1,8 @@
-# 🪁 chat
+# 🪁 chat web component
 
 This project includes **kite-chat** web component
 
 Web component is built using LitElement with TypeScript and Tailwind CSS.
-
-Project is generated from the `lit-starter-ts` template in [the main Lit
-repo](https://github.com/lit/lit). Issues and PRs for this template should be
-filed in that repo.
 
 ## Setup
 
@@ -16,10 +12,6 @@ Install dependencies:
 npm i
 ```
 
-This project uses npm [workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) and typescript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html).
-
-You need to run `npm run tsc` before you start working on the project in your IDE to prebuild type definitions for incremental builds, otherwise you may experience typescript module resolution errors.
-
 ## Build
 
 This sample uses the TypeScript compiler to produce JavaScript that runs in modern browsers.
@@ -27,7 +19,7 @@ This sample uses the TypeScript compiler to produce JavaScript that runs in mode
 To build the JavaScript version of your component:
 
 ```bash
-npm run build -ws
+npm run build
 ```
 
 To watch files and rebuild when the files are modified, run the following command in a separate shell:
@@ -111,7 +103,7 @@ To enable the site go to the GitHub settings and change the GitHub Pages &quot;S
 
 ## Script to include component from CDN
 
-`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat@2022.9.5/dist/index.mjs"></script>`
+`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat-component@2022.9.4/dist/index.mjs"></script>`
 
 ## Static Site with demo is located here
 
@@ -161,8 +153,10 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅property converter for datetime property
 - ✅shared worker
 - ✅npm publishing, unpkg cdn
-- ✅switch to monorepo with pnpm build - came back to npm because storybook seems has problems with pnpm links
-- ✅storybook
+- BUG: content window does not scroll properly
+- BUG: @base tailwind styles are not applicable in the context of wc (html, body)
+- switch to monorepo with pnpm build
+- storybook - use absolute instead of fixed positioning to facilitate storybook stories (may be not needed)
 - file upload
 - display images
 - new N (unread) badge on toggle button, autoopen on incoming attr
@@ -188,25 +182,3 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - playwright e2e tests
 - use temporal polyfill for timestamp
 - https://github.com/43081j/postcss-lit
-- document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test)
-- consider dockerz html template
-
-## Debug workers
-
-[Chrome chrome://inspect/#workers](chrome://inspect/#workers)
-
-[Firefox about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)
-
-Chat library uses inline module type shared worker for communication with the backend.
-
-Firefox as of now does not support module type workers, so if you plan to debug worker in development mode `npm start`
-please use Chrome only.
-
-Production build bundles worker module and deps to iife so production library created with `npm run build` is compatible with all modern browsers.
-
-## Storybook
-
-Tried storybook builder vite. Version 6.x depends on webpack4 manager, which has problems with outdated crypto on
-node >16, whereas new storybook version as of 7.0.0-alpha.40 does not support web components.
-
-So far, the only working version is based on webpack5

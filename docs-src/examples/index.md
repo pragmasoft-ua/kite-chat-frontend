@@ -1,20 +1,20 @@
 ---
 layout: example.11ty.cjs
-title: <humane-chat> ⌲ Examples ⌲ Basic
+title: <kite-chat> ⌲ Examples ⌲ Basic
 tags: example
 name: Basic
 description: A basic example
 ---
 
 <style>
-  humane-chat p {
+  kite-chat p {
     border: solid 1px blue;
     padding: 8px;
   }
 </style>
-<humane-chat>
+<kite-chat>
   <p>This is child content</p>
-</humane-chat>
+</kite-chat>
 
 <h3>CSS</h3>
 
@@ -28,7 +28,7 @@ p {
 <h3>HTML</h3>
 
 ```html
-<humane-chat>
+<kite-chat>
   <p>This is child content</p>
-</humane-chat>
+</kite-chat>
 ```

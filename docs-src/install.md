@@ -1,16 +1,16 @@
 ---
 layout: page.11ty.cjs
-title: <humane-chat> ⌲ Install
+title: <kite-chat> ⌲ Install
 ---
 
 # Install
 
-`<humane-chat>` is distributed on npm, so you can install it locally or use it via npm CDNs like unpkg.com.
+`<kite-chat>` is distributed on npm, so you can install it locally or use it via npm CDNs like unpkg.com.
 
 ## Local Installation
 
 ```bash
-npm i humane-chat
+npm i kite-chat
 ```
 
 ## CDN
@@ -22,11 +22,11 @@ For this element to work from unpkg.com specifically, you need to include the `?
 ### HTML
 
 ```html
-<script type="module" src="https://unpkg.com/humane-chat?module"></script>
+<script type="module" src="https://unpkg.com/kite-chat?module"></script>
 ```
 
 ### JavaScript
 
 ```html
-import {MyElement} from 'https://unpkg.com/humane-chat?module';
+import {MyElement} from 'https://unpkg.com/kite-chat?module';
 ```

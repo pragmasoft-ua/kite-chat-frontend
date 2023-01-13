@@ -27,8 +27,8 @@
     "types": ["vite/client", "jest"]
   },
   "references": [
-    {"path": "packages/humane-chat-component"},
-    {"path": "packages/humane-chat"},
-    {"path": "packages/humane-chat-demo"}
+    {"path": "packages/kite-chat-component"},
+    {"path": "packages/kite-chat"},
+    {"path": "packages/kite-chat-demo"}
   ]
 }

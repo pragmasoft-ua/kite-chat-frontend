@@ -2,9 +2,9 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="kite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>&lt;kite-chat> Demo</title>
+    <title>&lt;kite-chat&gt; demo</title>
+
     <style>
       :root {
         --kite-primary-color: #808080;
@@ -13,18 +13,26 @@
 
       @media (prefers-color-scheme: dark) {
         body {
-          background-color: #333;
+          background-color: lch(10% 0 0);
           color: white;
         }
+      }
+
+      h1 {
+        color: var(--kite-primary-color);
+        display: block;
+        margin: 1rem auto;
+        padding: 1rem;
+        width: fit-content;
       }
     </style>
   </head>
   <body>
     <h1>&lt;kite-chat&gt; demo</h1>
     <script type="module">
-      import {KiteChat} from 'https://unpkg.com/@pragmasoft-ukraine/kite-chat@2022.10.2/dist/kite-chat.js';
+      import {KiteChat} from './src/kite-chat.ts';
       const kiteChat = new KiteChat({
-        endpoint: 'wss://1194-81-17-143-177.eu.ngrok.io/chats/pragmasoft',
+        endpoint: 'ws://localhost:8080/api/chat',
         createIfMissing: true,
       });
       addEventListener('beforeunload', () => kiteChat.disconnect());

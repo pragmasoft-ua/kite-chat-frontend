@@ -1,27 +1,28 @@
 {
-  "name": "@pragmasoft-ukraine/humane-chat-frontend",
+  "name": "@pragmasoft-ukraine/kite-chat-frontend",
   "version": "2022.10.2",
-  "description": "humane-chat monorepo",
+  "description": "kite-chat frontend monorepo",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "homepage": "https://pragmasoft-ua.github.io/humane-chat-frontend/",
+  "homepage": "https://pragmasoft-ua.github.io/kite-chat-frontend/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/pragmasoft-ua/humane-chat-frontend.git"
+    "url": "git+https://github.com/pragmasoft-ua/kite-chat-frontend.git"
   },
   "bugs": {
-    "url": "https://github.com/pragmasoft-ua/humane-chat-frontend/issues"
+    "url": "https://github.com/pragmasoft-ua/kite-chat-frontend/issues"
   },
   "workspaces": [
-    "./packages/humane-chat-component",
-    "./packages/humane-chat",
-    "./packages/humane-chat-demo"
+    "./packages/kite-chat-component",
+    "./packages/kite-chat",
+    "./packages/kite-chat-demo"
   ],
   "scripts": {
     "tsc": "tsc -b",
-    "start": "npm run start -w ./packages/humane-chat-demo",
+    "start": "npm run start -w ./packages/kite-chat-demo",
     "build": "npm run build -ws",
-    "clean": "npm run clean -ws"
+    "clean": "npm run clean -ws",
+    "test": "npm run test -ws"
   },
   "devDependencies": {
     "@jest/globals": "^29.0.3",

@@ -6,7 +6,7 @@ module.exports = class Docs {
   data() {
     return {
       layout: 'page.11ty.cjs',
-      title: '<humane-chat> ⌲ Docs',
+      title: '<kite-chat> ⌲ Docs',
     };
   }
 

@@ -1,0 +1,16 @@
+{
+  "name": "@pragmasoft-ukraine/kite-chat-demo",
+  "description": "kite-chat usage demo",
+  "license": "LGPL3.0",
+  "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "clean": "rimraf ../../docs"
+  },
+  "dependencies": {
+    "@pragmasoft-ukraine/kite-chat": "*"
+  }
+}

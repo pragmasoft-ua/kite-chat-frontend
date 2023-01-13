@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>&lt;kite-chat&gt; demo</title>
+    <link rel="icon" type="image/svg+xml" href="kite.svg" />
+
+    <style>
+      :root {
+        --kite-primary-color: #808080;
+        font-family: sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: lch(10% 0 0);
+          color: white;
+        }
+      }
+
+      h1 {
+        color: var(--kite-primary-color);
+        display: block;
+        margin: 1rem auto;
+        padding: 1rem;
+        width: fit-content;
+      }
+
+      main {
+        display: flex;
+        flex-direction: column;
+        accent-color: var(--kite-primary-color);
+        row-gap: 1rem;
+        width: 30rem;
+        margin: 1rem auto;
+      }
+
+      main .buttons {
+        display: flex;
+        column-gap: 1rem;
+      }
+
+      main button {
+        background-color: var(--kite-primary-color);
+        color: white;
+        padding: 0.5rem;
+        width: fit-content;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+    </style>
+    <link href="./src/index.css" rel="stylesheet" />
+  </head>
+  <body>
+    <h1>&lt;kite-chat&gt; demo</h1>
+    <main>
+      <label for="incoming">Type message to send:</label>
+      <textarea
+        id="incoming"
+        rows="5"
+        placeholder="Type message"
+        autocomplete="on"
+        spellcheck="true"
+        wrap="soft"
+      ></textarea>
+      <section class="buttons">
+        <button id="send">Send to chat</button>
+        <button id="open">Open</button>
+        <button id="close">Close</button>
+      </section>
+      <label for="colorpicker"
+        >Primary color: <input type="color" id="colorpicker" value="#808080"
+      /></label>
+      <label for="outgoing">Outgoing messages:</label>
+      <section id="outgoing"></section>
+    </main>
+    <kite-chat open title="👩🏻Людяна підтримка">
+      <kite-msg>Hi</kite-msg>
+      <kite-msg status="read">Hello</kite-msg>
+      <kite-msg> Have you heard about Coding and Stuff?</kite-msg>
+      <kite-msg status="delivered">
+        Yeah I know, they post awesome coding tutorials
+      </kite-msg>
+      <kite-msg>But did you know they have a youtube channel?</kite-msg>
+      <kite-msg status="sent">
+        Yeah I also subscribed to their channel
+      </kite-msg>
+    </kite-chat>
+    <script type="module" src="./src/index.ts"></script>
+  </body>
+</html>

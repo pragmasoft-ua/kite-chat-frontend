@@ -1,0 +1,45 @@
+{
+  "name": "@pragmasoft-ukraine/kite-chat",
+  "description": "Kite chat frontend",
+  "license": "LGPL3.0",
+  "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
+  "version": "2022.10.2",
+  "homepage": "https://pragmasoft-ua.github.io/kite-chat/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pragmasoft-ua/kite-chat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/pragmasoft-ua/kite-chat/issues"
+  },
+  "keywords": [
+    "chat",
+    "webchat",
+    "livechat",
+    "kite",
+    "support",
+    "Ukraine",
+    "web-components"
+  ],
+  "files": [
+    "dist",
+    "types"
+  ],
+  "type": "module",
+  "module": "dist/kite-chat.js",
+  "types": "types/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "start": "vite",
+    "build": "concurrently \"npm:tsc\" \"npm:build:module\"",
+    "tsc": "tsc -b",
+    "build:module": "vite build",
+    "clean": "rimraf dist types tsconfig.tsbuildinfo",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@pragmasoft-ukraine/kite-chat-component": "*"
+  }
+}
