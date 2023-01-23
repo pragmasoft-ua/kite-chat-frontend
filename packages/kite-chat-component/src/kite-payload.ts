@@ -6,7 +6,7 @@ export const enum MsgStatus {
 }
 
 export type PayloadMsg<TPayload> = {
-  msgId: string;
+  messageId: string;
   timestamp: Date;
   status?: MsgStatus;
   payload: TPayload;

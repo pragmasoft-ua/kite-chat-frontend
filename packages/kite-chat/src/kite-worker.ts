@@ -60,8 +60,8 @@ function onTabMessage(payload: PlaintextMessage, port: MessagePort) {
     );
     return;
   }
-  const arrayBuffer = encodeKiteMsg(payload);
-  ws.send(arrayBuffer);
+  const encoded = encodeKiteMsg(payload);
+  ws.send(encoded);
   tabPorts.forEach((tabPort) => {
     if (tabPort !== port) {
       port.postMessage(payload);
@@ -118,14 +118,14 @@ function onWsOpen() {
   // TODO flush queue
 }
 
-function onWsClose() {
-  console.debug('onWsClose');
+function onWsClose(e: CloseEvent) {
+  console.debug('onWsClose', e);
   ws = null;
   pendingCommand = null;
 }
 
-function onWsError() {
-  console.debug('onWsError');
+function onWsError(e: Event) {
+  console.debug('onWsError', e);
   ws = null;
   pendingCommand = null;
 }

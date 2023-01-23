@@ -68,15 +68,25 @@ export class KiteChat {
     return savedId;
   }
 
-  protected onOutgoingMessage(msg: CustomEvent<PayloadMsg<string>>) {
-    console.debug('outgoing', msg);
+  protected onOutgoingMessage(msg: CustomEvent<PayloadMsg<unknown>>) {
+    const {detail} = msg;
+    let outgoing = null;
+    const payloadType = typeof detail.payload;
+    if (payloadType === 'string') {
+      outgoing = {
+        type: MsgType.PLAINTEXT,
+        text: detail.payload,
+        messageId: detail.messageId,
+        timestamp: detail.timestamp,
+      } as PlaintextMessage;
+    } else {
+      throw new Error('Unexpected payload type ' + payloadType);
+    }
     if (!this.kiteWorker) {
       throw new Error('Not connected');
     }
-    this.kiteWorker.port.postMessage({
-      type: MsgType.PLAINTEXT,
-      ...msg.detail,
-    });
+    console.debug('outgoing', outgoing);
+    this.kiteWorker.port.postMessage(outgoing);
   }
 
   protected onElementShow() {

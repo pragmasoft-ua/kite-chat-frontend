@@ -174,13 +174,13 @@ export class KiteChatElement extends LitElement {
       const payload = this.textarea.value;
       const status = MsgStatus.unknown;
       const timestamp = new Date();
-      const msgId = randomStringId();
+      const messageId = randomStringId();
       const e = new CustomEvent<PayloadMsg<string>>('kite-chat.send', {
         bubbles: true,
         composed: true,
         cancelable: true,
         detail: {
-          msgId,
+          messageId,
           status,
           timestamp,
           payload,
@@ -192,7 +192,7 @@ export class KiteChatElement extends LitElement {
       }
       this.insertAdjacentHTML(
         'beforeend',
-        `<kite-msg status="${status}" msgId="${msgId}" timestamp="${timestamp}">${payload}</kite-msg>`
+        `<kite-msg status="${status}" messageId="${messageId}" timestamp="${timestamp}">${payload}</kite-msg>`
       );
       this.lastElementChild?.scrollIntoView(false);
       this.textarea.value = '';
@@ -222,13 +222,13 @@ export class KiteChatElement extends LitElement {
   }
 
   incoming(
-    msg: string,
-    msgId = randomStringId(),
+    text: string,
+    messageId = randomStringId(),
     timestamp = new Date().toISOString()
   ) {
     this.insertAdjacentHTML(
       'beforeend',
-      `<kite-msg msgId="${msgId}" timestamp="${timestamp}">${msg}</kite-msg>`
+      `<kite-msg messageId="${messageId}" timestamp="${timestamp}">${text}</kite-msg>`
     );
     this.lastElementChild?.scrollIntoView(false);
     this.show();

@@ -18,7 +18,7 @@
     "./packages/kite-chat-demo"
   ],
   "scripts": {
-    "tsc": "tsc -b",
+    "compile": "tsc -b",
     "start": "npm run start -w ./packages/kite-chat-demo",
     "build": "npm run build -ws",
     "clean": "npm run clean -ws",
