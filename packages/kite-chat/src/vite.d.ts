@@ -4,3 +4,7 @@ declare module '*?sharedworker&inline' {
   };
   export default sharedWorkerConstructor;
 }
+
+declare module '*?inline-shared-worker' {
+  export default string;
+}

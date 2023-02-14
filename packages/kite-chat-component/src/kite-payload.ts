@@ -1,4 +1,4 @@
-export const enum MsgStatus {
+export enum MsgStatus {
   unknown = 0,
   sent = 1,
   delivered = 2,

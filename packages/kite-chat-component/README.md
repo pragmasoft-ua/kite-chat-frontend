@@ -105,7 +105,7 @@ To enable the site go to the GitHub settings and change the GitHub Pages &quot;S
 
 ## Script to include component from CDN
 
-`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat@2023.1.1/dist/kite-chat.js"></script>`
+`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat@2023.2.1/dist/kite-chat.js"></script>`
 
 ## Static Site with demo is located here
 

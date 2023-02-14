@@ -19,7 +19,7 @@ npm i
 
 This project uses npm [workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) and typescript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html).
 
-You need to run `npm run tsc` before you start working on the project in your IDE to prebuild type definitions for incremental builds, otherwise you may experience typescript module resolution errors.
+You need to run `npm run compile` before you start working on the project in your IDE to prebuild type definitions for incremental builds, otherwise you may experience typescript module resolution errors.
 
 ## Build
 
@@ -31,15 +31,15 @@ To build the JavaScript version of your component:
 npm run build
 ```
 
+You very likely may need to edit wss endpoint in the `kite-chat-demo/.env` file after running `ngrok http 80` as explained in the backend project `kite-chat`
+
 To watch files and rebuild when the files are modified, run the following command in a separate shell:
 
 ```bash
 npm start
 ```
 
-Both the TypeScript compiler and lit-analyzer are configured to be very strict. You may want to change `tsconfig.json` to make them less strict.
-
-## Testing
+## Testing (ignore)
 
 This sample uses modern-web.dev's
 [@web/test-runner](https://www.npmjs.com/package/@web/test-runner) for testing. See the
@@ -60,7 +60,7 @@ npm test:watch
 
 Alternatively the `test:prod` and `test:prod:watch` commands will run your tests in Lit's production mode.
 
-## Dev Server
+## Dev Server (ignore)
 
 This sample uses modern-web.dev's [@web/dev-server](https://www.npmjs.com/package/@web/dev-server) for previewing the project without additional build steps. Web Dev Server handles resolving Node-style "bare" import specifiers, which aren't supported in browsers. It also automatically transpiles JavaScript and adds polyfills to support older browsers. See [modern-web.dev's Web Dev Server documentation](https://modern-web.dev/docs/dev-server/overview/) for more information.
 
@@ -104,7 +104,7 @@ npm run lint
 
 Prettier has not been configured to run when committing files, but this can be added with Husky and and `pretty-quick`. See the [prettier.io](https://prettier.io/) site for instructions.
 
-## Static Site
+## Static Site (ignore)
 
 This project includes a simple website generated with the [eleventy](11ty.dev) static site generator and the templates and pages in `/docs-src`. The site is generated to `/docs` and intended to be checked in so that GitHub pages can serve the site [from `/docs` on the master branch](https://help.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
 
@@ -112,7 +112,7 @@ To enable the site go to the GitHub settings and change the GitHub Pages &quot;S
 
 ## Script to include component from CDN
 
-`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat@2023.1.1/dist/kite-chat.js"></script>`
+`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat@2023.2.1/dist/kite-chat.js"></script>`
 
 ## Static Site with demo is located here
 
@@ -138,7 +138,7 @@ npm run docs:watch
 
 The site will usually be served at http://localhost:8000.
 
-## Bundling and minification
+## Bundling and minification (ignore)
 
 This starter project doesn't include any build-time optimizations like bundling or minification. We recommend publishing components as unoptimized JavaScript modules, and performing build-time optimizations at the application level. This gives build tools the best chance to deduplicate code, remove dead code, and so on.
 
@@ -165,7 +165,6 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅switch to monorepo with pnpm build - came back to npm because storybook seems has problems with pnpm links
 - ✅storybook
 - documentation (Readme, jsdoc)
-- for some reason npm run tsc generates types twice. consider extending separate base tsconfig?
 - file upload
 - display images
 - new N (unread) badge on toggle button, autoopen on incoming attr

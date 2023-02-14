@@ -5,7 +5,7 @@
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
-    "start": "vite",
+    "start": "vite --force",
     "build": "vite build",
     "preview": "vite preview",
     "clean": "rimraf ../../docs"

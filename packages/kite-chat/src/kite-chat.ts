@@ -4,19 +4,21 @@ import type {
   KiteMsg,
   PlaintextMessage,
   MessageAck,
+  Connected,
 } from './kite-types';
 
 import {MsgType} from './kite-types';
 
 import {
   KiteChatElement,
+  KiteMsgElement,
   PayloadMsg,
   randomStringId,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 import {CHANNEL_NAME} from './shared-constants';
 
-import KiteWorker from './kite-worker?sharedworker&inline';
+import sharedWorkerUrl from './kite-worker?inline-shared-worker';
 
 export type KiteChatOptions = {
   endpoint: string;
@@ -39,24 +41,61 @@ export class KiteChat {
   protected readonly opts: KiteChatOptions;
   protected kiteWorker: SharedWorker | null;
   protected readonly broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
-
   readonly element: KiteChatElement | null;
+  private tabIndex: number;
 
   constructor(opts: KiteChatOptions) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
     if (!this.opts.userId) {
       this.opts.userId = this.persistentRandomId();
     }
-    console.debug('KiteChat', JSON.stringify(this.opts));
+    console.debug('new KiteChat', JSON.stringify(this.opts));
+    console.debug('origin', location.origin);
+    console.debug('meta.url.origin', new URL(import.meta.url).origin);
 
     this.element = this.findOrCreateElement(
       this.opts.createIfMissing as boolean
     );
-    if (this.element?.open || this.opts.eagerlyConnect) {
-      this.connect();
-    }
+    this.connect();
+  }
 
-    this.broadcastChannel.onmessage = this.onWorkerMessage.bind(this);
+  public connect() {
+    console.debug('connect');
+
+    const onWorkerMessageBound = this.onWorkerMessage.bind(this);
+
+    this.broadcastChannel.onmessage = onWorkerMessageBound;
+
+    const kiteWorker = new SharedWorker(sharedWorkerUrl);
+
+    kiteWorker.port.onmessage = onWorkerMessageBound;
+    kiteWorker.port.onmessageerror = this.onDeliveryError.bind(this);
+    kiteWorker.addEventListener('error', this.onWorkerError.bind(this));
+    kiteWorker.port.start();
+    const join: JoinChannel = {
+      type: MsgType.JOIN,
+      endpoint: this.opts.endpoint,
+      memberId: this.opts.userId as string,
+      memberName: this.opts.userName,
+      eagerlyConnect: this.opts.eagerlyConnect,
+    };
+    kiteWorker.port.postMessage(join);
+
+    this.kiteWorker = kiteWorker;
+  }
+
+  public disconnect() {
+    if (!this.kiteWorker) return;
+
+    console.debug('disconnect');
+
+    if (this.kiteWorker) {
+      this.kiteWorker.port.postMessage({
+        type: MsgType.DISCONNECTED,
+      });
+    }
+    this.kiteWorker.port.close();
+    this.kiteWorker = null;
   }
 
   protected persistentRandomId(): string {
@@ -91,9 +130,6 @@ export class KiteChat {
 
   protected onElementShow() {
     console.debug('onElementShow');
-    if (!this.kiteWorker) {
-      this.connect();
-    }
   }
 
   protected findOrCreateElement(createIfMissing: boolean) {
@@ -114,47 +150,12 @@ export class KiteChat {
     return element;
   }
 
-  public connect() {
-    console.debug('connect');
-
-    // TODO worker needs to be started unconditionally, but inside worker connect needs to be performed conditionally
-    // That's because we cannot restart failed worker - next time after worker error it is silently created in error state.
-
-    const kiteWorker = new KiteWorker();
-
-    kiteWorker.port.onmessage = this.onWorkerMessage.bind(this);
-    kiteWorker.port.onmessageerror = this.onDeliveryError.bind(this);
-    kiteWorker.addEventListener('error', this.onWorkerError.bind(this));
-    kiteWorker.port.start();
-    const join: JoinChannel = {
-      type: MsgType.JOIN,
-      endpoint: this.opts.endpoint,
-      memberId: this.opts.userId as string,
-      memberName: this.opts.userName,
-    };
-    kiteWorker.port.postMessage(join);
-
-    this.kiteWorker = kiteWorker;
-  }
-
-  public disconnect() {
-    if (!this.kiteWorker) return;
-
-    console.debug('disconnect');
-
-    if (this.kiteWorker)
-      this.kiteWorker.port.postMessage({
-        type: MsgType.DISCONNECTED,
-      });
-    this.kiteWorker = null;
-  }
-
   protected onWorkerMessage(e: MessageEvent<KiteMsg>) {
     const payload = e.data;
     if (!payload) throw new Error('no payload in incoming message');
     switch (payload.type) {
       case MsgType.CONNECTED:
-        this.onConnected();
+        this.onConnected(payload);
         break;
       case MsgType.PLAINTEXT:
         this.onPlaintextMessage(payload);
@@ -165,6 +166,10 @@ export class KiteChat {
       case MsgType.ERROR:
         this.onErrorMessage(payload);
         break;
+      case MsgType.ONLINE:
+      case MsgType.OFFLINE:
+        this.log(payload);
+        break;
     }
   }
 
@@ -173,23 +178,36 @@ export class KiteChat {
       'onPlaintextMessage',
       incoming.messageId,
       incoming.text,
-      incoming.timestamp
+      incoming.timestamp,
+      incoming.tabIndex
     );
-
-    this.element?.incoming(
-      incoming.text,
-      incoming.messageId,
-      incoming.timestamp.toISOString()
-    );
+    if (incoming.tabIndex != this.tabIndex) {
+      this.element?.incoming(
+        incoming.text,
+        incoming.messageId,
+        incoming.timestamp.toISOString()
+      );
+    }
   }
 
-  protected onConnected() {
-    console.debug('connected');
+  protected onConnected(payload: Connected) {
+    console.debug('connected', payload);
+    const {messageHistory, tabIndex} = payload;
+    this.tabIndex = tabIndex;
+    for (const msg of messageHistory) {
+      this.appendMessage(msg);
+    }
   }
 
   protected onMessageAck(ack: MessageAck) {
-    // TODO this.element?.ack(ack.messageId, ack.destiationMessageId, ack.timestamp);
-    console.debug(ack);
+    console.debug('onMessageAck', ack);
+    const msgElement = document.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${ack.messageId}"]`
+    ) as KiteMsgElement | undefined;
+    if (msgElement) {
+      msgElement.messageId = ack.destiationMessageId;
+      msgElement.status = 'delivered';
+    }
   }
 
   protected onErrorMessage(e: ErrorResponse) {
@@ -208,5 +226,24 @@ export class KiteChat {
     throw new Error(
       `Worker initialization error '${e.message}': ${e.filename}(${e.lineno}:${e.colno}). ${e.error}`
     );
+  }
+
+  private appendMessage(msg: PlaintextMessage) {
+    if (!this.element) return;
+    const el = document.createElement(KiteMsgElement.TAG);
+    el.setAttribute('messageId', msg.messageId);
+    el.setAttribute('timestamp', msg.timestamp.toISOString());
+    el.textContent = msg.text;
+    msg.status && el.setAttribute('status', msg.status.toString());
+    this.element.appendChild(el);
+  }
+
+  /**
+   * TODO replace with UI change
+   * @deprecated temporary, replace with UI change
+   * @param msg
+   */
+  protected log(msg: KiteMsg) {
+    console.log(JSON.stringify(msg));
   }
 }
