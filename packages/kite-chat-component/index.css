@@ -13,6 +13,7 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+  --kite-primary-color: #009f50;
 }
 
 a {
@@ -22,6 +23,11 @@ a {
 }
 a:hover {
   color: #23c84c8b;
+}
+
+h1 {
+  color: #009f50;
+  margin: 0 auto;
 }
 
 body {

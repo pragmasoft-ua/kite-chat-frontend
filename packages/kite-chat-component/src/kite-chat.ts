@@ -86,8 +86,12 @@ export class KiteChatElement extends LitElement {
               >✕</span
             >
           </header>
-          <main class="flex-1 snap-y overflow-y-auto bg-slate-300/50 p-2">
-            <slot></slot>
+          <main
+            class="flex flex-1 snap-y flex-col-reverse overflow-y-auto bg-slate-300/50 p-2"
+          >
+            <div class="flex min-h-min flex-col items-start">
+              <slot></slot>
+            </div>
           </main>
           <footer class="flex items-start gap-1 rounded-b p-2">
             <svg

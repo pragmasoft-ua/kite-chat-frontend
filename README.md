@@ -164,17 +164,17 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅npm publishing, unpkg cdn
 - ✅switch to monorepo with pnpm build - came back to npm because storybook seems has problems with pnpm links
 - ✅storybook
+- ✅cache session in worker to survive page reloads
+- ✅BroadcastChannel
 - documentation (Readme, jsdoc)
 - file upload
 - display images
 - new N (unread) badge on toggle button, autoopen on incoming attr
 - smarter datetime format or change display on click from time to date and back
-- cache session in worker to survive page reloads
 - keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - message selection, contextual edit/delete menu items (next to close button)
 - clipboard api
 - Web push
-- BroadcastChannel
 - buttons click animation
 - display links and button menus (as pills)
 - localization
@@ -189,7 +189,6 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - automate npm publish with github actions
 - playwright e2e tests
 - use temporal polyfill for timestamp
-- https://github.com/43081j/postcss-lit
 - document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test)
 - consider dockerz html template
 
@@ -212,3 +211,7 @@ Tried storybook builder vite. Version 6.x depends on webpack4 manager, which has
 node >16, whereas new storybook version as of 7.0.0-alpha.40 does not support web components.
 
 So far, the only working version is based on webpack5
+
+## Tailwindcss
+
+Tried @config for component, but didn't work, probably due to the vite or postcss

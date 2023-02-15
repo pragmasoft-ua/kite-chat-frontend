@@ -1,16 +1,15 @@
 :host {
   max-width: 80%;
-  @apply selection:bg-primary-color relative clear-both my-1.5 block snap-end scroll-my-1 whitespace-pre-line break-words rounded px-2 py-1 text-left shadow selection:text-white;
+  @apply selection:bg-primary-color relative my-1.5 block select-text snap-end scroll-my-1 whitespace-pre-line break-words rounded px-2 py-1 text-left shadow selection:text-white;
 }
 
 :host(:not([status])) {
   background: white;
-  float: left;
 }
 
 :host([status]) {
   background: theme('colors.stone.300');
-  float: right;
+  @apply self-end;
 }
 
 :host::before {
@@ -40,6 +39,7 @@ time {
   float: right;
   bottom: -0.375rem;
   right: -0.5rem;
+  user-select: none;
 }
 
 :host([status]) time {
@@ -53,6 +53,7 @@ s {
   right: 0.5rem;
   font-size: 0.5rem;
   letter-spacing: -0.125rem;
+  user-select: none;
 }
 
 s.read::after {
