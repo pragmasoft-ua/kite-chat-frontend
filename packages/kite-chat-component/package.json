@@ -3,7 +3,7 @@
   "description": "kite-chat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2023.2.1",
+  "version": "2023.2.2",
   "homepage": "https://pragmasoft-ua.github.io/kite-chat-frontend/",
   "publishConfig": {
     "access": "public"
@@ -70,7 +70,8 @@
   },
   "dependencies": {
     "lit": "^2.4.0",
-    "nanoid": "^4.0.0"
+    "nanoid": "^4.0.0",
+    "pretty-bytes": "^6.1.0"
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",

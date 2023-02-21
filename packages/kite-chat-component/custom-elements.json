@@ -70,7 +70,7 @@
             },
             {
               "kind": "method",
-              "name": "_send",
+              "name": "_sendText",
               "privacy": "private"
             },
             {
@@ -93,6 +93,37 @@
             },
             {
               "kind": "method",
+              "name": "_sendFile",
+              "privacy": "private",
+              "parameters": [
+                {
+                  "name": "event",
+                  "type": {
+                    "text": "Event"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
+              "name": "_dispatchMsg",
+              "privacy": "private",
+              "return": {
+                "type": {
+                  "text": "boolean"
+                }
+              },
+              "parameters": [
+                {
+                  "name": "detail",
+                  "type": {
+                    "text": "KiteMsg"
+                  }
+                }
+              ]
+            },
+            {
+              "kind": "method",
               "name": "hide"
             },
             {
@@ -101,21 +132,13 @@
             },
             {
               "kind": "method",
-              "name": "incoming",
+              "name": "appendMsg",
               "parameters": [
                 {
-                  "name": "text",
+                  "name": "msg",
                   "type": {
-                    "text": "string"
+                    "text": "KiteMsg"
                   }
-                },
-                {
-                  "name": "messageId",
-                  "default": "randomStringId()"
-                },
-                {
-                  "name": "timestamp",
-                  "default": "new Date().toISOString()"
                 }
               ]
             }
@@ -134,6 +157,13 @@
               },
               "description": "Chat window closes",
               "name": "kite-chat.hide"
+            },
+            {
+              "type": {
+                "text": "CustomEvent"
+              },
+              "description": "Outgoing message is sent",
+              "name": "kite-chat.send"
             }
           ],
           "attributes": [
@@ -147,10 +177,11 @@
               "fieldName": "open"
             },
             {
-              "name": "heading",
               "type": {
                 "text": "string"
               },
+              "description": "Chat dialog heading",
+              "name": "heading",
               "default": "'🪁Kite chat'",
               "fieldName": "heading"
             }
@@ -216,14 +247,16 @@
             {
               "kind": "field",
               "name": "timestamp",
+              "default": "new Date()",
               "description": "Timestamp as an ISO formatted string; optional, defaults to current time",
-              "attribute": "timestamp"
+              "attribute": "timestamp",
+              "reflects": true
             },
             {
               "kind": "field",
               "name": "status",
               "type": {
-                "text": "keyof typeof MsgStatus | undefined"
+                "text": "MsgStatus | undefined"
               },
               "description": "Status of the outgoing message; Optional, if present, must be one of 'sent' | 'delivered' | 'read';\nin this case message is formatted as an outgoing message",
               "attribute": "status",
@@ -244,13 +277,14 @@
             {
               "name": "status",
               "type": {
-                "text": "keyof typeof MsgStatus | undefined"
+                "text": "MsgStatus | undefined"
               },
               "description": "Status of the outgoing message; Optional, if present, must be one of 'sent' | 'delivered' | 'read';\nin this case message is formatted as an outgoing message",
               "fieldName": "status"
             },
             {
               "name": "timestamp",
+              "default": "new Date()",
               "description": "Timestamp as an ISO formatted string; optional, defaults to current time",
               "fieldName": "timestamp"
             },

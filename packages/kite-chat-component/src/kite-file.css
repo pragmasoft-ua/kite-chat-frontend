@@ -1,0 +1,8 @@
+img {
+  max-width: 98%;
+  padding: 1%;
+}
+
+a {
+  color: theme('colors.primary-color');
+}

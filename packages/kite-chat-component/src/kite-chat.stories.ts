@@ -2,7 +2,7 @@ import {Story} from '@storybook/web-components';
 import {html} from 'lit';
 import {ifDefined} from 'lit/directives/if-defined.js';
 import {styleMap} from 'lit/directives/style-map.js';
-import type {KiteChatElement, PayloadMsg} from '.';
+import type {KiteChatElement, KiteMsg} from '.';
 import './kite-chat.ts';
 import './kite-msg.ts';
 
@@ -23,10 +23,7 @@ type KiteChatProps = {
   open?: boolean;
   heading?: string;
   primaryColor?: string;
-  onMessage?(
-    this: KiteChatElement,
-    event: CustomEvent<PayloadMsg<string>>
-  ): void;
+  onMessage?(this: KiteChatElement, event: CustomEvent<KiteMsg>): void;
 };
 
 // More on component templates: https://storybook.js.org/docs/web-components/writing-stories/introduction#using-args

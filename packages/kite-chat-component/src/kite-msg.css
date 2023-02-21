@@ -54,21 +54,21 @@ s {
   font-size: 0.5rem;
   letter-spacing: -0.125rem;
   user-select: none;
+  color: theme('colors.neutral.500');
 }
 
 s.read::after {
-  content: '✓✓';
-  color: theme('colors.blue.500');
+  content: '✔✔';
+  color: theme('colors.primary-color');
 }
 
 s.delivered::after {
-  content: '✓✓';
-  color: theme('colors.neutral.500');
+  content: '✔';
+  color: theme('colors.primary-color');
 }
 
 s.sent::after {
-  content: '✓';
-  color: theme('colors.neutral.500');
+  content: '✔';
 }
 
 @media (prefers-color-scheme: dark) {

@@ -133,7 +133,7 @@ function onTabMessage(e: MessageEvent<KiteMsg>) {
       onPlaintextMessage(payload);
       break;
     case MsgType.DISCONNECTED:
-      onTabDisconnectMessage(payload, p);
+      onTabDisconnected(payload, p);
       break;
   }
 }
@@ -195,11 +195,14 @@ function onJoinChannel(payload: JoinChannel) {
  * @param payload
  * @param port
  */
-function onTabDisconnectMessage(payload: Disconnected, port: KiteMessagePort) {
+function onTabDisconnected(payload: Disconnected, port: KiteMessagePort) {
   const {tabIndex} = payload;
   port.close();
   tabsCount--;
-  console.debug(WORKER_NAME, 'onTabDisconnected', tabIndex, tabsCount);
+  console.debug(
+    WORKER_NAME,
+    `onTabDisconnected tab ${tabIndex}, remaining tabs ${tabsCount}`
+  );
   if (tabsCount <= 0) {
     // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4
     ws?.close(WS_CLOSE_REASON_GONE_AWAY, 'all active tabs closed');
@@ -245,11 +248,14 @@ function onWsOpen() {
 }
 
 function onWsClose(e: CloseEvent) {
-  const sessionDurationMs = Date.now() - connectedTimestampMs;
+  const sessionDurationMs = connectedTimestampMs
+    ? Date.now() - connectedTimestampMs
+    : 0;
   console.debug(
     WORKER_NAME,
-    'ws disconnected',
-    (sessionDurationMs * 60) / 1000,
+    `ws disconnected, session duration ${Math.round(
+      (sessionDurationMs * 60) / 1000
+    )} minutes`,
     e
   );
   broadcastChannel.postMessage({type: MsgType.OFFLINE, sessionDurationMs});

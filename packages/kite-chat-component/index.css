@@ -16,15 +16,6 @@
   --kite-primary-color: #009f50;
 }
 
-a {
-  font-weight: 500;
-  color: #13eb49ca;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #23c84c8b;
-}
-
 h1 {
   color: #009f50;
   margin: 0 auto;

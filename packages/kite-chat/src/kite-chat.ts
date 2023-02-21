@@ -12,8 +12,9 @@ import {MsgType} from './kite-types';
 import {
   KiteChatElement,
   KiteMsgElement,
-  PayloadMsg,
+  KiteMsg as KiteChatMsg,
   randomStringId,
+  isPlaintextMsg,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 import {CHANNEL_NAME} from './shared-constants';
@@ -92,6 +93,7 @@ export class KiteChat {
     if (this.kiteWorker) {
       this.kiteWorker.port.postMessage({
         type: MsgType.DISCONNECTED,
+        tabindex: this.tabIndex,
       });
     }
     this.kiteWorker.port.close();
@@ -107,19 +109,16 @@ export class KiteChat {
     return savedId;
   }
 
-  protected onOutgoingMessage(msg: CustomEvent<PayloadMsg<unknown>>) {
+  protected onOutgoingMessage(msg: CustomEvent<KiteChatMsg>) {
     const {detail} = msg;
     let outgoing = null;
-    const payloadType = typeof detail.payload;
-    if (payloadType === 'string') {
+    if (isPlaintextMsg(detail)) {
       outgoing = {
+        ...detail,
         type: MsgType.PLAINTEXT,
-        text: detail.payload,
-        messageId: detail.messageId,
-        timestamp: detail.timestamp,
       } as PlaintextMessage;
     } else {
-      throw new Error('Unexpected payload type ' + payloadType);
+      throw new Error('Unexpected payload type ' + JSON.stringify(detail));
     }
     if (!this.kiteWorker) {
       throw new Error('Not connected');
@@ -182,11 +181,7 @@ export class KiteChat {
       incoming.tabIndex
     );
     if (incoming.tabIndex != this.tabIndex) {
-      this.element?.incoming(
-        incoming.text,
-        incoming.messageId,
-        incoming.timestamp.toISOString()
-      );
+      this.element?.appendMsg(incoming);
     }
   }
 

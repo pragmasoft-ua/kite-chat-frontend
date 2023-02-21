@@ -32,7 +32,7 @@ kiteChat.element?.addEventListener('kite-chat.send', (e: CustomEvent) => {
 });
 
 sendToChatBtn.addEventListener('click', () =>
-  kiteChat.element?.incoming(textarea.value)
+  kiteChat.element?.appendMsg({text: textarea.value})
 );
 openBtn.addEventListener('click', () => kiteChat.element?.show());
 closeBtn.addEventListener('click', () => kiteChat.element?.hide());

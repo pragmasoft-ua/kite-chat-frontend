@@ -1,7 +1,7 @@
 /* eslint-env node */
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  content: ['./src/kite-chat.ts', './src/kite-msg.ts'],
+  content: ['./src/kite-chat.ts', './src/kite-msg.ts', './src/kite-file.ts'],
   theme: {
     extend: {
       colors: {

@@ -11,7 +11,13 @@ import {sharedStyles} from './shared-styles';
 
 import kiteChatStyles from './kite-chat.css?inline';
 import {randomStringId} from './random-string-id';
-import {PayloadMsg, MsgStatus} from './kite-payload';
+import {
+  FileMsg,
+  isPlaintextMsg,
+  KiteMsg,
+  MsgStatus,
+  PlaintextMsg,
+} from './kite-payload';
 
 console.debug('kite-chat loaded');
 
@@ -19,12 +25,20 @@ const componentStyles = css`
   ${unsafeCSS(kiteChatStyles)}
 `;
 
+const CUSTOM_EVENT_INIT = {
+  bubbles: true,
+  composed: true,
+  cancelable: true,
+};
+
 /**
  * KiteChat is an embeddable livechat component
  *
  * @fires {CustomEvent} kite-chat.show - Chat window opens
  * @fires {CustomEvent} kite-chat.hide - Chat window closes
+ * @fires {CustomEvent} kite-chat.send - Outgoing message is sent
  * @attr {Boolean} open - displays chat window if true or only toggle button if false or missing
+ * @attr {string} heading - Chat dialog heading
  * @slot {"kite-msg" | "p"} - kite-chat component contains chat messages as nested subcomponents, allowing server-side rendering
  * @cssvar --kite-primary-color - accent color, styles toggle button, title bar, text selection, cursor
  * @csspart toggle - The toggle button TODO implement
@@ -89,27 +103,35 @@ export class KiteChatElement extends LitElement {
           <main
             class="flex flex-1 snap-y flex-col-reverse overflow-y-auto bg-slate-300/50 p-2"
           >
-            <div class="flex min-h-min flex-col items-start">
+            <div class="flex min-h-min flex-col flex-wrap items-start">
               <slot></slot>
             </div>
           </main>
           <footer class="flex items-start gap-1 rounded-b p-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke-width="1.5"
-              stroke="currentColor"
-              class="h-6 w-6 cursor-pointer opacity-50 hover:opacity-100"
-            >
-              <title>Attach file</title>
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"
+            <label>
+              <input
+                type="file"
+                class="hidden"
+                aria-hidden="true"
+                multiple
+                @change=${this._sendFile}
               />
-            </svg>
-
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="h-6 w-6 cursor-pointer opacity-50 hover:opacity-100"
+              >
+                <title>Attach file</title>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"
+                />
+              </svg>
+            </label>
             <textarea
               required
               rows="1"
@@ -134,7 +156,7 @@ export class KiteChatElement extends LitElement {
                 'opacity-30': !this.sendEnabled,
                 'pointer-events-none': !this.sendEnabled,
               })} h-6 w-6"
-              @click=${this._send}
+              @click=${this._sendText}
             >
               <title>Send (Ctrl+↩)</title>
               <path
@@ -150,65 +172,30 @@ export class KiteChatElement extends LitElement {
   }
 
   private _toggleOpen() {
-    if (this.open) {
-      const e = new CustomEvent('kite-chat.hide', {
-        bubbles: true,
-        composed: true,
-        cancelable: true,
-      });
-      this.dispatchEvent(e);
-      if (!e.defaultPrevented) {
-        this.hide();
-      }
-    } else {
-      const e = new CustomEvent('kite-chat.show', {
-        bubbles: true,
-        composed: true,
-        cancelable: true,
-      });
-      this.dispatchEvent(e);
-      if (!e.defaultPrevented) {
-        this.show();
-      }
-    }
+    this.open ? this.hide() : this.show();
   }
 
-  private _send() {
+  private _sendText() {
     if (this.textarea.value?.length > 0) {
-      const payload = this.textarea.value;
-      const status = MsgStatus.unknown;
-      const timestamp = new Date();
-      const messageId = randomStringId();
-      const e = new CustomEvent<PayloadMsg<string>>('kite-chat.send', {
-        bubbles: true,
-        composed: true,
-        cancelable: true,
-        detail: {
-          messageId,
-          status,
-          timestamp,
-          payload,
-        },
-      });
-      this.dispatchEvent(e);
-      if (e.defaultPrevented) {
-        return;
+      const message: PlaintextMsg = {
+        messageId: randomStringId(),
+        timestamp: new Date(),
+        status: MsgStatus.unknown,
+        text: this.textarea.value,
+      };
+      if (this._dispatchMsg(message)) {
+        this.appendMsg(message);
+        this.textarea.value = '';
+        this.textarea.focus();
+        this._handleEnabled();
       }
-      this.insertAdjacentHTML(
-        'beforeend',
-        `<kite-msg status="${status}" messageId="${messageId}" timestamp="${timestamp}">${payload}</kite-msg>`
-      );
-      this.lastElementChild?.scrollIntoView(false);
-      this.textarea.value = '';
-      this.textarea.focus();
-      this._handleEnabled();
     }
   }
 
   private _handleKeyUp(event: KeyboardEvent) {
     if (event.key === 'Enter' && event.ctrlKey) {
       event.preventDefault();
-      this._send();
+      this._sendText();
     }
   }
 
@@ -216,25 +203,70 @@ export class KiteChatElement extends LitElement {
     this.sendEnabled = this.textarea.value.length > 0;
   }
 
+  private _sendFile(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const numFiles = target.files?.length ?? 0;
+    for (let i = 0; i < numFiles; i++) {
+      const file = target.files?.item(i);
+      if (!file) continue;
+      const message: FileMsg = {
+        messageId: randomStringId(),
+        timestamp: new Date(),
+        status: MsgStatus.unknown,
+        file,
+      };
+      this._dispatchMsg(message) && this.appendMsg(message);
+    }
+  }
+
+  private _dispatchMsg(detail: KiteMsg): boolean {
+    const e = new CustomEvent<KiteMsg>('kite-chat.send', {
+      ...CUSTOM_EVENT_INIT,
+      detail,
+    });
+    this.dispatchEvent(e);
+    return !e.defaultPrevented;
+  }
+
   hide() {
-    this.open = false;
+    if (!this.open) {
+      return;
+    }
+    const e = new CustomEvent('kite-chat.hide', CUSTOM_EVENT_INIT);
+    this.dispatchEvent(e);
+    if (!e.defaultPrevented) {
+      this.open = false;
+    }
   }
 
   show() {
-    this.open = true;
-    this.textarea.focus();
+    if (this.open) {
+      return;
+    }
+    const e = new CustomEvent('kite-chat.show', CUSTOM_EVENT_INIT);
+    this.dispatchEvent(e);
+    if (!e.defaultPrevented) {
+      this.open = true;
+      this.textarea.focus();
+    }
   }
 
-  incoming(
-    text: string,
-    messageId = randomStringId(),
-    timestamp = new Date().toISOString()
-  ) {
-    this.insertAdjacentHTML(
-      'beforeend',
-      `<kite-msg messageId="${messageId}" timestamp="${timestamp}">${text}</kite-msg>`
-    );
-    this.lastElementChild?.scrollIntoView(false);
+  appendMsg(msg: KiteMsg) {
+    const {messageId = randomStringId(), timestamp = new Date(), status} = msg;
+    const msgElement = document.createElement('kite-msg');
+    msgElement.messageId = messageId;
+    msgElement.timestamp = timestamp;
+    msgElement.status = status;
+    if (isPlaintextMsg(msg)) {
+      msgElement.innerText = msg.text;
+    } else {
+      const {file} = msg;
+      const fileElement = document.createElement('kite-file');
+      fileElement.file = file;
+      msgElement.appendChild(fileElement);
+    }
+    this.appendChild(msgElement);
+    msgElement.scrollIntoView(false);
     this.show();
   }
 
