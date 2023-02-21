@@ -15,6 +15,7 @@ import {
   KiteMsg as KiteChatMsg,
   randomStringId,
   isPlaintextMsg,
+  MsgStatus,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 import {CHANNEL_NAME} from './shared-constants';
@@ -201,7 +202,7 @@ export class KiteChat {
     ) as KiteMsgElement | undefined;
     if (msgElement) {
       msgElement.messageId = ack.destiationMessageId;
-      msgElement.status = 'delivered';
+      msgElement.status = MsgStatus.delivered;
     }
   }
 
