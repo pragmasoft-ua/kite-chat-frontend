@@ -55,7 +55,7 @@ export class KiteMsgElement extends LitElement {
         return value.toISOString();
       },
       fromAttribute(value) {
-        return value && new Date(value);
+        return value ? new Date(value) : null;
       },
     },
   })
