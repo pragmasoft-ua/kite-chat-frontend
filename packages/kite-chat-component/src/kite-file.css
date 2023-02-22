@@ -1,3 +1,5 @@
+@config "../tailwind.config.lit.cjs";
+
 img {
   max-width: 98%;
   padding: 1%;

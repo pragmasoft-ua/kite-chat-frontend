@@ -85,7 +85,9 @@ export class KiteMsgElement extends LitElement {
   }
 
   private _renderStatus() {
-    return this.status ? html`<s class="${MsgStatus[this.status]}"></s>` : null;
+    return this.status
+      ? html`<span class="${MsgStatus[this.status]}"></span>`
+      : null;
   }
 
   private _renderTimestamp() {

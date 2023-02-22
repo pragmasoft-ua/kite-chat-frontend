@@ -1,3 +1,5 @@
+@config "../tailwind.config.lit.cjs";
+
 textarea,
 main {
   scrollbar-width: thin;

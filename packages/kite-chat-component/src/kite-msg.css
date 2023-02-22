@@ -1,3 +1,5 @@
+@config "../tailwind.config.lit.cjs";
+
 :host {
   max-width: 80%;
   @apply selection:bg-primary-color relative my-1.5 block select-text snap-end scroll-my-1 whitespace-pre-line break-words rounded px-2 py-1 text-left shadow selection:text-white;
@@ -46,29 +48,28 @@ time {
   margin-right: 1.5rem;
 }
 
-s {
+span {
   text-decoration: none;
   position: absolute;
   bottom: 0;
-  right: 0.5rem;
-  font-size: 0.5rem;
-  letter-spacing: -0.125rem;
+  right: 0.5em;
+  letter-spacing: -0.3em;
   user-select: none;
   color: theme('colors.neutral.500');
 }
 
-s.read::after {
-  content: '✔✔';
+span.read::after,
+span.delivered::after {
   color: theme('colors.primary-color');
 }
 
-s.delivered::after {
-  content: '✔';
-  color: theme('colors.primary-color');
+span.sent::after,
+span.delivered::after {
+  content: '✓';
 }
 
-s.sent::after {
-  content: '✔';
+span.read::after {
+  content: '✓✓';
 }
 
 @media (prefers-color-scheme: dark) {
@@ -88,7 +89,7 @@ s.sent::after {
     border-top-color: theme('colors.stone.600');
   }
 
-  s {
+  span {
     color: theme('colors.neutral.200');
   }
 }

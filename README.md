@@ -153,31 +153,34 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅responsive dialog sizing/placement
 - ✅scroll snap
 - ✅dark/light theme
-- ✅primary color for text selection
+- ✅primary color for text selection, links, status indicators
 - ✅open/close animation
-- ✅button handlers
 - ✅focus on textarea when dialog is opened
 - ✅keyboard shortcut for send
 - ✅events
 - ✅property converter for datetime property
 - ✅shared worker
 - ✅npm publishing, unpkg cdn
-- ✅switch to monorepo with pnpm build - came back to npm because storybook seems has problems with pnpm links
+- ✅switch to monorepo with pnpm build (came back to npm because storybook seems has problems with pnpm links)
 - ✅storybook
 - ✅cache session in worker to survive page reloads
 - ✅BroadcastChannel
+- ✅display images
+- [in progress...] file upload
+- rich text message type: entities (urls, @-mentions...), markdown?
+- display links and button menus (as pills)
+- display error messages
 - documentation (Readme, jsdoc)
-- file upload
-- display images
+- localization
 - new N (unread) badge on toggle button, autoopen on incoming attr
 - smarter datetime format or change display on click from time to date and back
 - keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - message selection, contextual edit/delete menu items (next to close button)
-- clipboard api
+- clipboard api, drag and drop? web share api
+- video chats
+- webauthn e2e encryption
 - Web push
 - buttons click animation
-- display links and button menus (as pills)
-- localization
 - emoji keyboard https://emoji.julien-marcou.fr/
 - custom variables for sizing, background pattern, ...?
 - aria attributes for controls
