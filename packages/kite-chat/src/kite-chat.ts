@@ -21,8 +21,6 @@ import {
   isFileMsg,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
-import {CHANNEL_NAME} from './shared-constants';
-
 import sharedWorkerUrl from './kite-worker?inline-shared-worker';
 
 export type KiteChatOptions = {
@@ -45,9 +43,7 @@ const KITE_USER_ID_STORE_KEY = 'KITE_USER_ID';
 export class KiteChat {
   protected readonly opts: KiteChatOptions;
   protected kiteWorker: SharedWorker | null;
-  protected readonly broadcastChannel = new BroadcastChannel(CHANNEL_NAME);
   readonly element: KiteChatElement | null;
-  private tabIndex: number;
 
   constructor(opts: KiteChatOptions) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
@@ -68,9 +64,6 @@ export class KiteChat {
     console.debug('connect');
 
     const onWorkerMessageBound = this.onWorkerMessage.bind(this);
-
-    this.broadcastChannel.onmessage = onWorkerMessageBound;
-    this.broadcastChannel.onmessageerror = console.error;
 
     const kiteWorker = new SharedWorker(sharedWorkerUrl);
 
@@ -98,7 +91,6 @@ export class KiteChat {
     if (this.kiteWorker) {
       this.kiteWorker.port.postMessage({
         type: MsgType.DISCONNECTED,
-        tabindex: this.tabIndex,
       });
     }
     this.kiteWorker.port.close();
@@ -120,13 +112,11 @@ export class KiteChat {
     if (isPlaintextMsg(detail)) {
       outgoing = {
         ...detail,
-        tabIndex: this.tabIndex,
         type: MsgType.PLAINTEXT,
       } as PlaintextMsg;
     } else if (isFileMsg(detail)) {
       outgoing = {
         ...detail,
-        tabIndex: this.tabIndex,
         type: MsgType.FILE,
       } as FileMsg;
     } else {
@@ -187,21 +177,13 @@ export class KiteChat {
   }
 
   protected onContentMessage(incoming: ContentMsg) {
-    console.debug(
-      'onContentMessage',
-      incoming.messageId,
-      incoming.timestamp,
-      incoming.tabIndex
-    );
-    if (incoming.tabIndex != this.tabIndex) {
-      this.element?.appendMsg(incoming);
-    }
+    console.debug('onContentMessage', incoming.messageId, incoming.timestamp);
+    this.element?.appendMsg(incoming);
   }
 
   protected onConnected(payload: Connected) {
     console.debug('connected', payload);
-    const {messageHistory, tabIndex} = payload;
-    this.tabIndex = tabIndex;
+    const {messageHistory} = payload;
     if (!this.element) return;
     for (const msg of messageHistory) {
       this.element.appendMsg(msg);

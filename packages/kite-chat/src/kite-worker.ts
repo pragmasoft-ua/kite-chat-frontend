@@ -10,7 +10,6 @@ declare const self: SharedWorkerGlobalScope;
 import {MessagePort} from 'worker_threads';
 import type {
   ContentMsg,
-  Disconnected,
   ErrorResponse,
   FileMsg,
   JoinChannel,
@@ -22,9 +21,9 @@ import type {
 } from './kite-types';
 import {MsgType, MsgStatus} from './kite-types';
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
-import {CHANNEL_NAME, SUBPROTOCOL} from './shared-constants';
+import {SUBPROTOCOL} from './shared-constants';
 
-const WORKER_NAME = 'kite shared worker';
+const WORKER_NAME = 'kite worker';
 
 /**
  * @deprecated this is a workaround for a missing method Array.findLast()
@@ -37,13 +36,8 @@ interface KiteArray<T> extends Array<T> {
   ): T | undefined;
 }
 
-interface KiteBroadcastChannel extends BroadcastChannel {
-  postMessage(message: KiteMsg): void;
-}
-
 interface KiteMessagePort extends MessagePort {
   postMessage(value: KiteMsg): void;
-  tabIndex?: number; // cache tab index
 }
 
 /*
@@ -65,32 +59,21 @@ let ws: WebSocket | null;
 let joinChannel: JoinChannel | null = null;
 
 /**
- * Stores browser tabs' message ports, indexed by monotonically increased index.
- * Each tab obtains its index in response to JoinChannel request (Connected response)
- * Thus, once tab is closed, its slot is set to null to avoid breaking indices.
- * tabCount keeps the number of not null tabs.
- */
-let tabsCount = 0;
-
-/**
- * Each connected browser tab is assigned and returned unique index
- * to skip broadcast messages triggered by its own events
- */
-let nextTabIndex = 0;
-/**
  * Keeps ordered list of all messages (incoming and outgoing) to populate new browser tabs
  * when those connected
  */
 const messageHistory = new Array<ContentMsg>() as KiteArray<ContentMsg>;
 const outgoingQueue = new Array<KiteMsg>();
 
-// Create a broadcast channel to notify about state changes
-const broadcastChannel: KiteBroadcastChannel = new BroadcastChannel(
-  CHANNEL_NAME
-);
+const tabPorts = new Set<KiteMessagePort>();
 
-broadcastChannel.onmessage = console.log;
-broadcastChannel.onmessageerror = console.error;
+const broadcast = (msg: KiteMsg, exclude?: KiteMessagePort) => {
+  for (const tabPort of tabPorts) {
+    if (tabPort !== exclude) {
+      tabPort.postMessage(msg);
+    }
+  }
+};
 
 // keep track of online status.
 let online = self.navigator.onLine;
@@ -114,20 +97,16 @@ function onTabConnected(e: MessageEvent) {
   const port = e.ports[0];
   port.onmessage = onTabMessage;
   port.onmessageerror = console.error;
-  const tabIndex = nextTabIndex++;
-  tabsCount++;
-  const kiteMessagePort = port as unknown as KiteMessagePort;
-  kiteMessagePort.tabIndex = tabIndex;
-  console.debug(WORKER_NAME, 'tab connected', tabIndex, tabsCount);
+  tabPorts.add(port as unknown as KiteMessagePort);
+  console.debug(WORKER_NAME, 'tab connected', tabPorts.size);
   port.postMessage({
     type: MsgType.CONNECTED,
-    tabIndex,
     messageHistory,
   });
 }
 
 function onTabMessage(e: MessageEvent<KiteMsg>) {
-  const p = e.target as unknown as KiteMessagePort;
+  const tabPort = e.target as unknown as KiteMessagePort;
   const payload = e.data;
   assert(!!payload, 'Missing payload');
   console.debug(WORKER_NAME, 'tab message', JSON.stringify(payload));
@@ -136,13 +115,13 @@ function onTabMessage(e: MessageEvent<KiteMsg>) {
       onJoinChannel(payload);
       break;
     case MsgType.PLAINTEXT:
-      onPlaintextMessage(payload);
+      onPlaintextMessage(payload, tabPort);
       break;
     case MsgType.FILE:
-      onFileMessage(payload);
+      onFileMessage(payload, tabPort);
       break;
     case MsgType.DISCONNECTED:
-      onTabDisconnected(payload, p);
+      onTabDisconnected(tabPort);
       break;
   }
 }
@@ -150,7 +129,7 @@ function onTabMessage(e: MessageEvent<KiteMsg>) {
 function onOnline() {
   console.log(WORKER_NAME, 'went online');
   online = true;
-  if (tabsCount <= 0) {
+  if (tabPorts.size === 0) {
     console.log(WORKER_NAME, 'no tabs open');
     return;
   }
@@ -176,10 +155,10 @@ function onOffline() {
   ws = null;
 }
 
-function onPlaintextMessage(payload: PlaintextMsg) {
+function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
   outgoingQueue.push(payload);
-  broadcastChannel.postMessage(payload);
+  broadcast(payload, tabPort);
   if (ws) {
     ws.readyState === ws.OPEN && flushQueue();
   } else if (online) {
@@ -187,9 +166,9 @@ function onPlaintextMessage(payload: PlaintextMsg) {
   }
 }
 
-function onFileMessage(payload: FileMsg) {
+function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
-  broadcastChannel.postMessage(payload);
+  broadcast(payload, tabPort);
   const upload: Upload = {
     type: MsgType.UPLOAD,
     messageId: payload.messageId,
@@ -222,15 +201,12 @@ function onJoinChannel(payload: JoinChannel) {
  * @param payload
  * @param port
  */
-function onTabDisconnected(payload: Disconnected, port: KiteMessagePort) {
-  const {tabIndex} = payload;
+function onTabDisconnected(port: KiteMessagePort) {
   port.close();
-  tabsCount--;
-  console.debug(
-    WORKER_NAME,
-    `onTabDisconnected tab ${tabIndex}, remaining tabs ${tabsCount}`
-  );
-  if (tabsCount <= 0) {
+  tabPorts.delete(port);
+  const tabsCount = tabPorts.size;
+  console.debug(WORKER_NAME, `onTabDisconnected remained ${tabsCount} tabs`);
+  if (tabsCount === 0) {
     // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4
     ws?.close(WS_CLOSE_REASON_GONE_AWAY, 'all active tabs closed');
   }
@@ -265,7 +241,6 @@ function onWsMessage(event: MessageEvent) {
       onErrorResponse(payload as ErrorResponse);
       break;
   }
-  broadcastChannel.postMessage(kiteMsg);
 }
 
 function onWsOpen() {
@@ -274,7 +249,7 @@ function onWsOpen() {
   assert(!!joinChannel, 'no pending joinChannel message');
   send(joinChannel);
   flushQueue();
-  broadcastChannel.postMessage({type: MsgType.ONLINE});
+  broadcast({type: MsgType.ONLINE});
 }
 
 function onWsClose(e: CloseEvent) {
@@ -288,13 +263,13 @@ function onWsClose(e: CloseEvent) {
     )} minutes`,
     e
   );
-  broadcastChannel.postMessage({type: MsgType.OFFLINE, sessionDurationMs});
+  broadcast({type: MsgType.OFFLINE, sessionDurationMs});
   if (!online) {
     console.warn(WORKER_NAME, 'offline, do not reconnect');
     ws = null;
     return;
   }
-  if (tabsCount <= 0) {
+  if (tabPorts.size === 0) {
     console.warn(WORKER_NAME, 'no open tabs, do not reconnect');
     ws = null;
     return;
@@ -315,7 +290,7 @@ function onWsError(e: Event) {
 
 function onWsPlaintextMessage(payload: PlaintextMsg) {
   messageHistory.push(payload);
-  broadcastChannel.postMessage(payload);
+  broadcast(payload);
 }
 
 async function onWsFileMessage(payload: BinMsg) {
@@ -327,10 +302,11 @@ async function onWsFileMessage(payload: BinMsg) {
     file,
   };
   messageHistory.push(incoming);
-  broadcastChannel.postMessage(incoming);
+  broadcast(incoming);
 }
 
 async function downloadUrl(url: string): Promise<File> {
+  // TODO implement
   throw new Error('Not implemented downloading of ' + url);
 }
 
@@ -344,6 +320,8 @@ function onMessageAck(payload: MsgAck) {
   } else {
     console.warn(WORKER_NAME, 'Unexpected Ack', payload.messageId);
   }
+  // TODO handle properly in tab controller
+  broadcast(payload);
 }
 
 function onErrorResponse(payload: ErrorResponse) {

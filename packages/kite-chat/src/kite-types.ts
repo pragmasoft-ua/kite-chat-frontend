@@ -50,7 +50,6 @@ export type PlaintextMsg = {
   messageId: string;
   timestamp: Date;
   status?: MsgStatus;
-  tabIndex?: number;
 };
 
 export type FileMsg = {
@@ -59,7 +58,6 @@ export type FileMsg = {
   messageId: string;
   timestamp: Date;
   status?: MsgStatus;
-  tabIndex?: number;
 };
 
 export type Upload = {
@@ -82,13 +80,11 @@ export type BinMsg = {
 
 export type Connected = {
   type: MsgType.CONNECTED;
-  tabIndex: number;
   messageHistory: Array<ContentMsg>;
 };
 
 export type Disconnected = {
   type: MsgType.DISCONNECTED;
-  tabIndex: number;
 };
 
 export type Online = {
