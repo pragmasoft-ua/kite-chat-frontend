@@ -1,4 +1,9 @@
-import {KiteChat} from '@pragmasoft-ukraine/kite-chat';
+import {
+  isPlaintextMsg,
+  KiteChat,
+  KiteMsg,
+  prettyBytes,
+} from '@pragmasoft-ukraine/kite-chat';
 
 const endpoint = import.meta.env.VITE_WS_ENDPOINT;
 
@@ -22,14 +27,20 @@ const closeBtn = requiredElement('#close');
 const colorpicker = requiredElement('#colorpicker');
 const outgoing = requiredElement('section#outgoing');
 const root = document.documentElement;
+const fileInfo = (file: File) => `${file.name} (${prettyBytes(file.size)})`;
 
-kiteChat.element?.addEventListener('kite-chat.send', (e: CustomEvent) => {
-  const payload = e.detail;
-  outgoing.insertAdjacentHTML(
-    'beforeend',
-    `<p>${payload.timestamp.toISOString()}: ${payload.payload}</p>`
-  );
-});
+kiteChat.element?.addEventListener(
+  'kite-chat.send',
+  (e: CustomEvent<KiteMsg>) => {
+    const payload = e.detail;
+    outgoing.insertAdjacentHTML(
+      'beforeend',
+      `<p>${payload?.timestamp?.toISOString()}: ${
+        isPlaintextMsg(payload) ? payload.text : fileInfo(payload.file)
+      }</p>`
+    );
+  }
+);
 
 sendToChatBtn.addEventListener('click', () =>
   kiteChat.element?.appendMsg({text: textarea.value})

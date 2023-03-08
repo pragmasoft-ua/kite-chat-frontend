@@ -27,3 +27,4 @@ export * from './kite-msg';
 export * from './kite-file';
 export * from './kite-payload';
 export * from './random-string-id';
+export {default as prettyBytes} from 'pretty-bytes';
