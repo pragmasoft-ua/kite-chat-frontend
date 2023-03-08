@@ -9,12 +9,16 @@ declare const self: SharedWorkerGlobalScope;
 
 import {MessagePort} from 'worker_threads';
 import type {
+  ContentMsg,
   Disconnected,
   ErrorResponse,
+  FileMsg,
   JoinChannel,
   KiteMsg,
-  MessageAck,
-  PlaintextMessage,
+  MsgAck,
+  PlaintextMsg,
+  BinMsg,
+  Upload,
 } from './kite-types';
 import {MsgType, MsgStatus} from './kite-types';
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
@@ -77,14 +81,16 @@ let nextTabIndex = 0;
  * Keeps ordered list of all messages (incoming and outgoing) to populate new browser tabs
  * when those connected
  */
-const messageHistory =
-  new Array<PlaintextMessage>() as KiteArray<PlaintextMessage>;
+const messageHistory = new Array<ContentMsg>() as KiteArray<ContentMsg>;
 const outgoingQueue = new Array<KiteMsg>();
 
 // Create a broadcast channel to notify about state changes
 const broadcastChannel: KiteBroadcastChannel = new BroadcastChannel(
   CHANNEL_NAME
 );
+
+broadcastChannel.onmessage = console.log;
+broadcastChannel.onmessageerror = console.error;
 
 // keep track of online status.
 let online = self.navigator.onLine;
@@ -132,6 +138,9 @@ function onTabMessage(e: MessageEvent<KiteMsg>) {
     case MsgType.PLAINTEXT:
       onPlaintextMessage(payload);
       break;
+    case MsgType.FILE:
+      onFileMessage(payload);
+      break;
     case MsgType.DISCONNECTED:
       onTabDisconnected(payload, p);
       break;
@@ -167,10 +176,28 @@ function onOffline() {
   ws = null;
 }
 
-function onPlaintextMessage(payload: PlaintextMessage) {
+function onPlaintextMessage(payload: PlaintextMsg) {
   messageHistory.push(payload);
   outgoingQueue.push(payload);
   broadcastChannel.postMessage(payload);
+  if (ws) {
+    ws.readyState === ws.OPEN && flushQueue();
+  } else if (online) {
+    triggerWsConnection();
+  }
+}
+
+function onFileMessage(payload: FileMsg) {
+  messageHistory.push(payload);
+  broadcastChannel.postMessage(payload);
+  const upload: Upload = {
+    type: MsgType.UPLOAD,
+    messageId: payload.messageId,
+    fileName: payload.file.name,
+    fileType: payload.file.type,
+    fileSize: payload.file.size,
+  };
+  outgoingQueue.push(upload);
   if (ws) {
     ws.readyState === ws.OPEN && flushQueue();
   } else if (online) {
@@ -226,10 +253,13 @@ function onWsMessage(event: MessageEvent) {
   const kiteMsg = decodeKiteMsg(payload);
   switch (kiteMsg.type) {
     case MsgType.PLAINTEXT:
-      onWsPlaintextMessage(payload as PlaintextMessage);
+      onWsPlaintextMessage(payload as PlaintextMsg);
+      break;
+    case MsgType.BIN:
+      onWsFileMessage(payload as BinMsg);
       break;
     case MsgType.ACK:
-      onMessageAck(payload as MessageAck);
+      onMessageAck(payload as MsgAck);
       break;
     case MsgType.ERROR:
       onErrorResponse(payload as ErrorResponse);
@@ -283,11 +313,28 @@ function onWsError(e: Event) {
   // TODO close ws in the case of error?
 }
 
-function onWsPlaintextMessage(payload: PlaintextMessage) {
+function onWsPlaintextMessage(payload: PlaintextMsg) {
   messageHistory.push(payload);
+  broadcastChannel.postMessage(payload);
 }
 
-function onMessageAck(payload: MessageAck) {
+async function onWsFileMessage(payload: BinMsg) {
+  // TODO try/catch
+  const file: File = await downloadUrl(payload.url);
+  const incoming: FileMsg = {
+    ...payload,
+    type: MsgType.FILE,
+    file,
+  };
+  messageHistory.push(incoming);
+  broadcastChannel.postMessage(incoming);
+}
+
+async function downloadUrl(url: string): Promise<File> {
+  throw new Error('Not implemented downloading of ' + url);
+}
+
+function onMessageAck(payload: MsgAck) {
   const msg = messageHistory.findLast(
     (msg) => msg.messageId === payload.messageId
   );

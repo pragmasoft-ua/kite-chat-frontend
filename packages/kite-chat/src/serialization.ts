@@ -1,11 +1,14 @@
-import type {
+import {
   JoinChannel,
-  MessageAck,
+  MsgAck,
   ErrorResponse,
   KiteMsg,
   MsgType,
-  PlaintextMessage,
+  PlaintextMsg,
 } from './kite-types';
+
+declare type Decoder = (raw: unknown[]) => Record<string, unknown>;
+declare type Encoder = (obj: Record<string, unknown>) => unknown[];
 
 const decoderFactory = (fields: string[]) => (raw: unknown[]) =>
   raw.reduce<Record<string, unknown>>((obj, field, index) => {
@@ -41,7 +44,7 @@ const JOIN_CHANNEL_FIELDS: Array<keyof JoinChannel> = [
   'memberName',
 ];
 
-const MESSAGE_ACK_FIELDS: Array<keyof MessageAck> = [
+const MESSAGE_ACK_FIELDS: Array<keyof MsgAck> = [
   'type',
   'messageId',
   'destiationMessageId',
@@ -54,26 +57,23 @@ const ERROR_RESPONSE_FIELDS: Array<keyof ErrorResponse> = [
   'code',
 ];
 
-const PLAINTEXT_MESSAGE_FIELDS: Array<keyof PlaintextMessage> = [
+const PLAINTEXT_MESSAGE_FIELDS: Array<keyof PlaintextMsg> = [
   'type',
   'text',
   'messageId',
   'timestamp',
 ];
 
-const KITE_MSG_DECODERS = [
-  undefined,
-  decoderFactory(MESSAGE_ACK_FIELDS),
-  decoderFactory(ERROR_RESPONSE_FIELDS),
-  decoderFactory(PLAINTEXT_MESSAGE_FIELDS),
-];
+const KITE_MSG_DECODERS: Partial<Record<MsgType, Decoder>> = {
+  [MsgType.ACK]: decoderFactory(MESSAGE_ACK_FIELDS),
+  [MsgType.ERROR]: decoderFactory(ERROR_RESPONSE_FIELDS),
+  [MsgType.PLAINTEXT]: decoderFactory(PLAINTEXT_MESSAGE_FIELDS),
+};
 
-const KITE_MSG_ENCODERS = [
-  encoderFactory(JOIN_CHANNEL_FIELDS),
-  undefined,
-  undefined,
-  encoderFactory(PLAINTEXT_MESSAGE_FIELDS),
-];
+const KITE_MSG_ENCODERS: Partial<Record<MsgType, Encoder>> = {
+  [MsgType.JOIN]: encoderFactory(JOIN_CHANNEL_FIELDS),
+  [MsgType.PLAINTEXT]: encoderFactory(PLAINTEXT_MESSAGE_FIELDS),
+};
 
 export const decodeKiteMsg = (raw: string): KiteMsg => {
   const array = JSON.parse(raw);

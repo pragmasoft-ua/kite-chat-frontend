@@ -215,6 +215,8 @@ node >16, whereas new storybook version as of 7.0.0-alpha.40 does not support we
 
 So far, the only working version is based on webpack5
 
-## Tailwindcss
+## BroadcastChannel
 
-Tried @config for component, but didn't work, probably due to the vite or postcss
+https://bugzilla.mozilla.org/show_bug.cgi?id=1821171
+
+Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid of it.

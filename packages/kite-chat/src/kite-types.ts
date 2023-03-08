@@ -10,14 +10,17 @@ export enum MsgStatus {
 }
 
 export enum MsgType {
-  JOIN = 0,
-  ACK = 1,
-  ERROR = 2,
-  PLAINTEXT = 3,
-  CONNECTED = 100,
-  DISCONNECTED = 101,
-  ONLINE = 102,
-  OFFLINE = 103,
+  JOIN = 'JOIN',
+  ACK = 'ACK',
+  ERROR = 'ERR',
+  PLAINTEXT = 'TXT',
+  FILE = 'FILE',
+  BIN = 'BIN',
+  UPLOAD = 'UP',
+  CONNECTED = 'CON',
+  DISCONNECTED = 'DIS',
+  ONLINE = 'ON',
+  OFFLINE = 'OFF',
 }
 
 export type JoinChannel = {
@@ -28,7 +31,7 @@ export type JoinChannel = {
   eagerlyConnect?: boolean;
 };
 
-export type MessageAck = {
+export type MsgAck = {
   type: MsgType.ACK;
   messageId: string;
   destiationMessageId: string;
@@ -41,7 +44,7 @@ export type ErrorResponse = {
   code: number;
 };
 
-export type PlaintextMessage = {
+export type PlaintextMsg = {
   type: MsgType.PLAINTEXT;
   text: string;
   messageId: string;
@@ -50,10 +53,37 @@ export type PlaintextMessage = {
   tabIndex?: number;
 };
 
+export type FileMsg = {
+  type: MsgType.FILE;
+  file: File;
+  messageId: string;
+  timestamp: Date;
+  status?: MsgStatus;
+  tabIndex?: number;
+};
+
+export type Upload = {
+  type: MsgType.UPLOAD;
+  messageId: string;
+  fileName: string;
+  fileType: string;
+  fileSize: number;
+};
+
+export type BinMsg = {
+  type: MsgType.BIN;
+  messageId: string;
+  timestamp: Date;
+  url: string;
+  fileName?: string;
+  fileType?: string;
+  fileSize?: number;
+};
+
 export type Connected = {
   type: MsgType.CONNECTED;
   tabIndex: number;
-  messageHistory: Array<PlaintextMessage>;
+  messageHistory: Array<ContentMsg>;
 };
 
 export type Disconnected = {
@@ -70,11 +100,15 @@ export type Offline = {
   sessionDurationMs: number;
 };
 
+export type ContentMsg = PlaintextMsg | FileMsg;
+
 export type KiteMsg =
   | JoinChannel
-  | MessageAck
+  | MsgAck
   | ErrorResponse
-  | PlaintextMessage
+  | ContentMsg
+  | Upload
+  | BinMsg
   | Connected
   | Disconnected
   | Online

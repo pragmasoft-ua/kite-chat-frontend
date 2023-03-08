@@ -2,9 +2,11 @@ import type {
   JoinChannel,
   ErrorResponse,
   KiteMsg,
-  PlaintextMessage,
-  MessageAck,
+  PlaintextMsg,
+  MsgAck,
   Connected,
+  FileMsg,
+  ContentMsg,
 } from './kite-types';
 
 import {MsgType} from './kite-types';
@@ -16,6 +18,7 @@ import {
   randomStringId,
   isPlaintextMsg,
   MsgStatus,
+  isFileMsg,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 import {CHANNEL_NAME} from './shared-constants';
@@ -67,6 +70,7 @@ export class KiteChat {
     const onWorkerMessageBound = this.onWorkerMessage.bind(this);
 
     this.broadcastChannel.onmessage = onWorkerMessageBound;
+    this.broadcastChannel.onmessageerror = console.error;
 
     const kiteWorker = new SharedWorker(sharedWorkerUrl);
 
@@ -116,8 +120,15 @@ export class KiteChat {
     if (isPlaintextMsg(detail)) {
       outgoing = {
         ...detail,
+        tabIndex: this.tabIndex,
         type: MsgType.PLAINTEXT,
-      } as PlaintextMessage;
+      } as PlaintextMsg;
+    } else if (isFileMsg(detail)) {
+      outgoing = {
+        ...detail,
+        tabIndex: this.tabIndex,
+        type: MsgType.FILE,
+      } as FileMsg;
     } else {
       throw new Error('Unexpected payload type ' + JSON.stringify(detail));
     }
@@ -152,13 +163,15 @@ export class KiteChat {
 
   protected onWorkerMessage(e: MessageEvent<KiteMsg>) {
     const payload = e.data;
+    console.log('onWorkerMessage', JSON.stringify(payload));
     if (!payload) throw new Error('no payload in incoming message');
     switch (payload.type) {
       case MsgType.CONNECTED:
         this.onConnected(payload);
         break;
       case MsgType.PLAINTEXT:
-        this.onPlaintextMessage(payload);
+      case MsgType.FILE:
+        this.onContentMessage(payload);
         break;
       case MsgType.ACK:
         this.onMessageAck(payload);
@@ -173,11 +186,10 @@ export class KiteChat {
     }
   }
 
-  protected onPlaintextMessage(incoming: PlaintextMessage) {
+  protected onContentMessage(incoming: ContentMsg) {
     console.debug(
-      'onPlaintextMessage',
+      'onContentMessage',
       incoming.messageId,
-      incoming.text,
       incoming.timestamp,
       incoming.tabIndex
     );
@@ -190,12 +202,13 @@ export class KiteChat {
     console.debug('connected', payload);
     const {messageHistory, tabIndex} = payload;
     this.tabIndex = tabIndex;
+    if (!this.element) return;
     for (const msg of messageHistory) {
-      this.appendMessage(msg);
+      this.element.appendMsg(msg);
     }
   }
 
-  protected onMessageAck(ack: MessageAck) {
+  protected onMessageAck(ack: MsgAck) {
     console.debug('onMessageAck', ack);
     const msgElement = document.querySelector(
       `${KiteMsgElement.TAG}[messageId="${ack.messageId}"]`
@@ -222,16 +235,6 @@ export class KiteChat {
     throw new Error(
       `Worker initialization error '${e.message}': ${e.filename}(${e.lineno}:${e.colno}). ${e.error}`
     );
-  }
-
-  private appendMessage(msg: PlaintextMessage) {
-    if (!this.element) return;
-    const el = document.createElement(KiteMsgElement.TAG);
-    el.setAttribute('messageId', msg.messageId);
-    el.setAttribute('timestamp', msg.timestamp.toISOString());
-    el.textContent = msg.text;
-    msg.status && el.setAttribute('status', msg.status.toString());
-    this.element.appendChild(el);
   }
 
   /**
