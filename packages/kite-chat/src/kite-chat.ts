@@ -1,6 +1,6 @@
 import type {
   JoinChannel,
-  ErrorResponse,
+  ErrorMsg,
   KiteMsg,
   PlaintextMsg,
   MsgAck,
@@ -201,7 +201,7 @@ export class KiteChat {
     }
   }
 
-  protected onErrorMessage(e: ErrorResponse) {
+  protected onErrorMessage(e: ErrorMsg) {
     // TODO display error as a text message
     console.error(e.code, e.reason);
   }

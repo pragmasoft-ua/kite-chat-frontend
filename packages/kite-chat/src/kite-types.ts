@@ -1,3 +1,9 @@
+export class HttpError extends Error {
+  constructor(message: string, readonly status: number) {
+    super(message);
+  }
+}
+
 /**
  * need to duplicate the same type declaration from kite-chat-component/src/kite-payload
  * otherwise kite-worker is packaged incorrectly (includes entire chat component module)
@@ -16,11 +22,11 @@ export enum MsgType {
   PLAINTEXT = 'TXT',
   FILE = 'FILE',
   BIN = 'BIN',
-  UPLOAD = 'UP',
-  CONNECTED = 'CON',
-  DISCONNECTED = 'DIS',
-  ONLINE = 'ON',
-  OFFLINE = 'OFF',
+  UPLOAD = 'UPL',
+  CONNECTED = 'TAB+',
+  DISCONNECTED = 'TAB-',
+  ONLINE = 'ONLINE',
+  OFFLINE = 'OFFLINE',
 }
 
 export type JoinChannel = {
@@ -38,7 +44,7 @@ export type MsgAck = {
   timestamp: Date;
 };
 
-export type ErrorResponse = {
+export type ErrorMsg = {
   type: MsgType.ERROR;
   reason: string;
   code: number;
@@ -60,7 +66,7 @@ export type FileMsg = {
   status?: MsgStatus;
 };
 
-export type Upload = {
+export type UploadRequest = {
   type: MsgType.UPLOAD;
   messageId: string;
   fileName: string;
@@ -68,7 +74,13 @@ export type Upload = {
   fileSize: number;
 };
 
-export type BinMsg = {
+export type UploadResponse = {
+  type: MsgType.UPLOAD;
+  messageId: string;
+  url: string;
+};
+
+export type BinaryMsg = {
   type: MsgType.BIN;
   messageId: string;
   timestamp: Date;
@@ -101,10 +113,10 @@ export type ContentMsg = PlaintextMsg | FileMsg;
 export type KiteMsg =
   | JoinChannel
   | MsgAck
-  | ErrorResponse
+  | ErrorMsg
   | ContentMsg
-  | Upload
-  | BinMsg
+  | UploadRequest
+  | BinaryMsg
   | Connected
   | Disconnected
   | Online

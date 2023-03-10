@@ -8,18 +8,20 @@ const WS_CLOSE_REASON_GONE_AWAY = 1001;
 declare const self: SharedWorkerGlobalScope;
 
 import {MessagePort} from 'worker_threads';
-import type {
+import {
+  BinaryMsg,
   ContentMsg,
-  ErrorResponse,
+  ErrorMsg,
   FileMsg,
+  HttpError,
   JoinChannel,
   KiteMsg,
   MsgAck,
   PlaintextMsg,
-  BinMsg,
-  Upload,
+  UploadRequest,
+  UploadResponse,
 } from './kite-types';
-import {MsgType, MsgStatus} from './kite-types';
+import {MsgStatus, MsgType} from './kite-types';
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
 import {SUBPROTOCOL} from './shared-constants';
 
@@ -63,6 +65,7 @@ let joinChannel: JoinChannel | null = null;
  * when those connected
  */
 const messageHistory = new Array<ContentMsg>() as KiteArray<ContentMsg>;
+
 const outgoingQueue = new Array<KiteMsg>();
 
 const tabPorts = new Set<KiteMessagePort>();
@@ -74,6 +77,9 @@ const broadcast = (msg: KiteMsg, exclude?: KiteMessagePort) => {
     }
   }
 };
+
+const messageById = (messageId: string) =>
+  messageHistory.findLast((msg) => msg.messageId === messageId);
 
 // keep track of online status.
 let online = self.navigator.onLine;
@@ -157,31 +163,21 @@ function onOffline() {
 
 function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
-  outgoingQueue.push(payload);
   broadcast(payload, tabPort);
-  if (ws) {
-    ws.readyState === ws.OPEN && flushQueue();
-  } else if (online) {
-    triggerWsConnection();
-  }
+  queue(payload);
 }
 
 function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
   broadcast(payload, tabPort);
-  const upload: Upload = {
+  const upload: UploadRequest = {
     type: MsgType.UPLOAD,
     messageId: payload.messageId,
     fileName: payload.file.name,
     fileType: payload.file.type,
     fileSize: payload.file.size,
   };
-  outgoingQueue.push(upload);
-  if (ws) {
-    ws.readyState === ws.OPEN && flushQueue();
-  } else if (online) {
-    triggerWsConnection();
-  }
+  queue(upload);
 }
 
 function onJoinChannel(payload: JoinChannel) {
@@ -232,13 +228,16 @@ function onWsMessage(event: MessageEvent) {
       onWsPlaintextMessage(payload as PlaintextMsg);
       break;
     case MsgType.BIN:
-      onWsFileMessage(payload as BinMsg);
+      onWsBinaryMessage(payload as BinaryMsg);
+      break;
+    case MsgType.UPLOAD:
+      onWsUploadResponse(payload as UploadResponse);
       break;
     case MsgType.ACK:
       onMessageAck(payload as MsgAck);
       break;
     case MsgType.ERROR:
-      onErrorResponse(payload as ErrorResponse);
+      onErrorResponse(payload as ErrorMsg);
       break;
   }
 }
@@ -247,7 +246,7 @@ function onWsOpen() {
   console.debug(WORKER_NAME, 'ws connected');
   connectedTimestampMs = Date.now();
   assert(!!joinChannel, 'no pending joinChannel message');
-  send(joinChannel);
+  wsSend(joinChannel);
   flushQueue();
   broadcast({type: MsgType.ONLINE});
 }
@@ -293,27 +292,62 @@ function onWsPlaintextMessage(payload: PlaintextMsg) {
   broadcast(payload);
 }
 
-async function onWsFileMessage(payload: BinMsg) {
-  // TODO try/catch
-  const file: File = await downloadUrl(payload.url);
-  const incoming: FileMsg = {
-    ...payload,
-    type: MsgType.FILE,
-    file,
-  };
-  messageHistory.push(incoming);
-  broadcast(incoming);
+async function onWsBinaryMessage(payload: BinaryMsg) {
+  try {
+    const file: File = await downloadUrl(payload.url);
+    const incoming: FileMsg = {
+      ...payload,
+      type: MsgType.FILE,
+      file,
+    };
+    messageHistory.push(incoming);
+    broadcast(incoming);
+  } catch (error) {
+    if (error instanceof HttpError) {
+      broadcast({
+        type: MsgType.ERROR,
+        reason: error.message,
+        code: error.status,
+      });
+    } else {
+      console.error(error);
+    }
+  }
 }
 
-async function downloadUrl(url: string): Promise<File> {
-  // TODO implement
-  throw new Error('Not implemented downloading of ' + url);
+async function onWsUploadResponse(payload: UploadResponse) {
+  try {
+    const {url, messageId} = payload;
+    const msg = messageById(messageId) as FileMsg;
+    assert(!!msg, `No message ${messageId}`);
+    await upload(url, msg.file);
+    const outgoing: BinaryMsg = {
+      ...msg,
+      url,
+      type: MsgType.BIN,
+    };
+    queue(outgoing);
+  } catch (error) {
+    if (error instanceof HttpError) {
+      broadcast({
+        type: MsgType.ERROR,
+        reason: error.message,
+        code: error.status,
+      });
+    } else if (error instanceof Error) {
+      broadcast({
+        type: MsgType.ERROR,
+        reason: error.message,
+        code: 0,
+      });
+    } else {
+      console.error(error);
+    }
+  }
 }
 
 function onMessageAck(payload: MsgAck) {
-  const msg = messageHistory.findLast(
-    (msg) => msg.messageId === payload.messageId
-  );
+  const msg = messageById(payload.messageId);
   if (msg) {
     msg.messageId = payload.destiationMessageId;
     msg.status = MsgStatus.delivered;
@@ -324,7 +358,7 @@ function onMessageAck(payload: MsgAck) {
   broadcast(payload);
 }
 
-function onErrorResponse(payload: ErrorResponse) {
+function onErrorResponse(payload: ErrorMsg) {
   // TODO add error message to the messageHistory
   console.error(WORKER_NAME, payload.code, payload.reason);
 }
@@ -335,7 +369,7 @@ function assert(condition: boolean, message: string): asserts condition {
   }
 }
 
-function send(payload: KiteMsg) {
+function wsSend(payload: KiteMsg) {
   assert(!!ws, 'No Websocket connection');
   assert(ws.readyState === ws.OPEN, 'Websocket is not ready');
   console.debug(WORKER_NAME, 'ws send', payload);
@@ -349,7 +383,56 @@ function flushQueue() {
   console.debug(WORKER_NAME, 'flush queue', queueSize);
   while (queueSize-- > 0) {
     const payload = outgoingQueue[0];
-    send(payload);
+    wsSend(payload);
     outgoingQueue.shift();
+  }
+}
+
+function queue(msg: KiteMsg) {
+  outgoingQueue.push(msg);
+  if (ws) {
+    ws.readyState === ws.OPEN && flushQueue();
+  } else if (online) {
+    triggerWsConnection();
+  }
+}
+
+const FILENAME_REGEX = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+
+function dispositionFilename(disposition: string | null) {
+  if (disposition) {
+    const matches = FILENAME_REGEX.exec(disposition);
+    if (matches != null && matches[1]) {
+      return matches[1].replace(/['"]/g, '');
+    }
+  }
+  return null;
+}
+
+async function downloadUrl(url: string): Promise<File> {
+  const response = await fetch(url);
+  if (response.ok) {
+    const blob: Blob = await response.blob();
+    const disposition = response.headers.get('Content-Disposition');
+    const fileName = dispositionFilename(disposition);
+    assert(!!fileName, 'Missing filename');
+    return new File([blob], fileName, {lastModified: Date.now()});
+  } else {
+    throw new HttpError(await response.text(), response.status);
+  }
+}
+
+async function upload(url: string, file: File): Promise<void> {
+  // TODO throw exception instead of returning response
+  const headers = new Headers();
+  headers.append('Content-Type', file.type);
+  headers.append('Content-Disposition', `attachment; filename="${file.name}"`);
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers,
+    body: file,
+  });
+  if (!response.ok) {
+    throw new HttpError(await response.text(), response.status);
   }
 }

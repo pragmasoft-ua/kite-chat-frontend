@@ -1,10 +1,13 @@
 import {
   JoinChannel,
   MsgAck,
-  ErrorResponse,
+  ErrorMsg,
   KiteMsg,
   MsgType,
   PlaintextMsg,
+  BinaryMsg,
+  UploadRequest,
+  UploadResponse,
 } from './kite-types';
 
 declare type Decoder = (raw: unknown[]) => Record<string, unknown>;
@@ -51,11 +54,7 @@ const MESSAGE_ACK_FIELDS: Array<keyof MsgAck> = [
   'timestamp',
 ];
 
-const ERROR_RESPONSE_FIELDS: Array<keyof ErrorResponse> = [
-  'type',
-  'reason',
-  'code',
-];
+const ERROR_RESPONSE_FIELDS: Array<keyof ErrorMsg> = ['type', 'reason', 'code'];
 
 const PLAINTEXT_MESSAGE_FIELDS: Array<keyof PlaintextMsg> = [
   'type',
@@ -64,15 +63,43 @@ const PLAINTEXT_MESSAGE_FIELDS: Array<keyof PlaintextMsg> = [
   'timestamp',
 ];
 
+const BINARY_MESSAGE_FIELDS: Array<keyof BinaryMsg> = [
+  'type',
+  'url',
+  'fileName',
+  'fileSize',
+  'fileType',
+  'messageId',
+  'timestamp',
+];
+
+const UPLOAD_REQUEST_FIELDS: Array<keyof UploadRequest> = [
+  'type',
+  'fileName',
+  'fileSize',
+  'fileType',
+  'messageId',
+];
+
+const UPLOAD_RESPONSE_FIELDS: Array<keyof UploadResponse> = [
+  'type',
+  'url',
+  'messageId',
+];
+
 const KITE_MSG_DECODERS: Partial<Record<MsgType, Decoder>> = {
   [MsgType.ACK]: decoderFactory(MESSAGE_ACK_FIELDS),
   [MsgType.ERROR]: decoderFactory(ERROR_RESPONSE_FIELDS),
   [MsgType.PLAINTEXT]: decoderFactory(PLAINTEXT_MESSAGE_FIELDS),
+  [MsgType.UPLOAD]: decoderFactory(UPLOAD_RESPONSE_FIELDS),
+  [MsgType.BIN]: decoderFactory(BINARY_MESSAGE_FIELDS),
 };
 
 const KITE_MSG_ENCODERS: Partial<Record<MsgType, Encoder>> = {
   [MsgType.JOIN]: encoderFactory(JOIN_CHANNEL_FIELDS),
   [MsgType.PLAINTEXT]: encoderFactory(PLAINTEXT_MESSAGE_FIELDS),
+  [MsgType.UPLOAD]: encoderFactory(UPLOAD_REQUEST_FIELDS),
+  [MsgType.BIN]: encoderFactory(BINARY_MESSAGE_FIELDS),
 };
 
 export const decodeKiteMsg = (raw: string): KiteMsg => {

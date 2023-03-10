@@ -167,6 +167,8 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - ✅BroadcastChannel
 - ✅display images
 - [in progress...] file upload
+- tooltips 'Download file name' on images and files.
+- survive page reloads of the only open tab (indexedDb ?)
 - rich text message type: entities (urls, @-mentions...), markdown?
 - display links and button menus (as pills)
 - display error messages
