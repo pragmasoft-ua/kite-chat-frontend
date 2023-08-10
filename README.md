@@ -1,5 +1,7 @@
 # 🪁 Kite chat
 
+[Demo](https://www.k1te.chat/)
+
 This project includes **kite-chat** web component
 and a protocol driver to communicate with the chat backend.
 
@@ -116,7 +118,7 @@ To enable the site go to the GitHub settings and change the GitHub Pages &quot;S
 
 ## Static Site with demo is located here
 
-https://pragmasoft-ua.github.io/kite-chat-frontend/
+https://www.k1te.chat/
 
 To build the site, run:
 
@@ -147,6 +149,32 @@ For information on building application projects that include LitElement compone
 ## More information
 
 See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for more information.
+
+## Debug workers
+
+[Chrome chrome://inspect/#workers](chrome://inspect/#workers)
+
+[Firefox about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)
+
+Chat library uses inline module type shared worker for communication with the backend.
+
+Firefox as of now does not support module type workers, so if you plan to debug worker in development mode `npm start`
+please use Chrome only.
+
+Production build bundles worker module and deps to iife so production library created with `npm run build` is compatible with all modern browsers.
+
+## Storybook
+
+Tried storybook builder vite. Version 6.x depends on webpack4 manager, which has problems with outdated crypto on
+node >16, whereas new storybook version as of 7.0.0-alpha.40 does not support web components.
+
+So far, the only working version is based on webpack5
+
+## BroadcastChannel
+
+https://bugzilla.mozilla.org/show_bug.cgi?id=1821171
+
+Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid of it.
 
 ## TODO
 
@@ -196,29 +224,4 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 - use temporal polyfill for timestamp
 - document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test)
 - consider dockerz html template
-
-## Debug workers
-
-[Chrome chrome://inspect/#workers](chrome://inspect/#workers)
-
-[Firefox about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)
-
-Chat library uses inline module type shared worker for communication with the backend.
-
-Firefox as of now does not support module type workers, so if you plan to debug worker in development mode `npm start`
-please use Chrome only.
-
-Production build bundles worker module and deps to iife so production library created with `npm run build` is compatible with all modern browsers.
-
-## Storybook
-
-Tried storybook builder vite. Version 6.x depends on webpack4 manager, which has problems with outdated crypto on
-node >16, whereas new storybook version as of 7.0.0-alpha.40 does not support web components.
-
-So far, the only working version is based on webpack5
-
-## BroadcastChannel
-
-https://bugzilla.mozilla.org/show_bug.cgi?id=1821171
-
-Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid of it.
+- https://www.npmjs.com/package/standard (also exists for ts)

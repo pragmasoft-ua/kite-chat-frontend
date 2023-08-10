@@ -1,1 +1,1 @@
-export const SUBPROTOCOL = 'v1.k1te.chat';
+export const SUBPROTOCOL = 'k1te.chat/v1';
