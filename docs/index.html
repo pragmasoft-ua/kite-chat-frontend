@@ -50,6 +50,30 @@
         border-radius: 3px;
         cursor: pointer;
       }
+
+      @keyframes wave {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        20% {
+          transform: rotate(-4deg);
+        }
+
+        50% {
+          transform: rotate(12deg);
+        }
+
+        100% {
+          transform: rotate(0deg);
+        }
+      }
+
+      .kite {
+        animation: wave 3s infinite;
+        transform-origin: 30% center;
+        display: inline-block;
+      }
     </style>
     <script type="module" crossorigin src="/assets/index-79b2fcdb.js"></script>
   </head>
@@ -76,7 +100,7 @@
       <label for="outgoing">Outgoing messages:</label>
       <section id="outgoing"></section>
     </main>
-    <kite-chat open heading="👩🏻Людяна підтримка">
+    <kite-chat open heading="👩🏻Humane support 💙💛">
       <kite-msg>Hi</kite-msg>
       <kite-msg status="read">Hello</kite-msg>
       <kite-msg> Have you heard about Coding and Stuff?</kite-msg>
