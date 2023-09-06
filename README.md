@@ -194,7 +194,9 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - ✅cache session in worker to survive page reloads
 - ✅BroadcastChannel
 - ✅display images
+- client side PING
 - [in progress...] file upload
+- mobile page for demo site. VirtualKeyboard API
 - tooltips 'Download file name' on images and files.
 - survive page reloads of the only open tab (indexedDb ?)
 - rich text message type: entities (urls, @-mentions...), markdown?
@@ -203,7 +205,7 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - documentation (Readme, jsdoc)
 - localization
 - new N (unread) badge on toggle button, autoopen on incoming attr
-- smarter datetime format or change display on click from time to date and back
+- smarter datetime format or change display on click from time to date and back https://github.com/pragmasoft-ua/fmt-timestamp
 - keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - message selection, contextual edit/delete menu items (next to close button)
 - clipboard api, drag and drop? web share api

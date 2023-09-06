@@ -27,6 +27,8 @@ export enum MsgType {
   DISCONNECTED = 'TAB-',
   ONLINE = 'ONLINE',
   OFFLINE = 'OFFLINE',
+  PING = 'PING',
+  PONG = 'PONG',
 }
 
 export type JoinChannel = {
@@ -108,6 +110,14 @@ export type Offline = {
   sessionDurationMs: number;
 };
 
+export type Ping = {
+  type: MsgType.PING;
+};
+
+export type Pong = {
+  type: MsgType.PONG;
+};
+
 export type ContentMsg = PlaintextMsg | FileMsg;
 
 export type KiteMsg =
@@ -120,4 +130,6 @@ export type KiteMsg =
   | Connected
   | Disconnected
   | Online
-  | Offline;
+  | Offline
+  | Ping
+  | Pong;
