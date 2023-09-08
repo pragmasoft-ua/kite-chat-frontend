@@ -25,18 +25,7 @@ import {MsgStatus, MsgType} from './kite-types';
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
 import {SUBPROTOCOL} from './shared-constants';
 
-const WORKER_NAME = 'kite worker';
-
-/**
- * @deprecated this is a workaround for a missing method Array.findLast()
- * https://github.com/microsoft/TypeScript/issues/48829
- */
-interface KiteArray<T> extends Array<T> {
-  findLast(
-    predicate: (value: T, index: number, obj: T[]) => unknown,
-    thisArg?: unknown
-  ): T | undefined;
-}
+const WORKER_NAME = 'k1te worker';
 
 interface KiteMessagePort extends MessagePort {
   postMessage(value: KiteMsg): void;
@@ -64,7 +53,7 @@ let joinChannel: JoinChannel | null = null;
  * Keeps ordered list of all messages (incoming and outgoing) to populate new browser tabs
  * when those connected
  */
-const messageHistory = new Array<ContentMsg>() as KiteArray<ContentMsg>;
+const messageHistory = new Array<ContentMsg>();
 
 const outgoingQueue = new Array<KiteMsg>();
 
@@ -225,19 +214,19 @@ function onWsMessage(event: MessageEvent) {
   const kiteMsg = decodeKiteMsg(payload);
   switch (kiteMsg.type) {
     case MsgType.PLAINTEXT:
-      onWsPlaintextMessage(payload as PlaintextMsg);
+      onWsPlaintextMessage(kiteMsg as PlaintextMsg);
       break;
     case MsgType.BIN:
-      onWsBinaryMessage(payload as BinaryMsg);
+      onWsBinaryMessage(kiteMsg as BinaryMsg);
       break;
     case MsgType.UPLOAD:
-      onWsUploadResponse(payload as UploadResponse);
+      onWsUploadResponse(kiteMsg as UploadResponse);
       break;
     case MsgType.ACK:
-      onMessageAck(payload as MsgAck);
+      onMessageAck(kiteMsg as MsgAck);
       break;
     case MsgType.ERROR:
-      onErrorResponse(payload as ErrorMsg);
+      onErrorResponse(kiteMsg as ErrorMsg);
       break;
   }
 }

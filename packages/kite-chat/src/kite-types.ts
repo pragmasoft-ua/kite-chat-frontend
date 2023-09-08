@@ -126,6 +126,7 @@ export type KiteMsg =
   | ErrorMsg
   | ContentMsg
   | UploadRequest
+  | UploadResponse
   | BinaryMsg
   | Connected
   | Disconnected
