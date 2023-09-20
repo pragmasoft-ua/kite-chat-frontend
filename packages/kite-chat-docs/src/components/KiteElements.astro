@@ -1,0 +1,26 @@
+---
+import { Card } from '@astrojs/starlight/components';
+import components from '../../custom-elements.json';
+const kitePath = ".\/..\\kite-chat-component\\src\\index.ts";
+const listProperties = ["attributes", "properties", "events"]
+---
+
+
+{components.tags.filter((component) => component.path === kitePath)
+    .map((component) => (
+    <Card title={ component.name }>
+        <div class="mb-4">
+            <strong>Description: </strong> { component.description }
+        </div>
+        {listProperties.map((element) => (
+            <div class="mb-4">
+            <strong>{element}:</strong>
+            <ul class="list-disc ml-6">
+                {component[element]?.map((property) => (
+                    <li>{property.name} (Type:{property.type}) - {property.description}</li>
+                ))}
+            </ul>
+        </div>
+        ))}
+    </Card>
+))}

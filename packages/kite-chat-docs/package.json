@@ -1,0 +1,26 @@
+{
+  "name": "@pragmasoft-ukraine/kite-chat-docs",
+  "description": "kite-chat docs",
+  "license": "LGPL3.0",
+  "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
+  "browserslist": "> 0.5%, last 2 versions, not dead",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "analyze": "wca analyze ../kite-chat-component --format json --outFile ./custom-elements.json",
+    "clean": "rimraf ../../docs"
+  },
+  "dependencies": {
+    "@pragmasoft-ukraine/kite-chat": "*"
+  },
+  "devDependencies": {
+    "@astrojs/starlight": "^0.10.0",
+    "@astrojs/tailwind": "^5.0.0",
+    "@astrojs/starlight-tailwind": "^2.0.0",
+    "astro": "^3.0.6",
+    "sharp": "^0.32.5",
+    "tailwindcss": "^3.3.3",
+    "postcss": "^8.4.29"
+  }
+}

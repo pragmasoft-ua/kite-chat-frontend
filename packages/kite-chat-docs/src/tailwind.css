@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --kite-primary-color: #808080;
+}
+
+.site-title > img {
+    @apply h-8
+}

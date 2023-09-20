@@ -1,0 +1,40 @@
+---
+title: Getting Started
+description: A guide in my new Starlight docs site.
+---
+import ChatIcon from "../../../../components/ChatIcon.astro";
+import Tag from "../../../../components/Tag.astro";
+
+### Installation
+
+Before you can start using the Kite Chat component, please follow the below instructions:
+
+Add the following snippet inside the  <Tag name="body"/> section of your website:
+
+```html
+<script type="module">
+    import { KiteChat } from 'https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat@2023.2.3/+esm';
+    
+    new KiteChat({endpoint, createIfMissing: true});
+</script>
+```
+
+### Parameters
+
+- endpoint (required): This is a string that specifies the WebSocket endpoint to connect to. It represents the URL where the WebSocket server is hosted and will be used for communication.
+
+- eagerlyConnect (optional): This is a boolean flag that indicates whether the KiteChat instance should eagerly connect to the WebSocket server upon initialization. If set to true, it will establish a connection immediately after creation. If set to false or omitted, the connection will be established when needed.
+
+- createIfMissing (optional): Another boolean flag that determines whether a KiteChat HTML element should be created and appended to the document's body if it doesn't already exist. If set to true, it will create the KiteChat element if it's not found. If set to false or omitted, it won't create the element.
+
+- open (optional): This boolean flag defines whether the KiteChat element should be initially open or closed when created. If set to true, the chat window will be open. If set to false or omitted, the chat window will be closed.
+
+- userId (optional): A string that represents a unique identifier for the user. If not provided, a random user ID will be generated and stored persistently, so the same user will have the same ID across sessions.
+
+- userName (optional): A string that specifies the username of the user. This is an optional parameter to provide a user-friendly name for display within the chat.
+
+### Methods
+
+- connect(): This method establishes a connection to the WebSocket server specified by the endpoint in the options. It is typically called automatically when a new KiteChat instance is created. You don't need to call this method explicitly unless you want to reconnect after disconnecting.
+
+- disconnect(): This method disconnects the KiteChat instance from the WebSocket server. It sends a disconnect message to the server and closes the WebSocket connection. You can call this method when you want to manually disconnect from the chat server, such as when the user logs out or navigates away from the chat page.
