@@ -3,24 +3,85 @@ import { Card } from '@astrojs/starlight/components';
 import components from '../../custom-elements.json';
 const kitePath = ".\/..\\kite-chat-component\\src\\index.ts";
 const listProperties = ["attributes", "properties", "events"]
+
+type Attribute = {
+    name: string;
+    description: string;
+    type: string;
+    default?: string;
+};
+
+type Property = {
+    name: string;
+    type?: string;
+    attribute?: string;
+    description?: string;
+    default?: string;
+};
+
+type Event = {
+    name: string;
+    description: string;
+};
+
+type Slot = {
+    name: string;
+    description: string;
+};
+
+type CSSProperty = {
+    name: string;
+    description: string;
+};
+
+type CSSPart = {
+    name: string;
+    description: string;
+};
+
+type Component = {
+    name: string;
+    path: string;
+    description: string;
+    attributes?: Attribute[];
+    properties?: Property[];
+    events?: Event[];
+    slots?: Slot[];
+    cssProperties?: CSSProperty[];
+    cssParts?: CSSPart[];
+};
 ---
 
 
-{components.tags.filter((component) => component.path === kitePath)
+{components.tags.filter((component: Component) => component.path === kitePath)
     .map((component) => (
     <Card title={ component.name }>
         <div class="mb-4">
             <strong>Description: </strong> { component.description }
         </div>
-        {listProperties.map((element) => (
-            <div class="mb-4">
-            <strong>{element}:</strong>
+        <div class="mb-4">
+            <strong>Attributes:</strong>
             <ul class="list-disc ml-6">
-                {component[element]?.map((property) => (
+                {component.attributes?.map((attribute) => (
+                    <li>{attribute.name} (Type:{attribute.type}) - {attribute.description}</li>
+                ))}
+            </ul>
+        </div>
+        <div class="mb-4">
+            <strong>Properties:</strong>
+            <ul class="list-disc ml-6">
+                {component.properties?.map((property) => (
                     <li>{property.name} (Type:{property.type}) - {property.description}</li>
                 ))}
             </ul>
         </div>
-        ))}
+        <div class="mb-4">
+            <strong>Events:</strong>
+            <ul class="list-disc ml-6">
+                {component.events?.map((event) => (
+                    <li>{event.name} - {event.description}</li>
+                ))}
+            </ul>
+        </div>
     </Card>
 ))}
