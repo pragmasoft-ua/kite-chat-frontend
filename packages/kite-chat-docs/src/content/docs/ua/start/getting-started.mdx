@@ -2,8 +2,8 @@
 title: Getting Started
 description: A guide in my new Starlight docs site.
 ---
-import ChatIcon from "../../../../components/ChatIcon.astro";
-import Tag from "../../../../components/Tag.astro";
+import ChatIcon from "@components/ChatIcon.astro";
+import Tag from "@components/Tag.astro";
 
 ### Встановлення
 
@@ -13,7 +13,7 @@ import Tag from "../../../../components/Tag.astro";
 
 ```html
 <script type="module">
-    import { KiteChat } from 'https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat@2023.2.3/+esm';
+    import { KiteChat } from 'https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm';
     
     new KiteChat({endpoint, createIfMissing: true});
 </script>

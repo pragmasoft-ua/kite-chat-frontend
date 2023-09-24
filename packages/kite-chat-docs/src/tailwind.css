@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-    --kite-primary-color: #808080;
+    --kite-primary-color: var(--sl-color-text-accent);
 }
 
 .site-title > img {

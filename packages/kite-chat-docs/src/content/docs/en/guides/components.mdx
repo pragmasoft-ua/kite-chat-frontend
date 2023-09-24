@@ -2,15 +2,21 @@
 title: Use Components
 description: A guide in Kite Chat components.
 ---
-import ChatIcon from "../../../../components/ChatIcon.astro";
-import Tag from "../../../../components/Tag.astro";
+import ChatIcon from "@components/ChatIcon.astro";
+import Tag from "@components/Tag.astro";
+
+{
+__APP_MODE__ === "test"
+    ? <script type="module" src="/kite-chat-component.js"></script>
+    : <script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat-component/+esm"></script>
+}
 
 ### Installation
 
 Before using the Kite Chat components add the following snippet inside the <Tag name="head"/> section of your website:
 
 ```html
-<script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat@2023.2.3/+esm"/>
+<script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm"/>
 ```
 
 This script tag will make the kite-chat component available for use in your application.
@@ -62,3 +68,14 @@ Example:
     />
 </kite-msg>
 ```
+
+<kite-chat>
+    <kite-msg>Hi</kite-msg>
+    <kite-msg status="read">Hello</kite-msg>
+    <kite-msg>
+        <kite-file
+            name="kite-chat.txt"
+            src="data:text/plain;base64,8J+qgUtpdGUgY2hhdCB3ZWIgY29tcG9uZW50"
+        />
+    </kite-msg>
+</kite-chat>

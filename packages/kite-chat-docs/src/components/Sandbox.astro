@@ -34,13 +34,16 @@ const {
 </div>
 
 <script is:inline type="module">
-    import {
+    const {
         isPlaintextMsg,
         KiteChat
-    } from 'https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat@2023.2.3/+esm';
+    } = await import(__APP_MODE__ === "test"
+        ? '/kite-chat.js'
+        : 'https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm'
+    );
     import prettyBytes from 'https://cdn.jsdelivr.net/npm/pretty-bytes@6.1.1/+esm';
 
-    const endpoint = import.meta.env.VITE_WS_ENDPOINT;
+    const endpoint = __WS_ENDPOINT__;
     
     console.log('endpoint', endpoint);
     

@@ -1,11 +1,23 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import { loadEnv } from 'vite';
 
 import tailwind from "@astrojs/tailwind";
+
+const mode = process.env.NODE_ENV;
+console.log(mode);
+
+// https://main.vitejs.dev/config/#using-environment-variables-in-config
+const { 
+  APP_MODE, 
+  WS_ENDPOINT,
+} = loadEnv(mode, process.cwd(), '');
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.k1te.chat',
+  base: mode == 'test' ? '/test' : '',
+  outDir: mode == 'test' ? 'dist/test' : 'dist',
   integrations: [starlight({
     title: 'Kite Chat',
     favicon: '/kite.svg',
@@ -81,6 +93,11 @@ export default defineConfig({
   vite: {
     ssr: {
       noExternal: ['execa', 'is-stream', 'npm-run-path', /^unist-util/],
+    },
+    define: {
+      __APP_MODE__: JSON.stringify(APP_MODE),
+      __WS_ENDPOINT__: JSON.stringify(WS_ENDPOINT),
+      __BASE_URL__: APP_MODE === "test" ? "/test" : "", 
     },
   },
 });
