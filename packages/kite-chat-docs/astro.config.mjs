@@ -60,11 +60,11 @@ export default defineConfig({
       items: [
       // Each item here is one entry in the navigation menu.
       {
-        label: 'Use Components',
+        label: 'Backend Example',
         translations: {
-          'uk-UA': "Використання компонентів",
+          'uk-UA': "Приклад бекенду",
         },
-        link: '/guides/components/'
+        link: '/guides/backend-example/'
       }]
     }, {
       label: 'Reference',
