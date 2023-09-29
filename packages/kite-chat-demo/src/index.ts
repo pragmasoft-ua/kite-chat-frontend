@@ -9,7 +9,11 @@ const endpoint = import.meta.env.VITE_WS_ENDPOINT;
 
 console.log('endpoint', endpoint);
 
-const kiteChat = new KiteChat({endpoint, createIfMissing: true});
+const kiteChat = new KiteChat({
+  endpoint,
+  createIfMissing: true,
+  userName: '🐸',
+});
 addEventListener('beforeunload', () => kiteChat.disconnect());
 
 const requiredElement = <T extends HTMLElement = HTMLElement>(
@@ -42,8 +46,9 @@ kiteChat.element?.addEventListener(
   }
 );
 
-sendToChatBtn.addEventListener('click', () =>
-  kiteChat.element?.appendMsg({text: textarea.value})
+sendToChatBtn.addEventListener(
+  'click',
+  () => kiteChat.element?.appendMsg({text: textarea.value})
 );
 openBtn.addEventListener('click', () => kiteChat.element?.show());
 closeBtn.addEventListener('click', () => kiteChat.element?.hide());

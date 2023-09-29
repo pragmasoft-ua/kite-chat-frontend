@@ -181,7 +181,7 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - ✅responsive dialog sizing/placement
 - ✅scroll snap
 - ✅dark/light theme
-- ✅primary color for text selection, links, status indicators
+- ✅accent color for text selection, links, status indicators
 - ✅open/close animation
 - ✅focus on textarea when dialog is opened
 - ✅keyboard shortcut for send
@@ -195,7 +195,12 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - ✅BroadcastChannel
 - ✅display images
 - client side PING
+- debug reconnections - it seems after reconnection in lazy mode message is sent before join request
+- we need to store connection parameter then parse and send it in join request
+- random animal emoji instead of unknown user name (or used id?). Request user name in chat if not provided (optional?).
 - [in progress...] file upload
+- study top layer (possibly relevant) https://developer.chrome.com/blog/what-is-the-top-layer/
+- study css anchors https://developer.chrome.com/blog/tether-elements-to-each-other-with-css-anchor-positioning/
 - mobile page for demo site. VirtualKeyboard API
 - tooltips 'Download file name' on images and files.
 - survive page reloads of the only open tab (indexedDb ?)
@@ -224,6 +229,6 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - automate npm publish with github actions
 - playwright e2e tests
 - use temporal polyfill for timestamp
-- document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test)
-- consider dockerz html template
+- document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test) or remove it from dependencies
+- ❌consider dockerz html template (astro starlight is used instead)
 - https://www.npmjs.com/package/standard (also exists for ts)
