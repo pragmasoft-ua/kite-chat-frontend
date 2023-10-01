@@ -1,3 +1,6 @@
-import {nanoid} from 'nanoid/non-secure';
+import {urlAlphabet, customAlphabet} from 'nanoid';
 
-export const randomStringId = (length = 10) => nanoid(length);
+// nanoids are used in telegram #hashtag entities which should not contain -(minus) character
+const alphabet = urlAlphabet.replace('-', '');
+
+export const randomStringId = customAlphabet(alphabet, 10);
