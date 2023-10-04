@@ -8,6 +8,8 @@ import {
   BinaryMsg,
   UploadRequest,
   UploadResponse,
+  Ping,
+  Pong,
 } from './kite-types';
 
 declare type Decoder = (raw: unknown[]) => Record<string, unknown>;
@@ -39,12 +41,14 @@ const FIELD_DECODERS: Record<string, Codec> = {
 
 const FIELD_ENCODERS: Record<string, Codec> = {
   timestamp: (val: unknown) => (val as Date).toISOString(),
+  endpoint: (val: unknown) => (val as URL).searchParams.get('c'),
 };
 
 const JOIN_CHANNEL_FIELDS: Array<keyof JoinChannel> = [
   'type',
   'memberId',
   'memberName',
+  'endpoint',
 ];
 
 const MESSAGE_ACK_FIELDS: Array<keyof MsgAck> = [
@@ -87,12 +91,17 @@ const UPLOAD_RESPONSE_FIELDS: Array<keyof UploadResponse> = [
   'messageId',
 ];
 
+const PING_FIELDS: Array<keyof Ping> = ['type'];
+
+const PONG_FIELDS: Array<keyof Pong> = PING_FIELDS;
+
 const KITE_MSG_DECODERS: Partial<Record<MsgType, Decoder>> = {
   [MsgType.ACK]: decoderFactory(MESSAGE_ACK_FIELDS),
   [MsgType.ERROR]: decoderFactory(ERROR_RESPONSE_FIELDS),
   [MsgType.PLAINTEXT]: decoderFactory(PLAINTEXT_MESSAGE_FIELDS),
   [MsgType.UPLOAD]: decoderFactory(UPLOAD_RESPONSE_FIELDS),
   [MsgType.BIN]: decoderFactory(BINARY_MESSAGE_FIELDS),
+  [MsgType.PONG]: decoderFactory(PONG_FIELDS),
 };
 
 const KITE_MSG_ENCODERS: Partial<Record<MsgType, Encoder>> = {
@@ -100,6 +109,7 @@ const KITE_MSG_ENCODERS: Partial<Record<MsgType, Encoder>> = {
   [MsgType.PLAINTEXT]: encoderFactory(PLAINTEXT_MESSAGE_FIELDS),
   [MsgType.UPLOAD]: encoderFactory(UPLOAD_REQUEST_FIELDS),
   [MsgType.BIN]: encoderFactory(BINARY_MESSAGE_FIELDS),
+  [MsgType.PING]: encoderFactory(PING_FIELDS),
 };
 
 export const decodeKiteMsg = (raw: string): KiteMsg => {

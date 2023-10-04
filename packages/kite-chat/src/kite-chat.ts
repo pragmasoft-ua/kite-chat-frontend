@@ -22,6 +22,7 @@ import {
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 import sharedWorkerUrl from './kite-worker?inline-shared-worker';
+import {assert} from './assert';
 
 export type KiteChatOptions = {
   endpoint: string;
@@ -67,13 +68,24 @@ export class KiteChat {
 
     const kiteWorker = new SharedWorker(sharedWorkerUrl);
 
+    const endpoint = new URL(this.opts.endpoint);
+
+    assert(
+      endpoint.protocol.toLocaleLowerCase().startsWith('ws'),
+      'ws and wss protocols are only supported for the endpoint url'
+    );
+    assert(
+      endpoint.searchParams.has('c'),
+      'enpoint url should have c=<channel name> required query parameter'
+    );
+
     kiteWorker.port.onmessage = onWorkerMessageBound;
     kiteWorker.port.onmessageerror = this.onDeliveryError.bind(this);
     kiteWorker.addEventListener('error', this.onWorkerError.bind(this));
     kiteWorker.port.start();
     const join: JoinChannel = {
       type: MsgType.JOIN,
-      endpoint: this.opts.endpoint,
+      endpoint,
       memberId: this.opts.userId as string,
       memberName: this.opts.userName,
       eagerlyConnect: this.opts.eagerlyConnect,
@@ -153,7 +165,7 @@ export class KiteChat {
 
   protected onWorkerMessage(e: MessageEvent<KiteMsg>) {
     const payload = e.data;
-    console.log('onWorkerMessage', JSON.stringify(payload));
+    console.debug('onWorkerMessage', JSON.stringify(payload));
     if (!payload) throw new Error('no payload in incoming message');
     switch (payload.type) {
       case MsgType.CONNECTED:

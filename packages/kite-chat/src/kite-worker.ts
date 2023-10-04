@@ -8,6 +8,7 @@ const WS_CLOSE_REASON_GONE_AWAY = 1001;
 declare const self: SharedWorkerGlobalScope;
 
 import {MessagePort} from 'worker_threads';
+import {assert} from './assert';
 import {
   BinaryMsg,
   ContentMsg,
@@ -17,15 +18,22 @@ import {
   JoinChannel,
   KiteMsg,
   MsgAck,
+  MsgStatus,
+  MsgType,
   PlaintextMsg,
   UploadRequest,
   UploadResponse,
 } from './kite-types';
-import {MsgStatus, MsgType} from './kite-types';
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
 import {SUBPROTOCOL} from './shared-constants';
 
 const WORKER_NAME = 'k1te worker';
+
+const MIN_RECONNECTION_INTERVAL_MS = 60 * 1000; // 1 min
+
+const PING_INTERVAL_MS = 2 * 60 * 1000; // 2 min
+
+const MISSED_PONGS_TO_RECONNECT = 3;
 
 interface KiteMessagePort extends MessagePort {
   postMessage(value: KiteMsg): void;
@@ -59,6 +67,8 @@ const outgoingQueue = new Array<KiteMsg>();
 
 const tabPorts = new Set<KiteMessagePort>();
 
+let pingerTimer: ReturnType<typeof setInterval> | null = null;
+
 const broadcast = (msg: KiteMsg, exclude?: KiteMessagePort) => {
   for (const tabPort of tabPorts) {
     if (tabPort !== exclude) {
@@ -74,14 +84,13 @@ const messageById = (messageId: string) =>
 let online = self.navigator.onLine;
 console.log(WORKER_NAME, 'created', online ? 'online' : 'offline');
 
-const MIN_RECONNECTION_INTERVAL_MS = 1000 * 60; // 60s
-
 /**
  * Track the time when last ws connection was establisted to ensure
  * minimal reconnection interval (to avoid reconnecting too often infinitely)
  */
 let connectedTimestampMs = 0;
 let reconnectionAttempts = 0;
+let lastPongTimeMs = 0;
 
 // Event handler called when a tab tries to connect to this worker.
 self.onconnect = onTabConnected;
@@ -170,9 +179,9 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
 }
 
 function onJoinChannel(payload: JoinChannel) {
-  joinChannel = joinChannel || payload;
+  joinChannel = joinChannel ?? payload;
   joinChannel.eagerlyConnect =
-    joinChannel.eagerlyConnect || payload.eagerlyConnect;
+    joinChannel.eagerlyConnect ?? payload.eagerlyConnect;
   assert(
     joinChannel.endpoint === payload.endpoint,
     'Cannot use different chat endpoints for the same domain'
@@ -192,9 +201,13 @@ function onTabDisconnected(port: KiteMessagePort) {
   const tabsCount = tabPorts.size;
   console.debug(WORKER_NAME, `onTabDisconnected remained ${tabsCount} tabs`);
   if (tabsCount === 0) {
-    // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4
-    ws?.close(WS_CLOSE_REASON_GONE_AWAY, 'all active tabs closed');
+    disconnect();
   }
+}
+
+function disconnect(reason: string = 'all active tabs closed') {
+  // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4
+  ws?.close(WS_CLOSE_REASON_GONE_AWAY, reason);
 }
 
 function triggerWsConnection() {
@@ -210,23 +223,26 @@ function triggerWsConnection() {
 
 function onWsMessage(event: MessageEvent) {
   const payload = event.data;
-  console.log(WORKER_NAME, 'ws received', payload);
+  console.debug(WORKER_NAME, 'ws received', payload);
   const kiteMsg = decodeKiteMsg(payload);
   switch (kiteMsg.type) {
     case MsgType.PLAINTEXT:
-      onWsPlaintextMessage(kiteMsg as PlaintextMsg);
+      onWsPlaintextMessage(kiteMsg);
       break;
     case MsgType.BIN:
-      onWsBinaryMessage(kiteMsg as BinaryMsg);
+      onWsBinaryMessage(kiteMsg);
       break;
     case MsgType.UPLOAD:
       onWsUploadResponse(kiteMsg as UploadResponse);
       break;
     case MsgType.ACK:
-      onMessageAck(kiteMsg as MsgAck);
+      onMessageAck(kiteMsg);
       break;
     case MsgType.ERROR:
-      onErrorResponse(kiteMsg as ErrorMsg);
+      onErrorResponse(kiteMsg);
+      break;
+    case MsgType.PONG:
+      onPongResponse();
       break;
   }
 }
@@ -238,9 +254,14 @@ function onWsOpen() {
   wsSend(joinChannel);
   flushQueue();
   broadcast({type: MsgType.ONLINE});
+  pingerTimer = setInterval(pinger, PING_INTERVAL_MS);
 }
 
 function onWsClose(e: CloseEvent) {
+  if (pingerTimer) {
+    clearInterval(pingerTimer);
+    pingerTimer = null;
+  }
   const sessionDurationMs = connectedTimestampMs
     ? Date.now() - connectedTimestampMs
     : 0;
@@ -352,10 +373,8 @@ function onErrorResponse(payload: ErrorMsg) {
   console.error(WORKER_NAME, payload.code, payload.reason);
 }
 
-function assert(condition: boolean, message: string): asserts condition {
-  if (!condition) {
-    throw new Error(message);
-  }
+function onPongResponse() {
+  lastPongTimeMs = Date.now();
 }
 
 function wsSend(payload: KiteMsg) {
@@ -386,12 +405,20 @@ function queue(msg: KiteMsg) {
   }
 }
 
+function pinger() {
+  const sinceLastPongMs = Date.now() - lastPongTimeMs;
+  if (sinceLastPongMs > PING_INTERVAL_MS * MISSED_PONGS_TO_RECONNECT) {
+    disconnect(`missed ${MISSED_PONGS_TO_RECONNECT} pongs, reconnect`);
+  }
+  wsSend({type: MsgType.PING});
+}
+
 const FILENAME_REGEX = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
 
 function dispositionFilename(disposition: string | null) {
   if (disposition) {
     const matches = FILENAME_REGEX.exec(disposition);
-    if (matches != null && matches[1]) {
+    if (matches?.[1]) {
       return matches[1].replace(/['"]/g, '');
     }
   }

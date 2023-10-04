@@ -1,5 +1,8 @@
 export class HttpError extends Error {
-  constructor(message: string, readonly status: number) {
+  constructor(
+    message: string,
+    readonly status: number
+  ) {
     super(message);
   }
 }
@@ -35,7 +38,7 @@ export type JoinChannel = {
   type: MsgType.JOIN;
   memberId: string;
   memberName?: string;
-  endpoint: string;
+  endpoint: URL;
   eagerlyConnect?: boolean;
 };
 

@@ -181,7 +181,7 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - ✅responsive dialog sizing/placement
 - ✅scroll snap
 - ✅dark/light theme
-- ✅accent color for text selection, links, status indicators
+- ✅primary color for text selection, links, status indicators
 - ✅open/close animation
 - ✅focus on textarea when dialog is opened
 - ✅keyboard shortcut for send
@@ -194,11 +194,10 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - ✅cache session in worker to survive page reloads
 - ✅BroadcastChannel
 - ✅display images
-- client side PING
-- debug reconnections - it seems after reconnection in lazy mode message is sent before join request
-- we need to store connection parameter then parse and send it in join request
-- random animal emoji instead of unknown user name (or used id?). Request user name in chat if not provided (optional?).
+- ✅client side PING
+- ✅we need to store connection parameter then parse and send it in join request
 - [in progress...] file upload
+- random animal emoji instead of unknown user name (or used id?). Request user name in chat if not provided (optional?).
 - study top layer (possibly relevant) https://developer.chrome.com/blog/what-is-the-top-layer/
 - study css anchors https://developer.chrome.com/blog/tether-elements-to-each-other-with-css-anchor-positioning/
 - mobile page for demo site. VirtualKeyboard API
@@ -211,6 +210,7 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - localization
 - new N (unread) badge on toggle button, autoopen on incoming attr
 - smarter datetime format or change display on click from time to date and back https://github.com/pragmasoft-ua/fmt-timestamp
+- or alternatively use sticky dates (like in Telegram)
 - keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - message selection, contextual edit/delete menu items (next to close button)
 - clipboard api, drag and drop? web share api
@@ -222,13 +222,13 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - custom variables for sizing, background pattern, ...?
 - aria attributes for controls
 - virtual scrolling
-- remember input height
-- sticky dates
 - Conversation context (page url, ip, browser lang, time, timezone, location)
-- github sponsorship
+- telegram login (other social logins like google/facebook?)
 - automate npm publish with github actions
 - playwright e2e tests
 - use temporal polyfill for timestamp
-- document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test) or remove it from dependencies
-- ❌consider dockerz html template (astro starlight is used instead)
+- document use of https://www.npmjs.com/package/@webcomponents/webcomponentsjs as a polyfill (and test) or remove dependency
 - https://www.npmjs.com/package/standard (also exists for ts)
+- remember input height
+- ❌ consider dockerz html template (use Starlight instead)
+- ❌ github sponsorship (not supported in Ukraine)
