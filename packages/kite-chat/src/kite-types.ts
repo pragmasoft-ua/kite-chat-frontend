@@ -38,7 +38,7 @@ export type JoinChannel = {
   type: MsgType.JOIN;
   memberId: string;
   memberName?: string;
-  endpoint: URL;
+  endpoint: string;
   eagerlyConnect?: boolean;
 };
 

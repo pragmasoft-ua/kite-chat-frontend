@@ -85,7 +85,7 @@ export class KiteChat {
     kiteWorker.port.start();
     const join: JoinChannel = {
       type: MsgType.JOIN,
-      endpoint,
+      endpoint: this.opts.endpoint, // DOMException: URL object could not be cloned
       memberId: this.opts.userId as string,
       memberName: this.opts.userName,
       eagerlyConnect: this.opts.eagerlyConnect,

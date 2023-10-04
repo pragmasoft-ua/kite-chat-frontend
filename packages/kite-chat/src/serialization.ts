@@ -41,7 +41,7 @@ const FIELD_DECODERS: Record<string, Codec> = {
 
 const FIELD_ENCODERS: Record<string, Codec> = {
   timestamp: (val: unknown) => (val as Date).toISOString(),
-  endpoint: (val: unknown) => (val as URL).searchParams.get('c'),
+  endpoint: (val: unknown) => new URL(val as string).searchParams.get('c'),
 };
 
 const JOIN_CHANNEL_FIELDS: Array<keyof JoinChannel> = [
