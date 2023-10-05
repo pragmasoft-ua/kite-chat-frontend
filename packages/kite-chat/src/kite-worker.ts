@@ -1,7 +1,7 @@
 // https://joshuatz.com/posts/2021/strongly-typed-service-workers/
 /// <reference lib="webworker" />
 
-const WS_CLOSE_REASON_GONE_AWAY = 1001;
+const WS_CLOSE_REASON_NORMAL = 1000;
 
 // const READY_STATES = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
 
@@ -207,7 +207,7 @@ function onTabDisconnected(port: KiteMessagePort) {
 
 function disconnect(reason: string = 'all active tabs closed') {
   // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4
-  ws?.close(WS_CLOSE_REASON_GONE_AWAY, reason);
+  ws?.close(WS_CLOSE_REASON_NORMAL, reason);
 }
 
 function triggerWsConnection() {
@@ -238,6 +238,9 @@ function onWsMessage(event: MessageEvent) {
     case MsgType.ACK:
       onMessageAck(kiteMsg);
       break;
+    case MsgType.OK:
+      onWsJoined();
+      break;
     case MsgType.ERROR:
       onErrorResponse(kiteMsg);
       break;
@@ -252,8 +255,7 @@ function onWsOpen() {
   connectedTimestampMs = Date.now();
   assert(!!joinChannel, 'no pending joinChannel message');
   wsSend(joinChannel);
-  flushQueue();
-  broadcast({type: MsgType.ONLINE});
+  lastPongTimeMs = Date.now();
   pingerTimer = setInterval(pinger, PING_INTERVAL_MS);
 }
 
@@ -295,6 +297,12 @@ function onWsClose(e: CloseEvent) {
 function onWsError(e: Event) {
   console.debug(WORKER_NAME, 'onWsError', e);
   // TODO close ws in the case of error?
+}
+
+function onWsJoined() {
+  console.debug(WORKER_NAME, 'ws joined');
+  flushQueue();
+  broadcast({type: MsgType.ONLINE});
 }
 
 function onWsPlaintextMessage(payload: PlaintextMsg) {
@@ -374,6 +382,7 @@ function onErrorResponse(payload: ErrorMsg) {
 }
 
 function onPongResponse() {
+  console.debug('pong');
   lastPongTimeMs = Date.now();
 }
 

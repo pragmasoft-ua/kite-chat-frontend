@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -32,7 +32,7 @@
     <script type="module">
       import {KiteChat} from './src/kite-chat.ts';
       const kiteChat = new KiteChat({
-        endpoint: 'ws://localhost:8080/api/chat',
+        endpoint: 'wss://ws.k1te.chat/prod?c=pragmasoft',
         createIfMissing: true,
       });
       addEventListener('beforeunload', () => kiteChat.disconnect());

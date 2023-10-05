@@ -158,9 +158,6 @@ See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for mor
 
 Chat library uses inline module type shared worker for communication with the backend.
 
-Firefox as of now does not support module type workers, so if you plan to debug worker in development mode `npm start`
-please use Chrome only.
-
 Production build bundles worker module and deps to iife so production library created with `npm run build` is compatible with all modern browsers.
 
 ## Storybook
@@ -197,13 +194,15 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 - ✅client side PING
 - ✅we need to store connection parameter then parse and send it in join request
 - [in progress...] file upload
+- send feature flags from server in OK response ?
+- as worker esm modules are now supported in firefox, convert iife worker to module
 - random animal emoji instead of unknown user name (or used id?). Request user name in chat if not provided (optional?).
 - study top layer (possibly relevant) https://developer.chrome.com/blog/what-is-the-top-layer/
 - study css anchors https://developer.chrome.com/blog/tether-elements-to-each-other-with-css-anchor-positioning/
 - mobile page for demo site. VirtualKeyboard API
 - tooltips 'Download file name' on images and files.
 - survive page reloads of the only open tab (indexedDb ?)
-- rich text message type: entities (urls, @-mentions...), markdown?
+- rich text message type: entities (urls, @-mentions...), markdown? As a separate plugin? Or better format on the server and send html
 - display links and button menus (as pills)
 - display error messages
 - documentation (Readme, jsdoc)

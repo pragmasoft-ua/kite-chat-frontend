@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -24,7 +24,7 @@
     <script type="module">
       import {KiteChat} from 'https://unpkg.com/@pragmasoft-ukraine/kite-chat@2023.2.3/dist/kite-chat.js';
       const kiteChat = new KiteChat({
-        endpoint: 'wss://5ad4-109-70-150-94.eu.ngrok.io/channels/pragmasoft',
+        endpoint: 'wss://ws.k1te.chat/prod?c=pragmasoft',
         createIfMissing: true,
       });
       addEventListener('beforeunload', () => kiteChat.disconnect());

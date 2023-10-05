@@ -20,8 +20,9 @@ export enum MsgStatus {
 
 export enum MsgType {
   JOIN = 'JOIN',
-  ACK = 'ACK',
+  OK = 'OK',
   ERROR = 'ERR',
+  ACK = 'ACK',
   PLAINTEXT = 'TXT',
   FILE = 'FILE',
   BIN = 'BIN',
@@ -121,10 +122,15 @@ export type Pong = {
   type: MsgType.PONG;
 };
 
+export type OK = {
+  type: MsgType.OK;
+};
+
 export type ContentMsg = PlaintextMsg | FileMsg;
 
 export type KiteMsg =
   | JoinChannel
+  | OK
   | MsgAck
   | ErrorMsg
   | ContentMsg

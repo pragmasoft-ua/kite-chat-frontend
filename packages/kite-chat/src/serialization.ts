@@ -1,5 +1,6 @@
 import {
   JoinChannel,
+  OK,
   MsgAck,
   ErrorMsg,
   KiteMsg,
@@ -40,8 +41,8 @@ const FIELD_DECODERS: Record<string, Codec> = {
 };
 
 const FIELD_ENCODERS: Record<string, Codec> = {
-  timestamp: (val: unknown) => (val as Date).toISOString(),
-  endpoint: (val: unknown) => new URL(val as string).searchParams.get('c'),
+  timestamp: (val) => (val as Date).toISOString(),
+  endpoint: (val) => new URL(val as string).searchParams.get('c'),
 };
 
 const JOIN_CHANNEL_FIELDS: Array<keyof JoinChannel> = [
@@ -95,8 +96,11 @@ const PING_FIELDS: Array<keyof Ping> = ['type'];
 
 const PONG_FIELDS: Array<keyof Pong> = PING_FIELDS;
 
+const OK_FIELDS: Array<keyof OK> = PING_FIELDS;
+
 const KITE_MSG_DECODERS: Partial<Record<MsgType, Decoder>> = {
   [MsgType.ACK]: decoderFactory(MESSAGE_ACK_FIELDS),
+  [MsgType.OK]: decoderFactory(OK_FIELDS),
   [MsgType.ERROR]: decoderFactory(ERROR_RESPONSE_FIELDS),
   [MsgType.PLAINTEXT]: decoderFactory(PLAINTEXT_MESSAGE_FIELDS),
   [MsgType.UPLOAD]: decoderFactory(UPLOAD_RESPONSE_FIELDS),
