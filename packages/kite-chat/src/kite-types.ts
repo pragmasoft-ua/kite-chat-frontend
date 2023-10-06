@@ -58,16 +58,16 @@ export type ErrorMsg = {
 
 export type PlaintextMsg = {
   type: MsgType.PLAINTEXT;
-  text: string;
   messageId: string;
+  text: string;
   timestamp: Date;
   status?: MsgStatus;
 };
 
 export type FileMsg = {
   type: MsgType.FILE;
-  file: File;
   messageId: string;
+  file: File;
   timestamp: Date;
   status?: MsgStatus;
 };
@@ -89,11 +89,11 @@ export type UploadResponse = {
 export type BinaryMsg = {
   type: MsgType.BIN;
   messageId: string;
-  timestamp: Date;
   url: string;
   fileName?: string;
   fileType?: string;
   fileSize?: number;
+  timestamp: Date;
 };
 
 export type Connected = {

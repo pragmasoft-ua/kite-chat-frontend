@@ -3,8 +3,6 @@
 
 const WS_CLOSE_REASON_NORMAL = 1000;
 
-// const READY_STATES = ['CONNECTING', 'OPEN', 'CLOSING', 'CLOSED'];
-
 declare const self: SharedWorkerGlobalScope;
 
 import {MessagePort} from 'worker_threads';

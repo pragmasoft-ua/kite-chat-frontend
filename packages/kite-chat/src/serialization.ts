@@ -63,33 +63,33 @@ const ERROR_RESPONSE_FIELDS: Array<keyof ErrorMsg> = ['type', 'reason', 'code'];
 
 const PLAINTEXT_MESSAGE_FIELDS: Array<keyof PlaintextMsg> = [
   'type',
-  'text',
   'messageId',
+  'text',
   'timestamp',
 ];
 
 const BINARY_MESSAGE_FIELDS: Array<keyof BinaryMsg> = [
   'type',
+  'messageId',
   'url',
   'fileName',
-  'fileSize',
   'fileType',
-  'messageId',
+  'fileSize',
   'timestamp',
 ];
 
 const UPLOAD_REQUEST_FIELDS: Array<keyof UploadRequest> = [
   'type',
-  'fileName',
-  'fileSize',
-  'fileType',
   'messageId',
+  'fileName',
+  'fileType',
+  'fileSize',
 ];
 
 const UPLOAD_RESPONSE_FIELDS: Array<keyof UploadResponse> = [
   'type',
-  'url',
   'messageId',
+  'url',
 ];
 
 const PING_FIELDS: Array<keyof Ping> = ['type'];
