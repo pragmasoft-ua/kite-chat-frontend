@@ -9,3 +9,8 @@
 .site-title > img {
     @apply h-8
 }
+
+.main-pane {
+    position: relative;
+    z-index: 1;
+}
