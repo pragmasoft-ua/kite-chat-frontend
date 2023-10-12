@@ -6,6 +6,18 @@
     --kite-primary-color: var(--sl-color-text-accent);
 }
 
+:root[data-theme="light"] {
+    --sl-color-black: #fcfdfc;
+}
+
+:root[data-theme="dark"] img[src="/kite-chat-screenshot-ua-light.png"] {
+    content: url("/kite-chat-screenshot-ua-dark.png");
+}
+
+:root[data-theme="dark"] img[src="/kite-chat-screenshot-en-light.png"] {
+    content: url("/kite-chat-screenshot-en-dark.png");
+}
+
 .site-title > img {
     @apply h-8
 }

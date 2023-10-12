@@ -9,8 +9,14 @@ const {
     closeLabel="Close"
 } = Astro.props;
 ---
+<style>
+    button {
+        color: var(--sl-color-text-invert);
+        border-radius: 0.25rem;
+    }
+</style>
 
-<div class="flex flex-col gap-y-4">
+<div class="flex flex-col gap-y-4 ">
     <label for="incoming">{textboxLabel}</label>
     <textarea
         class="border border-black dark:border-white"
@@ -22,12 +28,12 @@ const {
         wrap="soft"
     ></textarea>
     <section class="flex flex-wrap gap-2">
-        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-125 dark:hover:brightness-75" id="send">{sendLabel}</button>
-        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-125 dark:hover:brightness-75" id="open">{openLabel}</button>
-        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-125 dark:hover:brightness-75" id="close">{closeLabel}</button>
+        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-110 dark:hover:brightness-75" id="send">{sendLabel}</button>
+        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-110 dark:hover:brightness-75" id="open">{openLabel}</button>
+        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-110 dark:hover:brightness-75" id="close">{closeLabel}</button>
     </section>
     <label for="colorpicker"
-        >{colorpickerLabel}: <input type="color" id="colorpicker" value="#808080"
+        >{colorpickerLabel}: <input type="color" id="colorpicker"
     /></label>
     <label for="outgoing">{outgoingLabel}</label>
     <section id="outgoing"></section>
@@ -90,4 +96,6 @@ const {
         const color = target.value;
         root.style.setProperty('--kite-primary-color', color);
     });
+    colorpicker.value = getComputedStyle(document.documentElement)
+        .getPropertyValue('--kite-primary-color');
 </script>
