@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import lit from '@astrojs/lit';
 import { loadEnv } from 'vite';
 
 import tailwind from "@astrojs/tailwind";
@@ -18,7 +19,7 @@ export default defineConfig({
   site: 'https://www.k1te.chat',
   base: mode == 'test' ? '/test' : '',
   outDir: mode == 'test' ? 'dist/test' : 'dist',
-  integrations: [starlight({
+  integrations: [lit(), starlight({
     title: 'Kite Chat',
     favicon: '/kite.svg',
     logo: {
