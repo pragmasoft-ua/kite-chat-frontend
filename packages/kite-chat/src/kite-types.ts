@@ -78,12 +78,14 @@ export type UploadRequest = {
   fileName: string;
   fileType: string;
   fileSize: number;
+  timestamp: Date;
 };
 
 export type UploadResponse = {
   type: MsgType.UPLOAD;
   messageId: string;
-  url: string;
+  canonicalUri: string;
+  uploadUri?: string;
 };
 
 export type BinaryMsg = {

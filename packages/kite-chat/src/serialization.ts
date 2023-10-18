@@ -84,12 +84,14 @@ const UPLOAD_REQUEST_FIELDS: Array<keyof UploadRequest> = [
   'fileName',
   'fileType',
   'fileSize',
+  'timestamp',
 ];
 
 const UPLOAD_RESPONSE_FIELDS: Array<keyof UploadResponse> = [
   'type',
   'messageId',
-  'url',
+  'canonicalUri',
+  'uploadUri',
 ];
 
 const PING_FIELDS: Array<keyof Ping> = ['type'];

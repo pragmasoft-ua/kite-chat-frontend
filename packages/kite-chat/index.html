@@ -32,7 +32,8 @@
     <script type="module">
       import {KiteChat} from './src/kite-chat.ts';
       const kiteChat = new KiteChat({
-        endpoint: 'wss://ws.k1te.chat/prod?c=pragmasoft',
+        endpoint: 'wss://79e7-45-9-29-251.ngrok-free.app/channels?c=pragmasoft',
+        // 'wss://ws.k1te.chat/prod?c=pragmasoft',
         createIfMissing: true,
       });
       addEventListener('beforeunload', () => kiteChat.disconnect());

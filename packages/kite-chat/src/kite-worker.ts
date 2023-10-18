@@ -172,6 +172,7 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
     fileName: payload.file.name,
     fileType: payload.file.type,
     fileSize: payload.file.size,
+    timestamp: payload.timestamp,
   };
   queue(upload);
 }
@@ -333,14 +334,19 @@ async function onWsBinaryMessage(payload: BinaryMsg) {
 
 async function onWsUploadResponse(payload: UploadResponse) {
   try {
-    const {url, messageId} = payload;
+    const {canonicalUri, uploadUri, messageId} = payload;
     const msg = messageById(messageId) as FileMsg;
-    assert(!!msg, `No message ${messageId}`);
-    await upload(url, msg.file);
+    const file = msg?.file;
+    assert(!!file, `No file in ${messageId}`);
+    await upload(uploadUri ?? canonicalUri, file);
     const outgoing: BinaryMsg = {
-      ...msg,
-      url,
       type: MsgType.BIN,
+      messageId,
+      url: canonicalUri,
+      fileName: file.name,
+      fileSize: file.size,
+      fileType: file.type,
+      timestamp: msg.timestamp,
     };
     queue(outgoing);
   } catch (error) {
@@ -420,39 +426,26 @@ function pinger() {
   wsSend({type: MsgType.PING});
 }
 
-const FILENAME_REGEX = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
-
-function dispositionFilename(disposition: string | null) {
-  if (disposition) {
-    const matches = FILENAME_REGEX.exec(disposition);
-    if (matches?.[1]) {
-      return matches[1].replace(/['"]/g, '');
-    }
-  }
-  return null;
-}
-
 async function downloadUrl(url: string): Promise<File> {
   const response = await fetch(url);
   if (response.ok) {
     const blob: Blob = await response.blob();
-    const disposition = response.headers.get('Content-Disposition');
-    const fileName = dispositionFilename(disposition);
-    assert(!!fileName, 'Missing filename');
-    return new File([blob], fileName, {lastModified: Date.now()});
+    const fileName = new URL(url).pathname;
+    return new File([blob], fileName, {
+      lastModified: Date.now(),
+      type: blob.type,
+    });
   } else {
     throw new HttpError(await response.text(), response.status);
   }
 }
 
 async function upload(url: string, file: File): Promise<void> {
-  // TODO throw exception instead of returning response
-  const headers = new Headers();
-  headers.append('Content-Type', file.type);
-  headers.append('Content-Disposition', `attachment; filename="${file.name}"`);
   const response = await fetch(url, {
     method: 'PUT',
-    headers,
+    headers: {
+      'Content-Type': file.type,
+    },
     body: file,
   });
   if (!response.ok) {

@@ -3,8 +3,8 @@
   "description": "Kite chat frontend",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2023.2.3",
-  "homepage": "https://pragmasoft-ua.github.io/kite-chat/",
+  "version": "2023.10.2",
+  "homepage": "https://www.k1te.chat/",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/pragmasoft-ua/kite-chat.git"
