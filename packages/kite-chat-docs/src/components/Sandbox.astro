@@ -43,17 +43,14 @@ const {
     const {
         isPlaintextMsg,
         KiteChat
-    } = await import(__APP_MODE__ === "test"
-        ? '/kite-chat.js'
-        : 'https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm'
-    );
+    } = await import(__BACKEND_PACKAGE_IMPORT__);
     import prettyBytes from 'https://cdn.jsdelivr.net/npm/pretty-bytes@6.1.1/+esm';
 
     const endpoint = __WS_ENDPOINT__;
     
     console.log('endpoint', endpoint);
     
-    const kiteChat = new KiteChat({endpoint, createIfMissing: true});
+    const kiteChat = new KiteChat({endpoint});
     addEventListener('beforeunload', () => kiteChat.disconnect());
     
     const requiredElement = (

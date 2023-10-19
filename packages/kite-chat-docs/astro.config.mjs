@@ -10,7 +10,7 @@ console.log(mode);
 
 // https://main.vitejs.dev/config/#using-environment-variables-in-config
 const { 
-  APP_MODE, 
+  BACKEND_PACKAGE_IMPORT, 
   WS_ENDPOINT,
 } = loadEnv(mode, process.cwd(), '');
 
@@ -21,7 +21,7 @@ export default defineConfig({
   outDir: mode == 'test' ? 'dist/test' : 'dist',
   integrations: [lit(), starlight({
     title: 'Kite Chat',
-    favicon: '/kite.svg',
+    favicon: './src/assets/kite.svg',
     logo: {
       src: './src/assets/kite.svg',
     },
@@ -96,9 +96,10 @@ export default defineConfig({
       noExternal: ['execa', 'is-stream', 'npm-run-path', /^unist-util/],
     },
     define: {
-      __APP_MODE__: JSON.stringify(APP_MODE),
+      __BASE_URL__: mode === "test" ? "/test" : "",
+      __BRANCH__: JSON.stringify(mode === "production" ? "main" : "test"),
       __WS_ENDPOINT__: JSON.stringify(WS_ENDPOINT),
-      __BASE_URL__: APP_MODE === "test" ? "/test" : "", 
+      __BACKEND_PACKAGE_IMPORT__: JSON.stringify(BACKEND_PACKAGE_IMPORT),
     },
   },
 });
