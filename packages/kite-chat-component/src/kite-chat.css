@@ -41,3 +41,38 @@ main::-webkit-scrollbar-thumb {
     bottom: 1vmin;
   }
 }
+
+:host(:not([theme="dark"])) {
+  --kite-msg-bg: white;
+  --kite-msg-border: white;
+  --kite-msg-sent-bg: theme('colors.stone.300');
+  --kite-msg-sent-border: theme('colors.stone.300');
+}
+
+:host([theme="dark"]) {
+  --kite-msg-bg: theme('colors.neutral.800');
+  --kite-msg-border: theme('colors.stone.800');
+  --kite-msg-sent-bg: theme('colors.neutral.600');
+  --kite-msg-sent-border: theme('colors.stone.600');
+}
+
+:host(:not([theme="dark"])) .kite-dialog {
+  @apply border-neutral-200 bg-white text-black;
+}
+
+:host([theme="dark"]) .kite-dialog {
+  @apply border-neutral-600 bg-neutral-800 text-white/95;
+}
+
+@media(prefers-color-scheme: dark) {
+  :host(:not([theme="light"])) {
+    --kite-msg-bg: theme('colors.neutral.800');
+    --kite-msg-border: theme('colors.stone.800');
+    --kite-msg-sent-bg: theme('colors.neutral.600');
+    --kite-msg-sent-border: theme('colors.stone.600');
+  }
+
+  :host(:not([theme="light"])) .kite-dialog {
+    @apply border-neutral-600 bg-neutral-800 text-white/95;
+  }
+}
