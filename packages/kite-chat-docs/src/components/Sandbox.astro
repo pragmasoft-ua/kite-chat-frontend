@@ -40,10 +40,7 @@ const {
 </div>
 
 <script is:inline type="module">
-    const {
-        isPlaintextMsg,
-        KiteChat
-    } = await import(__BACKEND_PACKAGE_IMPORT__);
+    import {isPlaintextMsg, KiteChat} from __BACKEND_PACKAGE_IMPORT__;
     import prettyBytes from 'https://cdn.jsdelivr.net/npm/pretty-bytes@6.1.1/+esm';
 
     const endpoint = __WS_ENDPOINT__;

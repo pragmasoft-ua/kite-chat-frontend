@@ -88,6 +88,10 @@ export default defineConfig({
         lang: 'uk-UA',
       },
     },
+    components: {
+      Hero: './src/components/overrided/Hero.astro',
+      ThemeProvider: './src/components/overrided/ThemeProvider.astro',
+    },
   }), tailwind({ applyBaseStyles: false })],
 
   //https://docs.astro.build/en/guides/integrations-guide/node/#syntaxerror-named-export-compile-not-found
