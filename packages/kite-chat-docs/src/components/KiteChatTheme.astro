@@ -8,11 +8,7 @@
 	const modeChange = (mode) => {
         const kiteChatElements = document.querySelectorAll('kite-chat');
         for (const kiteChat of kiteChatElements) {
-            if (mode === 'dark') {
-                kiteChat.setAttribute('dark', '');
-            } else {
-                kiteChat.removeAttribute('dark');
-            }
+            kiteChat.setAttribute('theme', mode);
         }
 	};   
 </script>
