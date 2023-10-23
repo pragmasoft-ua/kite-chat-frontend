@@ -88,7 +88,7 @@ export class KiteChatElement extends LitElement {
           class="kite-dialog ${classMap({
             'scale-y-100': this.open,
             'scale-y-0': !this.open,
-          })} selection:fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
+          })} selection:bg-primary-color fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
         >
           <header
             class="bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-secondary-color"
