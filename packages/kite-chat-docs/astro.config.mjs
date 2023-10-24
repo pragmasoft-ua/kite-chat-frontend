@@ -17,7 +17,7 @@ const {
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.k1te.chat',
-  base: mode == 'test' ? '/test' : '',
+  base: mode == 'test' ? '/kite-chat-frontend/test' : '/kite-chat-frontend',
   outDir: mode == 'test' ? 'dist/test' : 'dist',
   integrations: [lit(), starlight({
     title: 'Kite Chat',
