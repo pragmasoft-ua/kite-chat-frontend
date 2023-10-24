@@ -44,19 +44,6 @@ jobs:
         with:
           name: kite-chat-docs-artifact
           path: ./packages/kite-chat-docs/dist
-      - name: List Artifacts
-        run: |
-          ls -R $GITHUB_WORKSPACE
-          ls -R $RUNNER_TEMP
-        env:
-          GITHUB_WORKSPACE: ${{ github.workspace }}
-          RUNNER_TEMP: ${{ runner.temp }}
-      - name: Cache Docs
-        uses: actions/cache@v2
-        with:
-          path: ./packages/kite-chat-docs/dist
-          key: kite-chat-docs-dist-${{ runner.os }}
-        if: always()
 
   deploy:
     needs: build
