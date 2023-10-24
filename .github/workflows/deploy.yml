@@ -39,14 +39,6 @@ jobs:
           else
             npm run build -w @pragmasoft-ukraine/kite-chat-docs
           fi
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
       - name: Upload Docs Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -58,6 +50,14 @@ jobs:
           path: ./packages/kite-chat-docs/dist
           key: kite-chat-docs-dist-${{ runner.os }}
         if: always()
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy Docs to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v1
