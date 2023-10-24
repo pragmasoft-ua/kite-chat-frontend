@@ -47,6 +47,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      - name: Upload Docs Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: kite-chat-docs-artifact
+          path: ./packages/kite-chat-docs/dist
       - name: Cache Docs
         uses: actions/cache@v2
         with:
