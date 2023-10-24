@@ -100,7 +100,7 @@ export default defineConfig({
       noExternal: ['execa', 'is-stream', 'npm-run-path', /^unist-util/],
     },
     define: {
-      __BASE_URL__: mode === "test" ? "/test" : "",
+      __BASE_URL__: mode === "test" ? "/kite-chat-frontend/test" : "/kite-chat-frontend",
       __BRANCH__: JSON.stringify(mode === "production" ? "main" : "test"),
       __WS_ENDPOINT__: JSON.stringify(WS_ENDPOINT),
       __BACKEND_PACKAGE_IMPORT__: JSON.stringify(BACKEND_PACKAGE_IMPORT),
