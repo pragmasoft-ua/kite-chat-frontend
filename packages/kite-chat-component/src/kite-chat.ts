@@ -38,9 +38,11 @@ const CUSTOM_EVENT_INIT = {
  * @fires {CustomEvent} kite-chat.hide - Chat window closes
  * @fires {CustomEvent} kite-chat.send - Outgoing message is sent
  * @attr {Boolean} open - displays chat window if true or only toggle button if false or missing
+ * @attr {"light" | "dark"} theme - defines kite chat theme, using prefers-color-scheme by default
  * @attr {string} heading - Chat dialog heading
  * @slot {"kite-msg" | "p"} - kite-chat component contains chat messages as nested subcomponents, allowing server-side rendering
  * @cssvar --kite-primary-color - accent color, styles toggle button, title bar, text selection, cursor
+ * @cssvar --kite-secondary-color - accent contrast color, styles title, close button, toggle button icon color
  * @csspart toggle - The toggle button TODO implement
  */
 @customElement('kite-chat')
@@ -65,7 +67,7 @@ export class KiteChatElement extends LitElement {
       <div class="kite">
         <div
           title="Show live chat dialog"
-          class="kite-toggle bg-primary-color fixed right-4 bottom-4 z-30 h-12 w-12 cursor-pointer rounded-full p-2 text-white shadow hover:text-opacity-80"
+          class="kite-toggle bg-primary-color fixed right-4 bottom-4 z-30 h-12 w-12 cursor-pointer rounded-full p-2 text-secondary-color shadow hover:text-opacity-80"
           @click="${this._toggleOpen}"
         >
           <svg
@@ -86,10 +88,10 @@ export class KiteChatElement extends LitElement {
           class="kite-dialog ${classMap({
             'scale-y-100': this.open,
             'scale-y-0': !this.open,
-          })} selection:bg-primary-color fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border border-neutral-200 bg-white text-black shadow-lg transition-transform selection:text-white dark:border-neutral-600 dark:bg-neutral-800 dark:text-white/95"
+          })} selection:bg-primary-color fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
         >
           <header
-            class="bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-white/95"
+            class="bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-secondary-color"
           >
             <h3 class="kite-title flex-1">${this.heading}</h3>
             <span

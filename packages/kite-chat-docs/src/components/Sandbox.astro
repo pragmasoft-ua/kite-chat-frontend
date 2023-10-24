@@ -1,0 +1,106 @@
+---
+const {
+    textboxPlaceholder="Type message",
+    textboxLabel="Type message to send:",
+    colorpickerLabel="Change color",
+    outgoingLabel="Outgoing messages:",
+    sendLabel="Send to chat",
+    openLabel="Open",
+    closeLabel="Close"
+} = Astro.props;
+---
+<style>
+    button {
+        color: var(--sl-color-text-invert);
+        border-radius: 0.25rem;
+    }
+</style>
+
+<div class="flex flex-col gap-y-4 ">
+    <label for="incoming">{textboxLabel}</label>
+    <textarea
+        class="border border-black dark:border-white"
+        id="incoming"
+        rows="5"
+        placeholder={textboxPlaceholder}
+        autocomplete="on"
+        spellcheck="true"
+        wrap="soft"
+    ></textarea>
+    <section class="flex flex-wrap gap-2">
+        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-110 dark:hover:brightness-75" id="send">{sendLabel}</button>
+        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-110 dark:hover:brightness-75" id="open">{openLabel}</button>
+        <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-110 dark:hover:brightness-75" id="close">{closeLabel}</button>
+    </section>
+    <label for="colorpicker"
+        >{colorpickerLabel}: <input type="color" id="colorpicker"
+    /></label>
+    <label for="outgoing">{outgoingLabel}</label>
+    <section id="outgoing"></section>
+</div>
+
+<script is:inline>
+    async function loadModules() {
+        try {
+            const { isPlaintextMsg, KiteChat } = await import(__BACKEND_PACKAGE_IMPORT__);
+            const prettyBytes = await import('https://cdn.jsdelivr.net/npm/pretty-bytes@6.1.1/+esm');
+
+            return { isPlaintextMsg, KiteChat, prettyBytes };
+        } catch (error) {
+            console.error('Error loading modules:', error);
+        }
+    }
+
+    loadModules().then(({ isPlaintextMsg, KiteChat, prettyBytes }) => {
+        const endpoint = __WS_ENDPOINT__;
+    
+        console.log('endpoint', endpoint);
+        
+        const kiteChat = new KiteChat({endpoint});
+        addEventListener('beforeunload', () => kiteChat.disconnect());
+        
+        const requiredElement = (
+            selector
+        ) => {
+            const el = document.querySelector(selector);
+            if (!el) throw new Error(`Element '${selector}' is missing`);
+            return el;
+        };
+        
+        const textarea = requiredElement('textarea');
+        const sendToChatBtn = requiredElement('#send');
+        const openBtn = requiredElement('#open');
+        const closeBtn = requiredElement('#close');
+        const colorpicker = requiredElement('#colorpicker');
+        const outgoing = requiredElement('section#outgoing');
+        const root = document.documentElement;
+        const fileInfo = file => (file.name + ' ' + prettyBytes(file.size));
+        
+        //BUG! astro error when using template string
+        kiteChat.element?.addEventListener(
+            'kite-chat.send',
+            e => {
+                const payload = e.detail;
+                const message = isPlaintextMsg(payload) ? payload.text : fileInfo(payload.file);
+                outgoing.insertAdjacentHTML(
+                'beforeend',
+                '<p>'+ payload?.timestamp?.toISOString() + ':' + message + '</p>'
+                );
+            }
+        );
+        
+        
+        sendToChatBtn.addEventListener('click', () =>
+            kiteChat.element?.appendMsg({text: textarea.value})
+        );
+        openBtn.addEventListener('click', () => kiteChat.element?.show());
+        closeBtn.addEventListener('click', () => kiteChat.element?.hide());
+        colorpicker.addEventListener('input', (e) => {
+            const target = e.target;
+            const color = target.value;
+            root.style.setProperty('--kite-primary-color', color);
+        });
+        colorpicker.value = getComputedStyle(document.documentElement)
+            .getPropertyValue('--kite-primary-color');
+    });
+</script>

@@ -4,3 +4,4 @@ packages/*/types/
 packages/*/tsconfig.tsbuildinfo
 types
 **/.env
+.astro

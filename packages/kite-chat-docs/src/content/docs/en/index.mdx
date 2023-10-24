@@ -1,0 +1,34 @@
+---
+title: 1# Live Chat Widget
+description: Get started building your docs site with Starlight.
+template: splash
+hero:
+  tagline: This project includes kite-chat web component and a protocol driver to communicate with the chat backend.
+  image:
+    file: ../../../assets/kite-chat-screenshot-en-light.png
+  actions:
+    - text: Getting Started
+      link: __BASE_URL__/en/start/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: View on GitHub
+      link: https://github.com/pragmasoft-ua/kite-chat-frontend
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+	<Card title="Documentation" icon="pencil">
+		Kite Chat has detailed documentation and examples.
+	</Card>
+	<Card title="Easy Setup" icon="puzzle">
+		No installation needed, just use package cdn link.
+	</Card>
+	<Card title="Live Demo" icon="rocket">
+		Get familiar with widget using Kite Chat Sandbox.
+	</Card>
+	<Card title="Open source" icon="github">
+		Learn more at [the Kite Chat GitHub](https://github.com/pragmasoft-ua/kite-chat-frontend/).
+	</Card>
+</CardGrid>

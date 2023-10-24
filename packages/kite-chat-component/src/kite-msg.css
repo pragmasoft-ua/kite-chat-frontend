@@ -6,11 +6,11 @@
 }
 
 :host(:not([status])) {
-  background: white;
+  background: var(--kite-msg-bg, white);
 }
 
 :host([status]) {
-  background: theme('colors.stone.300');
+  background: var(--kite-msg-sent-bg, theme('colors.stone.300'));
   @apply self-end;
 }
 
@@ -25,12 +25,12 @@
 
 :host(:not([status]))::before {
   left: -0.375rem;
-  border-top-color: white;
+  border-top-color: var(--kite-msg-border, white);
 }
 
 :host([status])::before {
   right: -0.375rem;
-  border-top-color: theme('colors.stone.300');
+  border-top-color: var(--kite-msg-sent-border, theme('colors.stone.300'));
 }
 
 time {
@@ -72,24 +72,6 @@ span.read::after {
   content: '✓✓';
 }
 
-@media (prefers-color-scheme: dark) {
-  :host(:not([status])) {
-    background: theme('colors.neutral.800');
-  }
-
-  :host([status]) {
-    background: theme('colors.stone.600');
-  }
-
-  :host(:not([status]))::before {
-    border-top-color: theme('colors.neutral.800');
-  }
-
-  :host([status])::before {
-    border-top-color: theme('colors.stone.600');
-  }
-
-  span {
-    color: theme('colors.neutral.200');
-  }
+span {
+  @apply text-neutral-200;
 }

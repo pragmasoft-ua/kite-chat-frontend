@@ -6,6 +6,7 @@ module.exports = {
     extend: {
       colors: {
         'primary-color': 'var(--kite-primary-color, rgb(0 128 192))',
+        'secondary-color': 'var(--kite-secondary-color, rgb(255 255 255 / 0.95))',
       },
     },
   },

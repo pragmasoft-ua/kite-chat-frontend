@@ -1,0 +1,14 @@
+---
+---
+<script is:inline>
+	window.addEventListener('theme-change', (event) => {
+		modeChange(event.detail.theme);
+	})
+
+	const modeChange = (mode) => {
+        const kiteChatElements = document.querySelectorAll('kite-chat');
+        for (const kiteChat of kiteChatElements) {
+            kiteChat.setAttribute('theme', mode);
+        }
+	};   
+</script>
