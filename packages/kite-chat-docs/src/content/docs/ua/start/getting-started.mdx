@@ -1,0 +1,85 @@
+---
+title: Початок роботи
+description: Початок роботи з компонентом Kite Chat.
+---
+import ChatIcon from "@components/ChatIcon.astro";
+import Tag from "@components/Tag.astro";
+import KiteChatTheme from '@components/KiteChatTheme.astro';
+
+<KiteChatTheme/>
+
+{
+__BRANCH__ === "test"
+    ? <script type="module" src="/kite-chat-component.js"></script>
+    : <script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat-component/+esm"></script>
+}
+
+### Встановлення
+
+Перед використанням компонента Kite Chat додайте наступний фрагмент в секцію <Tag name="head"/> вашого сайту:
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm"/>
+```
+
+Цей скрипт зробить компонент kite-chat доступним для використання у вашому додатку.
+
+### Використання
+
+Щоб створити віджет Kite Chat, додайте наступний фрагмент до секції <Tag name="body"/>:
+
+```html
+<kite-chat></kite-chat>
+```
+
+Якщо все встановлено правильно, ви повинні побачити іконку чату в правому куті вашого сайту, як показано нижче:
+
+<div class="flex items-center justify-center">
+    <ChatIcon/>
+</div>
+
+Ви можете додавати повідомлення в чат за допомогою елемента kite-msg:
+
+```html
+<kite-msg>Текст повідомлення</kite-msg>
+```
+
+Приклад:
+
+```html
+<kite-chat>
+    <kite-msg>Вітаю</kite-msg>
+    <kite-msg status="read">Привіт!</kite-msg>
+</kite-chat>
+```
+
+Ви можете додавати файли до повідомлень за допомогою елемента kite-file:
+
+```html
+<kite-file
+    name="назва файлу"
+    src="шлях/до/файлу"
+/>
+```
+
+Приклад:
+
+```html
+<kite-msg>
+    <kite-file
+        name="kite-chat.txt"
+        src="data:text/plain;base64,8J+qgUtpdGUgY2hhdCB3ZWIgY29tcG9uZW50"
+    />
+</kite-msg>
+```
+
+<kite-chat>
+    <kite-msg>Вітаю</kite-msg>
+    <kite-msg status="read">Привіт!</kite-msg>
+    <kite-msg>
+        <kite-file
+            name="kite-chat.txt"
+            src="data:text/plain;base64,8J+qgUtpdGUgY2hhdCB3ZWIgY29tcG9uZW50"
+        />
+    </kite-msg>
+</kite-chat>

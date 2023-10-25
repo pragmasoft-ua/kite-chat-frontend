@@ -1,0 +1,84 @@
+---
+title: Getting Started
+description: A guide in Kite Chat component.
+---
+import ChatIcon from "@components/ChatIcon.astro";
+import Tag from "@components/Tag.astro";
+import KiteChatTheme from '@components/KiteChatTheme.astro';
+
+<KiteChatTheme/>
+
+{
+__BRANCH__ === "test"
+    ? <script type="module" src="/kite-chat-component.js"></script>
+    : <script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat-component/+esm"></script>
+}
+
+### Installation
+
+Before using the Kite Chat component add the following snippet inside the <Tag name="head"/> section of your website:
+
+```html
+<script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm"/>
+```
+
+This script tag will make the kite-chat component available for use in your application.
+
+### Usage
+
+To create Kite Chat wiget add the following to the <Tag name="body"/> section:
+
+```html
+<kite-chat></kite-chat>
+```
+
+If installed properly, you should see the chat icon in right corner of your website similar to below:
+
+<div class="flex items-center justify-center">
+    <ChatIcon/>
+</div>
+
+You can add messages to chat using the kite-msg element:
+
+```html
+<kite-msg>Your message</kite-msg>
+```
+
+Example:
+
+```html
+<kite-chat>
+    <kite-msg>Hi</kite-msg>
+    <kite-msg status="read">Hello</kite-msg>
+</kite-chat>
+```
+
+You can add files to message using the kite-file element:
+```html
+<kite-file
+    name="your file name"
+    src="path/to/file"
+/>
+```
+
+Example:
+
+```html
+<kite-msg>
+    <kite-file
+        name="kite-chat.txt"
+        src="data:text/plain;base64,8J+qgUtpdGUgY2hhdCB3ZWIgY29tcG9uZW50"
+    />
+</kite-msg>
+```
+
+<kite-chat>
+    <kite-msg>Hi</kite-msg>
+    <kite-msg status="read">Hello</kite-msg>
+    <kite-msg>
+        <kite-file
+            name="kite-chat.txt"
+            src="data:text/plain;base64,8J+qgUtpdGUgY2hhdCB3ZWIgY29tcG9uZW50"
+        />
+    </kite-msg>
+</kite-chat>

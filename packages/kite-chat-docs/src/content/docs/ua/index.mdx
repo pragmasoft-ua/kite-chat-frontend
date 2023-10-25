@@ -1,0 +1,35 @@
+---
+title: 1# Віджет Онлайн Чату
+description: Почніть створювати свій сайт з документами за допомогою Starlight.
+template: splash
+hero:
+  tagline: Цей проект включає в себе веб-компонент kite-chat і драйвер протоколу для зв'язку з бекендом чату.
+  image:
+    light: ../../../assets/kite-chat-screenshot-ua-light.png
+    dark: ../../../assets/kite-chat-screenshot-ua-dark.png
+  actions:
+    - text: Початок роботи
+      link: __BASE_URL__/ua/start/getting-started/
+      icon: right-arrow
+      variant: primary
+    - text: Дивитись на GitHub
+      link: https://github.com/pragmasoft-ua/kite-chat-frontend
+      icon: external
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components';
+
+<CardGrid stagger>
+	<Card title="Documentation" icon="pencil">
+		Kite Chat має детальну документацію та приклади.
+	</Card>
+	<Card title="Легке Налаштування" icon="puzzle">
+		Встановлення не потрібне, просто додайте cdn-посилання.
+	</Card>
+	<Card title="Демонстрація" icon="rocket">
+		Ознайомтеся з віджетом за допомогою Kite Середовища.
+	</Card>
+	<Card title="Open source" icon="github">
+		Дізнайтеся більше на [Kite Chat GitHub](https://github.com/pragmasoft-ua/kite-chat-frontend/).
+	</Card>
+</CardGrid>

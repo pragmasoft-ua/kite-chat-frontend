@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --kite-primary-color: var(--sl-color-text-accent);
+    --kite-secondary-color: var(--sl-color-text-invert);
+}
+
+:root[data-theme="light"] {
+    --sl-color-black: #fcfdfc;
+}
+
+.site-title > img {
+    @apply h-8
+}
+
+.main-pane {
+    position: relative;
+    z-index: 1;
+}
