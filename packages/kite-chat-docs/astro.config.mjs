@@ -11,8 +11,7 @@ console.log(mode);
 const base = mode == 'test' ? '/kite-chat-frontend/test' : '/kite-chat-frontend';
 
 // https://main.vitejs.dev/config/#using-environment-variables-in-config
-const { 
-  BACKEND_PACKAGE_IMPORT, 
+const {
   WS_ENDPOINT,
 } = loadEnv(mode, process.cwd(), '');
 
