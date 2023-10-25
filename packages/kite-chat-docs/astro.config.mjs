@@ -21,7 +21,18 @@ export default defineConfig({
   outDir: mode == 'test' ? 'dist/test' : 'dist',
   integrations: [lit(), starlight({
     title: 'Kite Chat',
-    favicon: './src/assets/kite.svg',
+    favicon: '/images/kite.svg',
+    head: [
+      // Add ICO favicon fallback for Safari.
+      {
+        tag: 'link',
+        attrs: {
+          rel: 'icon',
+          href:'/images/kite.ico',
+          sizes: '32x32',
+        },
+      },
+    ],
     logo: {
       src: './src/assets/kite.svg',
     },

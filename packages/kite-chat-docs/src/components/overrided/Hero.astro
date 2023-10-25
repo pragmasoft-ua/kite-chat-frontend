@@ -1,5 +1,4 @@
 ---
-import { Picture } from 'astro:assets';
 import { PAGE_TITLE_ID } from './constants';
 import type { Props } from '@astrojs/starlight/props';
 import CallToAction from '@astrojs/starlight/components/CallToAction.astro';
@@ -19,11 +18,11 @@ const imageAttrs = {
 <div class="hero">
 	<div class="image">
 	{
-		image?.file && (
+		image?.light && image?.dark && (
 		<picture>
-			<source srcset={image.file.src.replace('light', 'dark')} type="image/png" media="(prefers-color-scheme: dark)" />
-			<source srcset={image.file.src} type="image/png" media="(prefers-color-scheme: light)" />
-			<img src={image.file.src} {...imageAttrs} />
+			<source srcset={image.dark.src} type="image/png" media="(prefers-color-scheme: dark)" />
+			<source srcset={image.light.src} type="image/png" media="(prefers-color-scheme: light)" />
+			<img src={image.light.src} {...imageAttrs} />
 		</picture>
 		)
 	}
