@@ -8,6 +8,8 @@ import tailwind from "@astrojs/tailwind";
 const mode = process.env.NODE_ENV;
 console.log(mode);
 
+const base = mode == 'test' ? '/kite-chat-frontend/test' : '/kite-chat-frontend';
+
 // https://main.vitejs.dev/config/#using-environment-variables-in-config
 const { 
   BACKEND_PACKAGE_IMPORT, 
@@ -17,18 +19,18 @@ const {
 // https://astro.build/config
 export default defineConfig({
   site: 'https://www.k1te.chat',
-  base: mode == 'test' ? '/kite-chat-frontend/test' : '/kite-chat-frontend',
+  base: base,
   outDir: mode == 'test' ? 'dist/test' : 'dist',
   integrations: [lit(), starlight({
     title: 'Kite Chat',
-    favicon: '/images/kite.svg',
+    favicon: `${base}/images/kite.svg`,
     head: [
       // Add ICO favicon fallback for Safari.
       {
         tag: 'link',
         attrs: {
           rel: 'icon',
-          href:'/images/kite.ico',
+          href: `${base}/images/kite.ico`,
           sizes: '32x32',
         },
       },
@@ -111,10 +113,13 @@ export default defineConfig({
       noExternal: ['execa', 'is-stream', 'npm-run-path', /^unist-util/],
     },
     define: {
-      __BASE_URL__: mode === "test" ? "/kite-chat-frontend/test" : "/kite-chat-frontend",
+      __BASE_URL__: base,
       __BRANCH__: JSON.stringify(mode === "production" ? "main" : "test"),
       __WS_ENDPOINT__: JSON.stringify(WS_ENDPOINT),
-      __BACKEND_PACKAGE_IMPORT__: JSON.stringify(BACKEND_PACKAGE_IMPORT),
+      __BACKEND_PACKAGE_IMPORT__: JSON.stringify(mode === "test" 
+        ? `${base}/kite-chat.js` 
+        : "https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm"
+      ),
     },
   },
 });
