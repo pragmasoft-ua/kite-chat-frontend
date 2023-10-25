@@ -29,10 +29,9 @@ jobs:
       - name: Restore Cache
         uses: actions/cache@v2
         with:
-          path: |
-            packages/kite-chat-docs/dist
+          path: dist
           key: dist-${{ runner.os }}
-          restore-keys: dist-
+          restore-keys: dist-${{ runner.os }}
       - name: Install dependencies
         run: npm install
       - name: Build Kite Chat component
