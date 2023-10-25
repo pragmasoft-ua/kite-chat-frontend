@@ -1,0 +1,24 @@
+---
+title: Chat Demo
+description: Demo of kite chat widget usage.
+---
+import ImageFileExample from "@components/ImageFileExample.astro";
+import TextFileExample from "@components/TextFileExample.astro";
+
+import Sandbox from '@components/Sandbox.astro';
+import KiteChatTheme from '@components/KiteChatTheme.astro';
+
+<h2 class="!text-kite-primary-color"><span class="inline-block animate-wave origin-[30%_center]">🪁</span>Kite Sandbox</h2>
+
+<Sandbox/>
+<KiteChatTheme/>
+<kite-chat heading="👩🏻Humane support 💙💛">
+    <kite-msg>Hi</kite-msg>
+    <kite-msg status="read">Hello</kite-msg>
+    <kite-msg> Have you heard about Coding and Stuff?</kite-msg>
+    <kite-msg status="delivered">Yeah I know, they post awesome coding tutorials</kite-msg>
+    <kite-msg>But did you know they have a youtube channel?</kite-msg>
+    <kite-msg status="sent">Yeah I also subscribed to their channel</kite-msg>
+    <kite-msg><TextFileExample/></kite-msg>
+    <kite-msg status="read"><ImageFileExample/></kite-msg>
+</kite-chat>

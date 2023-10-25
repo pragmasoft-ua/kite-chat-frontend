@@ -1,0 +1,74 @@
+name: Deploy to GitHub Pages
+
+on:
+  # Trigger the workflow every time you push to the `main` branch
+  # Using a different branch name? Replace `main` with your branch’s name
+  push:
+    branches:
+      - main
+      - test
+  # Allows you to run this workflow manually from the Actions tab on GitHub.
+  workflow_dispatch:
+
+# Allow this job to clone the repo and create a page deployment
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout your repository using git
+        uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+      - name: Restore Cache
+        uses: actions/cache@v2
+        with:
+          path: | 
+            ./packages/kite-chat-docs/dist
+          key: ${{ runner.os }}-${{ hashFiles('./packages/kite-chat-docs/dist') }}
+      - name: List Cached Files
+        run: |
+          if [ -d "./packages/kite-chat-docs/dist" ]; then
+            ls -l ./packages/kite-chat-docs/dist
+          else
+            echo "files not found"
+          fi
+      - name: Cache Docs
+        uses: actions/cache@v2
+        with:
+          path: ./packages/kite-chat-docs/dist
+          key: dist-${{ runner.os }}
+      - name: Install dependencies
+        run: npm install
+      - name: Build Kite Chat component
+        run: npm run build -w @pragmasoft-ukraine/kite-chat-component
+      - name: Build Kite Chat
+        run: npm run build -w @pragmasoft-ukraine/kite-chat
+      - name: Build Docs
+        run: |
+          if [ ${{ github.ref }} = "refs/heads/test" ]; then
+            npm run build:test -w @pragmasoft-ukraine/kite-chat-docs
+          else
+            npm run build -w @pragmasoft-ukraine/kite-chat-docs
+          fi
+      - name: Upload Pages Artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./packages/kite-chat-docs/dist/
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy Docs to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
