@@ -8,7 +8,7 @@ import tailwind from "@astrojs/tailwind";
 const mode = process.env.NODE_ENV;
 console.log(mode);
 
-const base = mode == '' ? '/test' : '';
+const base = mode == 'test' ? '/test' : '';
 
 // https://main.vitejs.dev/config/#using-environment-variables-in-config
 const {
