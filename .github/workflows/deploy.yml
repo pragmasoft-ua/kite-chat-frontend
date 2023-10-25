@@ -34,7 +34,12 @@ jobs:
             ./packages/kite-chat-docs/dist
           key: ${{ runner.os }}-dist
       - name: List Cached Files
-        run: ls -l ./packages/kite-chat-docs/dist
+        run: |
+          if [ -d "./packages/kite-chat-docs/dist" ]; then
+            ls -l ./packages/kite-chat-docs/dist
+          else
+            echo "files not found"
+          fi
       - name: Install dependencies
         run: npm install
       - name: Build Kite Chat component
