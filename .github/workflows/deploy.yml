@@ -31,7 +31,7 @@ jobs:
         with:
           path: | 
             ./packages/kite-chat-docs/dist
-          key: dist-${{ runner.os }}-${{ hashFiles('./packages/kite-chat-docs/dist') }}
+          key: dist-${{ runner.os }}-${{ hashFiles('./packages/kite-chat-docs') }}
           restore-keys: dist-${{ runner.os }}-
       - name: List Cached Files
         run: |
