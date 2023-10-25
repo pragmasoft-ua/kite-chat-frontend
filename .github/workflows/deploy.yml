@@ -26,12 +26,12 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
-      - name: Restore Cache
+      - name: Cache
         uses: actions/cache@v2
         with:
           path: | 
             ./packages/kite-chat-docs/dist
-          key: ${{ runner.os }}-${{ hashFiles('./packages/kite-chat-docs/dist') }}
+          key: dist-${{ runner.os }}
       - name: List Cached Files
         run: |
           if [ -d "./packages/kite-chat-docs/dist" ]; then
@@ -39,11 +39,6 @@ jobs:
           else
             echo "files not found"
           fi
-      - name: Cache Docs
-        uses: actions/cache@v2
-        with:
-          path: ./packages/kite-chat-docs/dist
-          key: dist-${{ runner.os }}
       - name: Install dependencies
         run: npm install
       - name: Build Kite Chat component
