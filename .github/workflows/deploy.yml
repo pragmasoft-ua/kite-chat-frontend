@@ -32,6 +32,7 @@ jobs:
           path: | 
             ./packages/kite-chat-docs/dist
           key: dist-${{ runner.os }}
+          restore-keys: dist-
       - name: List Cached Files
         run: |
           if [ -d "./packages/kite-chat-docs/dist" ]; then
