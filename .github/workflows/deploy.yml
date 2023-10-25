@@ -26,6 +26,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 20
+      - name: Cache Docs
+        uses: actions/cache@v2
+        with:
+          path: ./packages/kite-chat-docs/dist
+          key: dist-${{ runner.os }}
       - name: Install dependencies
         run: npm install
       - name: Build Kite Chat component
