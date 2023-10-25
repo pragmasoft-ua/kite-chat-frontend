@@ -39,6 +39,13 @@ jobs:
           else
             npm run build -w @pragmasoft-ukraine/kite-chat-docs
           fi
+      - name: Cache Dist Folders
+        uses: actions/cache@v2
+        with:
+          path: |
+            packages/kite-chat-docs/dist
+          key: dist-${{ runner.os }}
+          restore-keys: dist-
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v1
         with:
