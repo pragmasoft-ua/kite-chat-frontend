@@ -31,6 +31,8 @@ jobs:
         with:
           path: ./packages/kite-chat-docs/dist
           key: dist-${{ runner.os }}
+      - name: List Cached Files
+        run: ls -l ./packages/kite-chat-docs/dist
       - name: Install dependencies
         run: npm install
       - name: Build Kite Chat component
