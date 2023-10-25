@@ -27,12 +27,11 @@ jobs:
         with:
           node-version: 20
       - name: Restore Cache
-        id: cache-dist-restore
-        uses: actions/cache/restore@v3
+        uses: actions/cache@v2
         with:
-          path: |
+          path: | 
             ./packages/kite-chat-docs/dist
-          key: ${{ runner.os }}-dist
+          key: ${{ runner.os }}-${{ hashFiles('./packages/kite-chat-docs/dist') }}
       - name: List Cached Files
         run: |
           if [ -d "./packages/kite-chat-docs/dist" ]; then
@@ -40,6 +39,11 @@ jobs:
           else
             echo "files not found"
           fi
+      - name: Cache Docs
+        uses: actions/cache@v2
+        with:
+          path: ./packages/kite-chat-docs/dist
+          key: dist-${{ runner.os }}
       - name: Install dependencies
         run: npm install
       - name: Build Kite Chat component
@@ -53,13 +57,6 @@ jobs:
           else
             npm run build -w @pragmasoft-ukraine/kite-chat-docs
           fi
-      - name: Save Cache
-        id: cache-dist-save
-        uses: actions/cache/save@v3
-        with:
-          path: |
-            ./packages/kite-chat-docs/dist
-          key: ${{ steps.cache-dist-restore.outputs.cache-primary-key }}
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v1
         with:
