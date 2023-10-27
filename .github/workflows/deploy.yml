@@ -1,8 +1,7 @@
 name: Deploy to GitHub Pages
 
 on:
-  # Trigger the workflow every time you push to the `main` branch
-  # Using a different branch name? Replace `main` with your branch’s name
+  # Trigger the workflow every time you push to the `main` branch or manually from the Actions tab
   push:
     branches:
       - main
@@ -17,49 +16,134 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  build_main:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout your repository using git
-        uses: actions/checkout@v3
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
+      - name: Checkout main branch using git
+        uses: actions/checkout@v2
         with:
-          node-version: 20
-      - name: Cache
-        uses: actions/cache@v2
+          ref: main
+
+      - name: Restore build files
+        if: github.event.ref != 'refs/heads/main'
+        id: cache-main-dist
+        uses: actions/cache/restore@v3
         with:
-          path: | 
-            ./packages/kite-chat-docs/dist
-          key: dist-${{ runner.os }}-${{ hashFiles('./package-lock.json') }}
-          restore-keys: dist-${{ runner.os }}-
+          path: ./packages/kite-chat-docs/dist
+          key: ${{ runner.os }}-dist-main-${{ hashFiles('./package-lock.json') }}
+
       - name: List Cached Files
-        run: |
-          if [ -d "./packages/kite-chat-docs/dist" ]; then
-            ls -l ./packages/kite-chat-docs/dist
-          else
-            echo "files not found"
-          fi
+        if: steps.cache-main-dist.outputs.cache-hit == 'true'
+        run: ls -l ./packages/kite-chat-docs/dist
+
+      - name: Set up Node.js
+        if: steps.cache-main-dist.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Cache node modules
+        if: steps.cache-main-dist.outputs.cache-hit != 'true'
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-modules-main-${{ hashFiles('./package-lock.json') }}
+
       - name: Install dependencies
+        if: steps.cache-main-dist.outputs.cache-hit != 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
-      - name: Build Kite Chat component
-        run: npm run build -w @pragmasoft-ukraine/kite-chat-component
-      - name: Build Kite Chat
-        run: npm run build -w @pragmasoft-ukraine/kite-chat
+
       - name: Build Docs
-        run: |
-          if [ ${{ github.ref }} = "refs/heads/test" ]; then
-            npm run build:test -w @pragmasoft-ukraine/kite-chat-docs
-          else
-            npm run build -w @pragmasoft-ukraine/kite-chat-docs
-          fi
+        if: steps.cache-main-dist.outputs.cache-hit != 'true'
+        run: npm run build -w @pragmasoft-ukraine/kite-chat-docs
+
+      - name: Save build files
+        if: steps.cache-main-dist.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        id: cache
+        with:
+          path: ./packages/kite-chat-docs/dist
+          key: ${{ runner.os }}-dist-main-${{ hashFiles('./package-lock.json') }}
+
+      - name: Upload Main Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: main-dist
+          path: ./packages/kite-chat-docs/dist/
+
+  build_test:
+    needs: build_main
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout test branch using git
+        uses: actions/checkout@v2
+        with:
+          ref: test
+
+      - name: Restore main build files
+        uses: actions/download-artifact@v2
+        with:
+          name: main-dist
+          path: ./packages/kite-chat-docs/dist
+
+      - name: Restore build files
+        if: github.event.ref != 'refs/heads/test'
+        id: cache-test-dist
+        uses: actions/cache/restore@v3
+        with:
+          path: ./packages/kite-chat-docs/dist/test
+          key: ${{ runner.os }}-dist-test-${{ hashFiles('./package-lock.json') }}
+
+      - name: List Cached Files
+        if: steps.cache-test-dist.outputs.cache-hit == 'true'
+        run: ls -l ./packages/kite-chat-docs/dist/test
+
+      - name: Set up Node.js
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Cache node modules
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
+        id: cache-node-modules
+        uses: actions/cache@v3
+        with:
+          path: ./node_modules
+          key: ${{ runner.os }}-modules-main-${{ hashFiles('./package-lock.json') }}
+
+      - name: Install dependencies
+        if: steps.cache-test-dist.outputs.cache-hit != 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
+        run: npm install
+
+      - name: Build Kite Chat component
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
+        run: npm run build -w @pragmasoft-ukraine/kite-chat-component
+
+      - name: Build Kite Chat
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
+        run: npm run build -w @pragmasoft-ukraine/kite-chat
+
+      - name: Build Docs for Test
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
+        run: npm run build:test -w @pragmasoft-ukraine/kite-chat-docs
+
+      - name: Save build files
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v3
+        id: save-test-dist
+        with:
+          path: ./packages/kite-chat-docs/dist/test
+          key: ${{ runner.os }}-dist-test-${{ hashFiles('./package-lock.json') }}
+
       - name: Upload Pages Artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: ./packages/kite-chat-docs/dist/
 
   deploy:
-    needs: build
+    needs: [build_main, build_test]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -67,4 +151,4 @@ jobs:
     steps:
       - name: Deploy Docs to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2
