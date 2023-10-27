@@ -17,6 +17,16 @@ function imageSchema({ image }: SchemaContext) {
 	.optional();
 }
 
+function bannerSchema() {
+	return z.object({
+		/** The content of the banner. Supports HTML syntax. */
+		content: z.string(),
+		/** Docs branch where the banner should be displayed. */
+		branch: z.enum(['main', 'test', 'any']).default('any'),
+	})
+	.optional();
+}
+
 // Get a copy of the original docsSchema
 function modifiedDocsSchema() {
 	return ({ image }: SchemaContext) =>
@@ -24,7 +34,8 @@ function modifiedDocsSchema() {
 			z.object({
 				hero: docsSchema()({ image }).shape.hero.unwrap().merge(
 					z.object({image: imageSchema({ image })})
-				).optional()
+				).optional(),
+				banner: bannerSchema(),
 			})
 		)
 }

@@ -22,7 +22,7 @@ export default defineConfig({
   outDir: mode == 'test' ? 'dist/test' : 'dist',
   integrations: [lit(), starlight({
     title: 'Kite Chat',
-    favicon: `${base}/images/kite.svg`,
+    favicon: `/images/kite.svg`,
     head: [
       // Add ICO favicon fallback for Safari.
       {
@@ -103,6 +103,7 @@ export default defineConfig({
     components: {
       Hero: './src/components/overrided/Hero.astro',
       ThemeProvider: './src/components/overrided/ThemeProvider.astro',
+      Banner: './src/components/overrided/Banner.astro',
     },
   }), tailwind({ applyBaseStyles: false })],
 
