@@ -20,7 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main branch using git
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: main
 
@@ -67,7 +67,7 @@ jobs:
           key: ${{ runner.os }}-dist-main-${{ hashFiles('./package-lock.json') }}
 
       - name: Upload Main Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: main-dist
           path: ./packages/kite-chat-docs/dist/
@@ -77,12 +77,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout test branch using git
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           ref: test
 
       - name: Restore main build files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: main-dist
           path: ./packages/kite-chat-docs/dist
