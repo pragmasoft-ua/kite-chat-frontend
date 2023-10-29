@@ -114,7 +114,7 @@ export default defineConfig({
     },
     define: {
       __BASE_URL__: base,
-      __BRANCH__: JSON.stringify(mode === "production" ? "main" : "test"),
+      __BRANCH__: JSON.stringify(mode === "test" ? "test" : "main"),
       __WS_ENDPOINT__: JSON.stringify(WS_ENDPOINT),
       __BACKEND_PACKAGE_IMPORT__: JSON.stringify(mode === "test" 
         ? `${base}/kite-chat.js` 
