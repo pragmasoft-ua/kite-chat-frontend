@@ -4,15 +4,7 @@ description: Початок роботи з компонентом Kite Chat.
 ---
 import ChatIcon from "@components/ChatIcon.astro";
 import Tag from "@components/Tag.astro";
-import KiteChatTheme from '@components/KiteChatTheme.astro';
 
-<KiteChatTheme/>
-
-{
-__BRANCH__ === "test"
-    ? <script type="module" src="__BASE_URL__/kite-chat-component.js"></script>
-    : <script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat-component/+esm"></script>
-}
 
 ### Встановлення
 
@@ -72,14 +64,3 @@ __BRANCH__ === "test"
     />
 </kite-msg>
 ```
-
-<kite-chat>
-    <kite-msg>Вітаю</kite-msg>
-    <kite-msg status="read">Привіт!</kite-msg>
-    <kite-msg>
-        <kite-file
-            name="kite-chat.txt"
-            src="data:text/plain;base64,8J+qgUtpdGUgY2hhdCB3ZWIgY29tcG9uZW50"
-        />
-    </kite-msg>
-</kite-chat>

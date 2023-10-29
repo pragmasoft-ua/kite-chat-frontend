@@ -104,6 +104,7 @@ export default defineConfig({
       Hero: './src/components/overrided/Hero.astro',
       ThemeProvider: './src/components/overrided/ThemeProvider.astro',
       Banner: './src/components/overrided/Banner.astro',
+      MarkdownContent: './src/components/overrided/MarkdownContent.astro',
     },
   }), tailwind({ applyBaseStyles: false })],
 
@@ -121,9 +122,9 @@ export default defineConfig({
         : "https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm"
       ),
       //override vite MODE variables
-      'import.meta.env.DEV': mode === "development" ? true : false,
-      'import.meta.env.PROD': mode === "development" ? false : true,
-      'import.meta.env.MODE': mode,
+      'import.meta.env.DEV': mode === "development",
+      'import.meta.env.PROD': mode !== "development",
+      'import.meta.env.MODE': JSON.stringify(mode),
     },
   },
 });

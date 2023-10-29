@@ -1,0 +1,36 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import KiteChatTheme from '@components/KiteChatTheme.astro';
+import { useTranslations } from '../../utils/translations';
+
+const isDemo = Astro.props.slug.endsWith('/demo');
+
+const t = useTranslations(Astro.props.locale);
+const kiteChatTranslations = Object.fromEntries(
+	Object.entries(t.pick('kite.')).map(([key, value]) => [key.replace('kite.', ''), value])
+);
+---
+<KiteChatTheme/>
+
+<Default {...Astro.props}><slot /></Default>
+
+{
+    !isDemo
+        ? (
+        __BRANCH__ === "test"
+            ? <script type="module" src="__BASE_URL__/kite-chat-component.js"></script>
+            : <script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat-component/+esm"></script>
+        )
+    : null
+}
+
+{
+    !isDemo
+        ? (
+            <kite-chat heading={kiteChatTranslations.heading}>
+                <kite-msg>{kiteChatTranslations.helloMsg}</kite-msg>
+            </kite-chat>
+        )
+    : null
+}
