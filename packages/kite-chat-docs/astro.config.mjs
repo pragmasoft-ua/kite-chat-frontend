@@ -120,6 +120,10 @@ export default defineConfig({
         ? `${base}/kite-chat.js` 
         : "https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm"
       ),
+      //override vite MODE variables
+      'import.meta.env.DEV': mode === "development" ? true : false,
+      'import.meta.env.PROD': mode === "development" ? false : true,
+      'import.meta.env.MODE': mode,
     },
   },
 });
