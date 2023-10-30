@@ -19,3 +19,7 @@
     position: relative;
     z-index: 1;
 }
+
+kite-msg {
+    margin-top: 1.5rem;
+}
