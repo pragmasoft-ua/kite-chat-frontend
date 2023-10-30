@@ -1,0 +1,80 @@
+---
+import { Card } from '@astrojs/starlight/components';
+import { type CollectionEntry, getCollection } from 'astro:content';
+
+const {element, tag} = Astro.props;
+
+let customElements: Record<string, CollectionEntry<'customElements'>['data']>[typeof element] = {};
+try {
+	customElements = Object.fromEntries(
+		(await getCollection('customElements')).map(({ id, data }) => [id, data] as const)
+	)[element];
+} catch {}
+
+const ignoredProperties = ["styles", "TAG"];
+---
+
+{customElements.tags?.filter(({name}) => !tag || name === tag).map((component) => (
+    <div id={component.name}>
+        <div class="mb-4">
+            <strong>Tag: </strong> {`<${component.name}></${component.name}>`}
+        </div>
+        <div class="mb-4">
+            <strong>Description: </strong> { component.description }
+        </div>
+        {component.attributes && <div class="mb-4">
+            <strong>Attributes:</strong>
+            <ul class="list-disc ml-6">
+                {component.attributes.map((attribute) => (
+                    <li>
+                        <div class="!m-0">{attribute.name} (Type:{attribute.type}) - {attribute.description}</div>
+                        <div class="!m-0">{attribute.default && `Default value: ${attribute.default}`}</div>
+                    </li>
+                ))}
+            </ul>
+        </div>}
+        {component.properties && <div class="mb-4">
+            <strong>Properties:</strong>
+            <ul class="list-disc ml-6">
+                {component.properties.filter((property) => !ignoredProperties.includes(property.name)).map((property) => (
+                    <li>
+                        <div class="!m-0">{property.name} (Type:{property.type}) - {property.description}</div>
+                        <div class="!m-0">{property.default && `Default value: ${property.default}`}</div>
+                    </li>
+                ))}
+            </ul>
+        </div>}
+        {component.cssProperties && <div class="mb-4">
+            <strong>CSS variables:</strong>
+            <ul class="list-disc ml-6">
+                {component.cssProperties.map((property) => (
+                    <li>{property.name} - {property.description}</li>
+                ))}
+            </ul>
+        </div>}
+        {component.slots && <div class="mb-4">
+            <strong>Slots:</strong>
+            <ul class="list-disc ml-6">
+                {component.slots.map((slot) => (
+                    <li>{slot.name || "default"} - {slot.description}</li>
+                ))}
+            </ul>
+        </div>}
+        {component.cssParts && <div class="mb-4">
+            <strong>CSS parts:</strong>
+            <ul class="list-disc ml-6">
+                {component.cssParts.map((part) => (
+                    <li>{part.name} - {part.description}</li>
+                ))}
+            </ul>
+        </div>}
+        {component.events && <div class="mb-4">
+            <strong>Events:</strong>
+            <ul class="list-disc ml-6">
+                {component.events.map((event) => (
+                    <li>{event.name} - {event.description}</li>
+                ))}
+            </ul>
+        </div>}
+    </div>
+))}

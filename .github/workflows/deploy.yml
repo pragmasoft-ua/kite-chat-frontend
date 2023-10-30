@@ -54,6 +54,10 @@ jobs:
         if: steps.cache-main-dist.outputs.cache-hit != 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
+      - name: Analyze Component
+        if: steps.cache-main-dist.outputs.cache-hit != 'true'
+        run: npm run analyze
+
       - name: Build Docs
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
         run: npm run build -w @pragmasoft-ukraine/kite-chat-docs
@@ -124,6 +128,10 @@ jobs:
       - name: Build Kite Chat
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
         run: npm run build -w @pragmasoft-ukraine/kite-chat
+
+      - name: Analyze Component
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
+        run: npm run analyze
 
       - name: Build Docs for Test
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
