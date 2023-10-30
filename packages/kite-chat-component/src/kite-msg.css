@@ -20,17 +20,17 @@
   width: 0;
   height: 0;
   top: 0;
-  border: 10px solid transparent;
+  border: 10px solid transparent !important;
 }
 
 :host(:not([status]))::before {
   left: -0.375rem;
-  border-top-color: var(--kite-msg-border, white);
+  border-top-color: var(--kite-msg-border, white) !important;
 }
 
 :host([status])::before {
   right: -0.375rem;
-  border-top-color: var(--kite-msg-sent-border, theme('colors.stone.300'));
+  border-top-color: var(--kite-msg-sent-border, theme('colors.stone.300')) !important;
 }
 
 time {
