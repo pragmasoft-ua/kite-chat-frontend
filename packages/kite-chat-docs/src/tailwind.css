@@ -8,7 +8,7 @@
 }
 
 :root[data-theme="light"] {
-    --sl-color-black: #fcfdfc;
+    --sl-color-black: #f4f4f4;
 }
 
 .site-title > img {
