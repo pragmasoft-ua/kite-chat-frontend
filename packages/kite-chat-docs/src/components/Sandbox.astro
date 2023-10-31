@@ -53,7 +53,7 @@ const {
             selector
         ) => {
             const el = document.querySelector(selector);
-            if (!el) throw new Error(`Element '${selector}' is missing`);
+            if (!el) throw new Error(`Element ${selector} is missing`);
             return el;
         };
         
@@ -67,19 +67,14 @@ const {
         const root = document.documentElement;
         const fileInfo = file => (file.name + ' ' + prettyBytes(file.size));
         
-        //BUG! astro error when using template string
         kiteChat.addEventListener(
             'kite-chat.send',
             e => {
                 const payload = e.detail;
                 const message = isPlaintextMsg(payload) ? payload.text : fileInfo(payload.file);
-                outgoing.insertAdjacentHTML(
-                'beforeend',
-                '<p>'+ payload?.timestamp?.toISOString() + ':' + message + '</p>'
-                );
+                outgoing.insertAdjacentHTML('beforeend', `<p>${payload?.timestamp?.toISOString()}:${message}</p>`);
             }
         );
-        
         
         sendToChatBtn.addEventListener('click', () =>
             kiteChat.appendMsg({text: textarea.value})
