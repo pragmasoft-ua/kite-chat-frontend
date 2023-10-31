@@ -2,6 +2,7 @@ import type {KiteChatElement} from './kite-chat';
 import {KiteFileElement} from './kite-file';
 import type {KiteMsgElement} from './kite-msg';
 import type {KiteMsg} from './kite-payload';
+import "@oddbird/popover-polyfill";
 
 declare global {
   interface HTMLElementTagNameMap {

@@ -4,7 +4,7 @@
  * LGPLv3
  */
 
-import {LitElement, html, css, unsafeCSS} from 'lit';
+import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
@@ -18,6 +18,7 @@ import {
   MsgStatus,
   PlaintextMsg,
 } from './kite-payload';
+import {AnchorController} from './anchor-controller';
 
 console.debug('kite-chat loaded');
 
@@ -59,8 +60,32 @@ export class KiteChatElement extends LitElement {
   @query('textarea')
   private textarea!: HTMLTextAreaElement;
 
+  @query('#kite-dialog')
+  private dialog!: HTMLElement;
+
   @state()
   private sendEnabled = false;
+
+  protected anchorController!: AnchorController;
+
+  constructor() {
+    super();
+
+    if (!CSS.supports('anchor-name', '--combobox')) {
+        // The anchor-name property is not supported
+        this.anchorController = new AnchorController(this, {width: '20rem', height: '30rem'})
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>): void {
+    if (changedProperties.has('open')) {
+      if (this.open) {
+        this.dialog.showPopover();
+      } else {
+        this.dialog.hidePopover();
+      }
+    }
+  }
 
   override render() {
     return html`
@@ -69,6 +94,7 @@ export class KiteChatElement extends LitElement {
           title="Show live chat dialog"
           class="kite-toggle bg-primary-color fixed right-4 bottom-4 z-30 h-12 w-12 cursor-pointer rounded-full p-2 text-secondary-color shadow hover:text-opacity-80"
           @click="${this._toggleOpen}"
+          popovertarget="kite-dialog"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -85,10 +111,12 @@ export class KiteChatElement extends LitElement {
           </svg>
         </div>
         <div
+          popover="manual"
+          id="kite-dialog"
           class="kite-dialog ${classMap({
             'scale-y-100': this.open,
             'scale-y-0': !this.open,
-          })} selection:bg-primary-color fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
+          })} selection:bg-primary-color fixed p-0 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
         >
           <header
             class="bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-secondary-color"

@@ -76,3 +76,18 @@ main::-webkit-scrollbar-thumb {
     @apply border-neutral-600 bg-neutral-800 text-white/95;
   }
 }
+
+@supports(anchor-name: --combobox) {
+  [popovertarget] {
+      anchor-name: --combobox;
+  }
+
+  [popover] {
+      position: fixed;
+      anchor-default: --combobox;
+      left: auto;
+      right: anchor(right);
+      bottom: calc(anchor(top) + 1rem);
+      top: auto;
+  }
+}
