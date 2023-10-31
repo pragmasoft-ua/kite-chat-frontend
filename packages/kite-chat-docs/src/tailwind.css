@@ -8,7 +8,7 @@
 }
 
 :root[data-theme="light"] {
-    --sl-color-black: #fcfdfc;
+    --sl-color-black: #f4f4f4;
 }
 
 .site-title > img {
@@ -18,4 +18,8 @@
 .main-pane {
     position: relative;
     z-index: 1;
+}
+
+kite-msg {
+    margin-top: 1.5rem;
 }

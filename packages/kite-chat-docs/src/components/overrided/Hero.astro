@@ -46,14 +46,14 @@ const imageAttrs = {
 
 <script is:inline>
 	window.addEventListener('theme-change', (event) => {
-		modeChange(event.detail.theme);
+		heroImageChange(event.detail.theme);
 	})
 
 	const picture = document.querySelector('picture');
 	const dark = picture.querySelector('source[media="(prefers-color-scheme: dark)"]');
 	const light = picture.querySelector('source[media="(prefers-color-scheme: light)"]');
 
-	const modeChange = (mode) => {
+	const heroImageChange = (mode) => {
 		if (mode === 'dark') {
 			dark.media = 'all';
 			light.media = 'none';

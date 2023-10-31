@@ -22,6 +22,7 @@ module.exports = {
 				gray: colors.slate,
 
 				"kite-primary-color": "var(--kite-primary-color)",
+				"kite-secondary-color": "var(--kite-secondary-color)",
 			},
 		},
 	},

@@ -27,7 +27,7 @@
     "dev:docs": "npm run dev -w @pragmasoft-ukraine/kite-chat-docs",
     "build:docs": "npm run build -w @pragmasoft-ukraine/kite-chat-docs",
     "preview:docs": "npm run preview -w @pragmasoft-ukraine/kite-chat-docs",
-    "analyze:docs": "npm run analyze -w @pragmasoft-ukraine/kite-chat-docs"
+    "analyze": "npm run wca:analyze -w @pragmasoft-ukraine/kite-chat-component"
   },
   "devDependencies": {
     "@jest/globals": "^29.6.4",

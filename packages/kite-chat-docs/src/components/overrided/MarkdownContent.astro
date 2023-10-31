@@ -1,0 +1,45 @@
+---
+import type { Props } from '@astrojs/starlight/props';
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import KiteChatTheme from '@components/KiteChatTheme.astro';
+import { useTranslations } from '../../utils/translations';
+
+const isDemo = Astro.props.slug.endsWith('/demo');
+
+const t = useTranslations(Astro.props.locale);
+const kiteChatTranslations = Object.fromEntries(
+	Object.entries(t.pick('kite.')).map(([key, value]) => [key.replace('kite.', ''), value])
+);
+---
+<KiteChatTheme/>
+
+<script is:inline>
+    async function loadModules() {
+        try {
+            return await import("__BACKEND_PACKAGE_IMPORT__");
+        } catch (error) {
+            console.error('Error loading modules:', error);
+        }
+    }
+
+    loadModules().then(({ KiteChat }) => {
+        const endpoint = "__WS_ENDPOINT__";
+    
+        console.log('endpoint', endpoint);
+        
+        const kiteChat = new KiteChat({endpoint});
+        addEventListener('beforeunload', () => kiteChat.disconnect());
+    });
+</script>
+
+<Default {...Astro.props}><slot /></Default>
+
+{
+    !isDemo
+        ? (
+            <kite-chat heading={kiteChatTranslations.heading}>
+                <kite-msg>{kiteChatTranslations.helloMsg}</kite-msg>
+            </kite-chat>
+        )
+    : null
+}

@@ -42,31 +42,22 @@ const {
 <script is:inline>
     async function loadModules() {
         try {
-            const { isPlaintextMsg, KiteChat } = await import(__BACKEND_PACKAGE_IMPORT__);
-            const prettyBytes = await import('https://cdn.jsdelivr.net/npm/pretty-bytes@6.1.1/+esm');
-
-            return { isPlaintextMsg, KiteChat, prettyBytes };
+            return await import("__BACKEND_PACKAGE_IMPORT__");
         } catch (error) {
             console.error('Error loading modules:', error);
         }
     }
 
-    loadModules().then(({ isPlaintextMsg, KiteChat, prettyBytes }) => {
-        const endpoint = __WS_ENDPOINT__;
-    
-        console.log('endpoint', endpoint);
-        
-        const kiteChat = new KiteChat({endpoint});
-        addEventListener('beforeunload', () => kiteChat.disconnect());
-        
+    loadModules().then(({ isPlaintextMsg, prettyBytes }) => {
         const requiredElement = (
             selector
         ) => {
             const el = document.querySelector(selector);
-            if (!el) throw new Error(`Element '${selector}' is missing`);
+            if (!el) throw new Error(`Element ${selector} is missing`);
             return el;
         };
         
+        const kiteChat = requiredElement('kite-chat');
         const textarea = requiredElement('textarea');
         const sendToChatBtn = requiredElement('#send');
         const openBtn = requiredElement('#open');
@@ -76,25 +67,20 @@ const {
         const root = document.documentElement;
         const fileInfo = file => (file.name + ' ' + prettyBytes(file.size));
         
-        //BUG! astro error when using template string
-        kiteChat.element?.addEventListener(
+        kiteChat.addEventListener(
             'kite-chat.send',
             e => {
                 const payload = e.detail;
                 const message = isPlaintextMsg(payload) ? payload.text : fileInfo(payload.file);
-                outgoing.insertAdjacentHTML(
-                'beforeend',
-                '<p>'+ payload?.timestamp?.toISOString() + ':' + message + '</p>'
-                );
+                outgoing.insertAdjacentHTML('beforeend', `<p>${payload?.timestamp?.toISOString()}:${message}</p>`);
             }
         );
         
-        
         sendToChatBtn.addEventListener('click', () =>
-            kiteChat.element?.appendMsg({text: textarea.value})
+            kiteChat.appendMsg({text: textarea.value})
         );
-        openBtn.addEventListener('click', () => kiteChat.element?.show());
-        closeBtn.addEventListener('click', () => kiteChat.element?.hide());
+        openBtn.addEventListener('click', () => kiteChat.show());
+        closeBtn.addEventListener('click', () => kiteChat.hide());
         colorpicker.addEventListener('input', (e) => {
             const target = e.target;
             const color = target.value;

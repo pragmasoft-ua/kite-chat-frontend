@@ -22,7 +22,7 @@ export default defineConfig({
   outDir: mode == 'test' ? 'dist/test' : 'dist',
   integrations: [lit(), starlight({
     title: 'Kite Chat',
-    favicon: `${base}/images/kite.svg`,
+    favicon: `/images/kite.svg`,
     head: [
       // Add ICO favicon fallback for Safari.
       {
@@ -103,6 +103,8 @@ export default defineConfig({
     components: {
       Hero: './src/components/overrided/Hero.astro',
       ThemeProvider: './src/components/overrided/ThemeProvider.astro',
+      Banner: './src/components/overrided/Banner.astro',
+      MarkdownContent: './src/components/overrided/MarkdownContent.astro',
     },
   }), tailwind({ applyBaseStyles: false })],
 
@@ -113,12 +115,16 @@ export default defineConfig({
     },
     define: {
       __BASE_URL__: base,
-      __BRANCH__: JSON.stringify(mode === "production" ? "main" : "test"),
-      __WS_ENDPOINT__: JSON.stringify(WS_ENDPOINT),
-      __BACKEND_PACKAGE_IMPORT__: JSON.stringify(mode === "test" 
+      __BRANCH__: JSON.stringify(mode === "test" ? "test" : "main"),
+      __WS_ENDPOINT__: WS_ENDPOINT,
+      __BACKEND_PACKAGE_IMPORT__: mode === "test" 
         ? `${base}/kite-chat.js` 
         : "https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm"
-      ),
+      ,
+      //override vite MODE variables
+      'import.meta.env.DEV': mode === "development",
+      'import.meta.env.PROD': mode !== "development",
+      'import.meta.env.MODE': JSON.stringify(mode),
     },
   },
 });
