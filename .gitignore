@@ -5,3 +5,5 @@ packages/*/tsconfig.tsbuildinfo
 types
 **/.env
 .astro
+packages/kite-chat-docs/kite-chat-component.js
+packages/kite-chat-docs/kite-chat.js
