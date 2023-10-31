@@ -13,17 +13,26 @@ const kiteChatTranslations = Object.fromEntries(
 ---
 <KiteChatTheme/>
 
-<Default {...Astro.props}><slot /></Default>
+<script is:inline>
+    async function loadModules() {
+        try {
+            return await import("__BACKEND_PACKAGE_IMPORT__");
+        } catch (error) {
+            console.error('Error loading modules:', error);
+        }
+    }
 
-{
-    !isDemo
-        ? (
-        __BRANCH__ === "test"
-            ? <script type="module" src="__BASE_URL__/kite-chat-component.js"></script>
-            : <script type="module" src="https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat-component/+esm"></script>
-        )
-    : null
-}
+    loadModules().then(({ KiteChat }) => {
+        const endpoint = "__WS_ENDPOINT__";
+    
+        console.log('endpoint', endpoint);
+        
+        const kiteChat = new KiteChat({endpoint});
+        addEventListener('beforeunload', () => kiteChat.disconnect());
+    });
+</script>
+
+<Default {...Astro.props}><slot /></Default>
 
 {
     !isDemo

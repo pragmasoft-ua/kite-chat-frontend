@@ -42,20 +42,13 @@ const {
 <script is:inline>
     async function loadModules() {
         try {
-            return await import(__BACKEND_PACKAGE_IMPORT__);
+            return await import("__BACKEND_PACKAGE_IMPORT__");
         } catch (error) {
             console.error('Error loading modules:', error);
         }
     }
 
-    loadModules().then(({ isPlaintextMsg, KiteChat, prettyBytes }) => {
-        const endpoint = __WS_ENDPOINT__;
-    
-        console.log('endpoint', endpoint);
-        
-        const kiteChat = new KiteChat({endpoint});
-        addEventListener('beforeunload', () => kiteChat.disconnect());
-        
+    loadModules().then(({ isPlaintextMsg, prettyBytes }) => {
         const requiredElement = (
             selector
         ) => {
@@ -64,6 +57,7 @@ const {
             return el;
         };
         
+        const kiteChat = requiredElement('kite-chat');
         const textarea = requiredElement('textarea');
         const sendToChatBtn = requiredElement('#send');
         const openBtn = requiredElement('#open');
@@ -74,7 +68,7 @@ const {
         const fileInfo = file => (file.name + ' ' + prettyBytes(file.size));
         
         //BUG! astro error when using template string
-        kiteChat.element?.addEventListener(
+        kiteChat.addEventListener(
             'kite-chat.send',
             e => {
                 const payload = e.detail;
@@ -88,10 +82,10 @@ const {
         
         
         sendToChatBtn.addEventListener('click', () =>
-            kiteChat.element?.appendMsg({text: textarea.value})
+            kiteChat.appendMsg({text: textarea.value})
         );
-        openBtn.addEventListener('click', () => kiteChat.element?.show());
-        closeBtn.addEventListener('click', () => kiteChat.element?.hide());
+        openBtn.addEventListener('click', () => kiteChat.show());
+        closeBtn.addEventListener('click', () => kiteChat.hide());
         colorpicker.addEventListener('input', (e) => {
             const target = e.target;
             const color = target.value;
