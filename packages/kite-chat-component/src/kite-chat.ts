@@ -19,6 +19,7 @@ import {
   PlaintextMsg,
 } from './kite-payload';
 import {AnchorController} from './anchor-controller';
+import {DraggableController} from './draggable-controller';
 
 console.debug('kite-chat loaded');
 
@@ -68,6 +69,8 @@ export class KiteChatElement extends LitElement {
 
   protected anchorController!: AnchorController;
 
+  protected draggableController = new DraggableController(this, "#kite-toggle", this._toggleOpen.bind(this));
+
   constructor() {
     super();
 
@@ -91,9 +94,9 @@ export class KiteChatElement extends LitElement {
     return html`
       <div class="kite">
         <div
+          id="kite-toggle"
           title="Show live chat dialog"
           class="kite-toggle bg-primary-color fixed right-4 bottom-4 z-30 h-12 w-12 cursor-pointer rounded-full p-2 text-secondary-color shadow hover:text-opacity-80"
-          @click="${this._toggleOpen}"
           popovertarget="kite-dialog"
         >
           <svg

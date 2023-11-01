@@ -13,6 +13,8 @@ type Size = {
 export class AnchorController {
     private targetSelector = "[popovertarget]";
     private popoverSelector = "[popover]";
+    private handleToggleBound: () => void;
+    private targetObserver: MutationObserver;
 
     constructor(
         private host: ReactiveControllerHost & HTMLElement, 
@@ -31,10 +33,20 @@ export class AnchorController {
 
     hostConnected() {
         window.addEventListener('resize', this.positionPopover.bind(this));
+        this.handleToggleBound = this.positionPopover.bind(this);
+        this.targetObserver = new MutationObserver(this.positionPopover.bind(this));
+    }
+
+    hostUpdate() {
+        if (this.popoverElement) {
+            this.targetObserver.disconnect();
+            this.popoverElement.removeEventListener('toggle', this.handleToggleBound);
+        }
     }
 
     hostUpdated() {
-        this.popoverElement.addEventListener('toggle', this.positionPopover.bind(this)); 
+        this.popoverElement.addEventListener('toggle', this.handleToggleBound); 
+        this.targetObserver.observe(this.targetElement, { attributes: true, childList: true, subtree: true });
     }
 
     hostDisconnected() {
