@@ -17,7 +17,7 @@
 
 .main-pane {
     position: relative;
-    z-index: 1;
+    z-index: 10;
 }
 
 kite-msg {
