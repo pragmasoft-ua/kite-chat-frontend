@@ -9,6 +9,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab on GitHub.
   workflow_dispatch:
 
+env:
+  # Setting an environment variable with the value of a configuration variable
+  npm_token: ${{ vars.NPM_TOKEN }}
+
 # Allow this job to clone the repo and create a page deployment
 permissions:
   contents: read
@@ -75,6 +79,18 @@ jobs:
         with:
           name: main-dist
           path: ./packages/kite-chat-docs/dist/
+
+      - name: Upload Kite Chat Component Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: kite-chat-component
+          path: ./packages/kite-chat-component
+
+      - name: Upload Kite Chat Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: kite-chat
+          path: ./packages/kite-chat
 
   build_test:
     needs: build_main
@@ -149,6 +165,36 @@ jobs:
         uses: actions/upload-pages-artifact@v2
         with:
           path: ./packages/kite-chat-docs/dist/
+
+  publish_kite_chat_component:
+    needs: build_main
+    runs-on: ubuntu-latest
+    if: github.event.ref == 'refs/heads/main'
+    steps:
+      - name: Restore Kite Chat Component Package
+        uses: actions/download-artifact@v3
+        with:
+          name: kite-chat-component
+          path: ./packages/kite-chat-component
+      - name: Publish Kite Chat Component
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ env.npm_token }}" > ~/.npmrc
+          npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
+
+  publish_kite_chat:
+    needs: build_main
+    runs-on: ubuntu-latest
+    if: github.event.ref == 'refs/heads/main'
+    steps:
+      - name: Restore Kite Chat Package
+        uses: actions/download-artifact@v3
+        with:
+          name: kite-chat
+          path: ./packages/kite-chat
+      - name: Publish Kite Chat
+        run: |
+          echo "//registry.npmjs.org/:_authToken=${{ env.npm_token }}" > ~/.npmrc
+          npm publish --access public -w @pragmasoft-ukraine/kite-chat
 
   deploy:
     needs: [build_main, build_test]
