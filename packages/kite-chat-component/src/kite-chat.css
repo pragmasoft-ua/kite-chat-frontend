@@ -99,7 +99,7 @@ main::-webkit-scrollbar-thumb {
 
 @media (max-height: 35rem) {
   .kite-dialog {
-    height: 98vh;
+    height: 98dvh;
     width: 98vw;
     max-width: 30rem;
     right: 1vmin;
