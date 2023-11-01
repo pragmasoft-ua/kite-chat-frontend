@@ -74,13 +74,13 @@ export class KiteChatElement extends LitElement {
   constructor() {
     super();
 
-    if (!CSS.supports('anchor-name', '--toggle') && !CSS.supports('height', 'anchor-size(height)')) {
+    if (!CSS.supports('anchor-name', '--toggle')) {
         // The anchor-name property is not supported
         this.anchorController = new AnchorController(this, {
-          height: '30rem', 
-          margin: '1rem', 
-          gap: '1rem'
-        });
+            x: '--custom-anchor-x',
+            y: '--custom-anchor-y'
+          }, '.kite-toggle', '.kite-dialog'
+        );
     }
   }
 
@@ -126,7 +126,7 @@ export class KiteChatElement extends LitElement {
           class="kite-dialog ${classMap({
             'scale-y-100': this.open,
             'scale-y-0': !this.open,
-          })} selection:bg-primary-color outline-none fixed p-0 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
+          })} selection:bg-primary-color outline-none fixed p-0 z-40 flex origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
         >
           <header
             class="bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-secondary-color"
@@ -179,7 +179,7 @@ export class KiteChatElement extends LitElement {
               spellcheck="true"
               wrap="soft"
               placeholder="Type a message"
-              class="caret-primary-color max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
+              class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
               @input=${this._handleEnabled}
               @keyup=${this._handleKeyUp}
             ></textarea>

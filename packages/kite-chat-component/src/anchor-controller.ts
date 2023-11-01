@@ -5,21 +5,20 @@ type Anchor = {
     y: number;
 }
 
-type Size = {
-    height?: string;
-    margin?: string;
-    gap?: string;
+type Variables = {
+    x: string;
+    y: string;
 }
 
 export class AnchorController {
-    private targetSelector = "[popovertarget]";
-    private popoverSelector = "[popover]";
     private handleToggleBound: () => void;
     private targetObserver: MutationObserver;
 
     constructor(
         private host: ReactiveControllerHost & HTMLElement, 
-        private popoverSize: Size | null = null,
+        private variables: Variables | null = null,
+        private targetSelector = "[popovertarget]",
+        private popoverSelector = "[popover]",
     ) {
         this.host.addController(this);
     }
@@ -68,29 +67,15 @@ export class AnchorController {
 
     positionPopover() {
         if (this.popoverElement && this.targetElement) {
-            const popoverRect = this.popoverElement.getBoundingClientRect();
-            const targetRect = this.targetElement.getBoundingClientRect();
-            const width = `${popoverRect.width}px`;
-            const height = this.popoverSize?.height ?? `${popoverRect.height}px`;
-            const margin = this.popoverSize?.margin ?? '0';
-            const gap = this.popoverSize?.gap ?? '0';
-            const maxHeight = `calc(100dvh - ${targetRect.height}px - ${margin} * 2 - ${gap})`;
-            const maxWidth = `calc(100vw - ${margin} * 2)`;
-            
-            const calculatePosition = () => {
-                this.computePosition(this.targetElement).then(({ x, y }: Anchor) => {
-                    Object.assign(this.popoverElement.style, {
-                        margin: '0',
-                        left: `calc(${x}px - min(${width}, ${maxWidth})`,
-                        top: `calc(${y}px - min(${height}, ${maxHeight}) - ${gap})`,
-                        maxHeight,
-                        maxWidth,
-                    });
-                });
-            };
-        
             // Use requestAnimationFrame to ensure synchronized calculation
-            requestAnimationFrame(calculatePosition);
+            requestAnimationFrame(() => {
+                this.computePosition(this.targetElement).then(({ x, y }: Anchor) => {
+                    if(this.variables) {
+                        this.popoverElement.style.setProperty(this.variables.x, `${x}px`);
+                        this.variables && this.popoverElement.style.setProperty(this.variables.y, `${y}px`);
+                    }
+                });
+            });
         }
     }
 }
