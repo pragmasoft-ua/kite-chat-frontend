@@ -83,8 +83,10 @@ export class KiteChatElement extends LitElement {
   override updated(changedProperties: PropertyValues<this>): void {
     if (changedProperties.has('open')) {
       if (this.open) {
+        this.textarea.focus();
         this.dialog.showPopover();
       } else {
+        this.textarea.blur();
         this.dialog.hidePopover();
       }
     }
@@ -280,7 +282,6 @@ export class KiteChatElement extends LitElement {
     this.dispatchEvent(e);
     if (!e.defaultPrevented) {
       this.open = true;
-      this.textarea.focus();
     }
   }
 
