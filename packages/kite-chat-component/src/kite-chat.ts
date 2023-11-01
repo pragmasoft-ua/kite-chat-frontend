@@ -120,6 +120,7 @@ export class KiteChatElement extends LitElement {
           </svg>
         </div>
         <dialog
+          tabindex="-1"
           popover="manual"
           id="kite-dialog"
           class="kite-dialog ${classMap({
