@@ -173,10 +173,12 @@ jobs:
           name: kite-chat-component
       - name: Display structure of restored files
         run: ls -R
-      - name: Publish Kite Chat Component
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          npm publish --access public
+      - name: Config npm
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks
 
   publish_kite_chat:
     needs: build_main
@@ -189,10 +191,12 @@ jobs:
           name: kite-chat
       - name: Display structure of restored files
         run: ls -R
-      - name: Publish Kite Chat
-        run: |
-          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > .npmrc
-          npm publish --access public
+      - name: Config npm
+        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Publish to npm
+        run: pnpm publish --access public --no-git-checks
 
   deploy:
     needs: [build_main, build_test]
