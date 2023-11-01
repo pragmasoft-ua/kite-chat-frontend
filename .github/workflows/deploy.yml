@@ -178,7 +178,7 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
+        run: npm publish --access public --no-git-checks
 
   publish_kite_chat:
     needs: build_main
@@ -196,7 +196,7 @@ jobs:
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
       - name: Publish to npm
-        run: pnpm publish --access public --no-git-checks
+        run: npm publish --access public --no-git-checks
 
   deploy:
     needs: [build_main, build_test]
