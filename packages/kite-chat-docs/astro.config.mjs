@@ -104,7 +104,7 @@ export default defineConfig({
       Hero: './src/components/overrided/Hero.astro',
       ThemeProvider: './src/components/overrided/ThemeProvider.astro',
       Banner: './src/components/overrided/Banner.astro',
-      MarkdownContent: './src/components/overrided/MarkdownContent.astro',
+      PageFrame: './src/components/overrided/PageFrame.astro',
     },
   }), tailwind({ applyBaseStyles: false })],
 
