@@ -4,7 +4,7 @@
  * LGPLv3
  */
 
-import {LitElement, html, css, unsafeCSS} from 'lit';
+import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
@@ -18,6 +18,8 @@ import {
   MsgStatus,
   PlaintextMsg,
 } from './kite-payload';
+import {AnchorController} from './anchor-controller';
+import {DraggableController} from './draggable-controller';
 
 console.debug('kite-chat loaded');
 
@@ -59,16 +61,49 @@ export class KiteChatElement extends LitElement {
   @query('textarea')
   private textarea!: HTMLTextAreaElement;
 
+  @query('#kite-dialog')
+  private dialog!: HTMLElement;
+
   @state()
   private sendEnabled = false;
+
+  protected anchorController!: AnchorController;
+
+  protected draggableController = new DraggableController(this, "#kite-toggle", this._toggleOpen.bind(this));
+
+  constructor() {
+    super();
+
+    if (!CSS.supports('anchor-name', '--toggle')) {
+        // The anchor-name property is not supported
+        this.anchorController = new AnchorController(this, {
+            x: '--custom-anchor-x',
+            y: '--custom-anchor-y'
+          }, '.kite-toggle', '.kite-dialog'
+        );
+    }
+  }
+
+  override updated(changedProperties: PropertyValues<this>): void {
+    if (changedProperties.has('open')) {
+      if (this.open) {
+        this.textarea.focus();
+        this.dialog.showPopover();
+      } else {
+        this.textarea.blur();
+        this.dialog.hidePopover();
+      }
+    }
+  }
 
   override render() {
     return html`
       <div class="kite">
         <div
+          id="kite-toggle"
           title="Show live chat dialog"
           class="kite-toggle bg-primary-color fixed right-4 bottom-4 z-30 h-12 w-12 cursor-pointer rounded-full p-2 text-secondary-color shadow hover:text-opacity-80"
-          @click="${this._toggleOpen}"
+          popovertarget="kite-dialog"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -84,11 +119,14 @@ export class KiteChatElement extends LitElement {
             />
           </svg>
         </div>
-        <div
+        <dialog
+          tabindex="-1"
+          popover="manual"
+          id="kite-dialog"
           class="kite-dialog ${classMap({
             'scale-y-100': this.open,
             'scale-y-0': !this.open,
-          })} selection:bg-primary-color fixed right-4 bottom-20 z-40 flex h-[30rem] w-[20rem] origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
+          })} selection:bg-primary-color outline-none fixed p-0 z-40 flex origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
         >
           <header
             class="bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-secondary-color"
@@ -141,7 +179,7 @@ export class KiteChatElement extends LitElement {
               spellcheck="true"
               wrap="soft"
               placeholder="Type a message"
-              class="caret-primary-color max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
+              class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
               @input=${this._handleEnabled}
               @keyup=${this._handleKeyUp}
             ></textarea>
@@ -168,7 +206,7 @@ export class KiteChatElement extends LitElement {
               />
             </svg>
           </footer>
-        </div>
+        </dialog>
       </div>
     `;
   }
@@ -249,7 +287,6 @@ export class KiteChatElement extends LitElement {
     this.dispatchEvent(e);
     if (!e.defaultPrevented) {
       this.open = true;
-      this.textarea.focus();
     }
   }
 

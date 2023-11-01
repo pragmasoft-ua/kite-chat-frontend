@@ -1,8 +1,10 @@
 ---
 import type { Props } from '@astrojs/starlight/props';
-import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import Default from '@astrojs/starlight/components/PageFrame.astro';
 import KiteChatTheme from '@components/KiteChatTheme.astro';
 import { useTranslations } from '../../utils/translations';
+import ImageFileExample from "@components/ImageFileExample.astro";
+import TextFileExample from "@components/TextFileExample.astro";
 
 const isDemo = Astro.props.slug.endsWith('/demo');
 
@@ -11,6 +13,12 @@ const kiteChatTranslations = Object.fromEntries(
 	Object.entries(t.pick('kite.')).map(([key, value]) => [key.replace('kite.', ''), value])
 );
 ---
+<Default {...Astro.props}>
+    <slot />
+    <slot name="header" slot="header"/>
+    <slot name="sidebar" slot="sidebar"/>
+</Default>
+
 <KiteChatTheme/>
 
 <script is:inline>
@@ -32,8 +40,6 @@ const kiteChatTranslations = Object.fromEntries(
     });
 </script>
 
-<Default {...Astro.props}><slot /></Default>
-
 {
     !isDemo
         ? (
@@ -41,5 +47,16 @@ const kiteChatTranslations = Object.fromEntries(
                 <kite-msg>{kiteChatTranslations.helloMsg}</kite-msg>
             </kite-chat>
         )
-    : null
+    : (
+        <kite-chat heading={kiteChatTranslations.heading}>
+            <kite-msg>{kiteChatTranslations.exampleMsgs[0]}</kite-msg>
+            <kite-msg status="read">{kiteChatTranslations.exampleMsgs[1]}</kite-msg>
+            <kite-msg>{kiteChatTranslations.exampleMsgs[2]}</kite-msg>
+            <kite-msg status="delivered">{kiteChatTranslations.exampleMsgs[3]}</kite-msg>
+            <kite-msg>{kiteChatTranslations.exampleMsgs[4]}</kite-msg>
+            <kite-msg status="sent">{kiteChatTranslations.exampleMsgs[5]}</kite-msg>
+            <kite-msg><TextFileExample/></kite-msg>
+            <kite-msg status="read"><ImageFileExample/></kite-msg>
+        </kite-chat>
+    )
 }
