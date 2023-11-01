@@ -15,7 +15,6 @@ export class DraggableController {
 
     private handleMouseDownBound: (event: MouseEvent) => void;
     private handleClickBound: () => void;
-    private handleTouchStartBound: (event: TouchEvent) => void;
 
     constructor(
         private host: ReactiveControllerHost & HTMLElement,
@@ -32,32 +31,25 @@ export class DraggableController {
     hostConnected() {
         window.addEventListener('mousemove', this.handleMouseMove.bind(this));
         window.addEventListener('mouseup', this.handleMouseUp.bind(this));
-        window.addEventListener('touchmove', this.handleTouchMove.bind(this));
-        window.addEventListener('touchend', this.handleTouchEnd.bind(this));
         this.handleMouseDownBound = this.handleMouseDown.bind(this);
         this.handleClickBound = this.handleClick.bind(this);
-        this.handleTouchStartBound = this.handleTouchStart.bind(this);
     }
 
     hostUpdate() {
         if (this.targetElement) {
             this.targetElement.removeEventListener('mousedown', this.handleMouseDownBound);
             this.targetElement.removeEventListener('click', this.handleClickBound);
-            this.targetElement.removeEventListener('touchstart', this.handleTouchStartBound);
         }
     }
 
     hostUpdated() {
         this.targetElement.addEventListener('mousedown', this.handleMouseDownBound);
         this.targetElement.addEventListener('click', this.handleClickBound);
-        this.targetElement.addEventListener('touchstart', this.handleTouchStartBound);
     }
 
     hostDisconnected() {
         window.removeEventListener('mousemove', this.handleMouseMove.bind(this));
         window.removeEventListener('mouseup', this.handleMouseUp.bind(this));
-        window.removeEventListener('touchmove', this.handleTouchMove.bind(this));
-        window.removeEventListener('touchend', this.handleTouchEnd.bind(this));
     }
 
     private handleClick() {
@@ -76,17 +68,9 @@ export class DraggableController {
         this.start({ x: event.clientX, y: event.clientY });
     }
 
-    private handleTouchStart(event: TouchEvent) {
-        this.start({ x: event.touches[0].clientX, y: event.touches[0].clientY });
-    }
-
     private handleMouseMove(event: MouseEvent) {
         event.preventDefault();
         this.move({ x: event.clientX, y: event.clientY });
-    }
-
-    private handleTouchMove(event: TouchEvent) {
-        this.move({ x: event.touches[0].clientX, y: event.touches[0].clientY });
     }
 
     private start(position: Position) {
@@ -122,10 +106,6 @@ export class DraggableController {
 
     private handleMouseUp() {
         this.targetElement.style.cursor = 'pointer';
-        this.end();
-    }
-
-    private handleTouchEnd() {
         this.end();
     }
 }
