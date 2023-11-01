@@ -77,7 +77,6 @@ export class DraggableController {
     }
 
     private handleTouchStart(event: TouchEvent) {
-        event.preventDefault();
         this.start({ x: event.touches[0].clientX, y: event.touches[0].clientY });
     }
 
