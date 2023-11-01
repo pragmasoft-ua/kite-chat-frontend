@@ -179,7 +179,7 @@ jobs:
       - name: Publish Kite Chat Component
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ env.npm_token }}" > ~/.npmrc
-          npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
+          npm publish --access public
 
   publish_kite_chat:
     needs: build_main
@@ -194,7 +194,7 @@ jobs:
       - name: Publish Kite Chat
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ env.npm_token }}" > ~/.npmrc
-          npm publish --access public -w @pragmasoft-ukraine/kite-chat
+          npm publish --access public
 
   deploy:
     needs: [build_main, build_test]
