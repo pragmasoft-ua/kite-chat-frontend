@@ -46,6 +46,7 @@ export class AnchorController {
     }
 
     hostUpdated() {
+        this.positionPopover();
         this.popoverElement.addEventListener('toggle', this.handleToggleBound); 
         this.targetObserver.observe(this.targetElement, { attributes: true, childList: true, subtree: true });
     }
@@ -82,8 +83,8 @@ export class AnchorController {
                         margin: '0',
                         left: `calc(${x}px - min(${width}, ${maxWidth})`,
                         top: `calc(${y}px - min(${height}, ${maxHeight}) - ${gap})`,
-                        height: `min(${height}, ${maxHeight})`,
-                        width: `min(${width}, ${maxWidth})`,
+                        maxHeight,
+                        maxWidth,
                     });
                 });
             };
