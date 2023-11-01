@@ -64,6 +64,7 @@ export class DraggableController {
     }
 
     private handleMouseDown(event: MouseEvent) {
+        event.preventDefault();
         if (this.targetElement) {
             this.clickOccurred = true;
             const rect = this.targetElement.getBoundingClientRect();
@@ -74,6 +75,7 @@ export class DraggableController {
     }
 
     private handleMouseMove(event: MouseEvent) {
+        event.preventDefault();
         if (this.clickOccurred && !this.isDragging) {
             this.current = { x: event.clientX, y: event.clientY };
             if (this.isMoved()) {
