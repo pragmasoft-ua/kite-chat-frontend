@@ -95,6 +95,6 @@ main::-webkit-scrollbar-thumb {
       bottom: calc(anchor(top) + var(--kite-margin));
       top: auto;
       max-width: calc(100vw - var(--kite-margin) * 2);
-      max-height: calc(100vh - anchor-size(height) - var(--kite-margin) * 2 - var(--kite-gap));
+      max-height: calc(100svh - anchor-size(height) - var(--kite-margin) * 2 - var(--kite-gap));
   }
 }

@@ -74,7 +74,7 @@ export class AnchorController {
             const height = this.popoverSize?.height ?? `${popoverRect.height}px`;
             const margin = this.popoverSize?.margin ?? '0';
             const gap = this.popoverSize?.gap ?? '0';
-            const maxHeight = `calc(100vh - ${targetRect.height}px - ${margin} * 2 - ${gap})`;
+            const maxHeight = `calc(100svh - ${targetRect.height}px - ${margin} * 2 - ${gap})`;
             const maxWidth = `calc(100vw - ${margin} * 2)`;
             
             const calculatePosition = () => {
