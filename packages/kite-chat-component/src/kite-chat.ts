@@ -74,7 +74,7 @@ export class KiteChatElement extends LitElement {
   constructor() {
     super();
 
-    if (!CSS.supports('anchor-name', '--combobox')) {
+    if (!CSS.supports('anchor-name', '--toggle') && !CSS.supports('height', 'anchor-size(height)')) {
         // The anchor-name property is not supported
         this.anchorController = new AnchorController(this, {
           height: '30rem', 

@@ -82,14 +82,14 @@ main::-webkit-scrollbar-thumb {
   --kite-gap: 1rem;
 }
 
-@supports(anchor-name: --combobox) {
+@supports(anchor-name: --toggle) {
   [popovertarget] {
-      anchor-name: --combobox;
+      anchor-name: --toggle;
   }
 
   [popover] {
       position: fixed;
-      anchor-default: --combobox;
+      anchor-default: --toggle;
       left: auto;
       right: anchor(right);
       bottom: calc(anchor(top) + var(--kite-margin));
