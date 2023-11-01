@@ -9,10 +9,6 @@ on:
   # Allows you to run this workflow manually from the Actions tab on GitHub.
   workflow_dispatch:
 
-env:
-  # Setting an environment variable with the value of a configuration variable
-  npm_token: ${{ vars.NPM_TOKEN }}
-
 # Allow this job to clone the repo and create a page deployment
 permissions:
   contents: read
@@ -175,10 +171,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: kite-chat-component
-          path: ./packages/kite-chat-component
+      - name: Display structure of restored files
+        run: ls -R
       - name: Publish Kite Chat Component
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ env.npm_token }}" > ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           npm publish --access public
 
   publish_kite_chat:
@@ -190,10 +187,11 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: kite-chat
-          path: ./packages/kite-chat
+      - name: Display structure of restored files
+        run: ls -R
       - name: Publish Kite Chat
         run: |
-          echo "//registry.npmjs.org/:_authToken=${{ env.npm_token }}" > ~/.npmrc
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
           npm publish --access public
 
   deploy:
