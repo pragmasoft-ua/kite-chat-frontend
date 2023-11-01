@@ -176,6 +176,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          registry-url: 'https://registry.npmjs.org/'
 
       - name: Install dependencies
         run: npm install
@@ -189,15 +190,12 @@ jobs:
       - name: Analyze Component
         run: npm run analyze
 
-      - name: Create .npmrc
-        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-
       - name: Publish to npm
         run: |
           npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
           npm publish --access public -w @pragmasoft-ukraine/kite-chat
         env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
   deploy:
     needs: [build_main, build_test]

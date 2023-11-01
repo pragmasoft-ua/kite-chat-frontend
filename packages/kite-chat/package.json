@@ -29,7 +29,7 @@
   "module": "dist/kite-chat.js",
   "types": "types/index.d.ts",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "access": "public"
   },
   "scripts": {
     "start": "vite --force",

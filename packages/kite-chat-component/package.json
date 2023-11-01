@@ -6,7 +6,7 @@
   "version": "2023.10.4",
   "homepage": "https://www.k1te.chat/",
   "publishConfig": {
-    "registry": "https://registry.npmjs.org"
+    "access": "public"
   },
   "repository": {
     "type": "git",
