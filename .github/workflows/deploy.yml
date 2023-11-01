@@ -162,41 +162,39 @@ jobs:
         with:
           path: ./packages/kite-chat-docs/dist/
 
-  publish_kite_chat_component:
-    needs: build_main
-    runs-on: ubuntu-latest
-    if: github.event.ref == 'refs/heads/main'
-    steps:
-      - name: Restore Kite Chat Component Package
-        uses: actions/download-artifact@v3
-        with:
-          name: kite-chat-component
-      - name: Display structure of restored files
-        run: ls -R
-      - name: Config npm
-        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish to npm
-        run: npm publish --access public --no-git-checks
-
   publish_kite_chat:
     needs: build_main
     runs-on: ubuntu-latest
     if: github.event.ref == 'refs/heads/main'
     steps:
-      - name: Restore Kite Chat Package
-        uses: actions/download-artifact@v3
+      - name: Checkout main branch using git
+        uses: actions/checkout@v3
         with:
-          name: kite-chat
-      - name: Display structure of restored files
-        run: ls -R
-      - name: Config npm
-        run: echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > .npmrc
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+  
+      - name: Build Kite Chat component
+        run: npm run build -w @pragmasoft-ukraine/kite-chat-component
+
+      - name: Build Kite Chat
+        run: npm run build -w @pragmasoft-ukraine/kite-chat
+
+      - name: Analyze Component
+        run: npm run analyze
+
+      - name: Publish to npm
+        run: |
+          npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
+          npm publish --access public -w @pragmasoft-ukraine/kite-chat
         env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - name: Publish to npm
-        run: npm publish --access public --no-git-checks
 
   deploy:
     needs: [build_main, build_test]
