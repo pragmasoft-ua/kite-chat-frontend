@@ -17,6 +17,7 @@ export function kitei18nSchema() {
 				.describe('Text displayed in the first kite chat message.'),
 
 			'kite.heading': z.string().describe('Text displayed in the chat heading.'),
+			'kite.exampleMsgs': z.array(z.string()).describe('Messages displayed in the chat demo'),
 		})
 		.partial();
 }

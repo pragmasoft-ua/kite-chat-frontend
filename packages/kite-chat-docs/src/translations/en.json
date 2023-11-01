@@ -1,4 +1,12 @@
 {
     "kite.helloMsg": "Welcome to Kite Chat!",
-    "kite.heading": "👩🏻Humane support 💙💛"
+    "kite.heading": "👩🏻Humane support 💙💛",
+    "kite.exampleMsgs": [
+        "Hi",
+        "Hello",
+        "Have you heard about Coding and Stuff?",
+        "Yeah I know, they post awesome coding tutorials",
+        "But did you know they have a youtube channel?",
+        "Yeah I also subscribed to their channel"
+    ]
 }

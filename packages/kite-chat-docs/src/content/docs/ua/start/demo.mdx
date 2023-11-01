@@ -2,9 +2,6 @@
 title: Приклад використання
 description: Посібник використання віджету kite чату.
 ---
-import ImageFileExample from "@components/ImageFileExample.astro";
-import TextFileExample from "@components/TextFileExample.astro";
-
 import Sandbox from '@components/Sandbox.astro';
 
 <h2 class="!text-kite-primary-color"><span class="inline-block animate-wave origin-[30%_center]">🪁</span>Kite Cередовище</h2>
@@ -18,14 +15,3 @@ import Sandbox from '@components/Sandbox.astro';
     openLabel="Відкрити"
     closeLabel="Закрити"
 />
-
-<kite-chat heading="👩🏻Служба підтримки 💙💛">
-    <kite-msg>Вітаю!</kite-msg>
-    <kite-msg status="read">Привіт</kite-msg>
-    <kite-msg>Ви чули про Coding and Stuff?</kite-msg>
-    <kite-msg status="delivered">Так, я знаю, вони публікують чудові підручники з кодування</kite-msg>
-    <kite-msg>Але чи знали ви, що у них є канал на Youtube?</kite-msg>
-    <kite-msg status="sent">Так, я також підписаний на їх канал</kite-msg>
-    <kite-msg><TextFileExample/></kite-msg>
-    <kite-msg status="read"><ImageFileExample/></kite-msg>
-</kite-chat>
