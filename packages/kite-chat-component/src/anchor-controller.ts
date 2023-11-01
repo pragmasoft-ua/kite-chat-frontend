@@ -6,8 +6,9 @@ type Anchor = {
 }
 
 type Size = {
-    width: string; 
-    height: string;
+    height?: string;
+    margin?: string;
+    gap?: string;
 }
 
 export class AnchorController {
@@ -67,18 +68,26 @@ export class AnchorController {
     positionPopover() {
         if (this.popoverElement && this.targetElement) {
             const popoverRect = this.popoverElement.getBoundingClientRect();
-            const width = this.popoverSize?.width || `${popoverRect.width}px`;
-            const height = this.popoverSize?.height || `${popoverRect.height}px`;
+            const targetRect = this.targetElement.getBoundingClientRect();
+            const width = `${popoverRect.width}px`;
+            const height = this.popoverSize?.height ?? `${popoverRect.height}px`;
+            const margin = this.popoverSize?.margin ?? '0';
+            const gap = this.popoverSize?.gap ?? '0';
+            const maxHeight = `calc(100vh - ${targetRect.height}px - ${margin} * 2 - ${gap})`;
+            const maxWidth = `calc(100vw - ${margin} * 2)`;
+            
             const calculatePosition = () => {
                 this.computePosition(this.targetElement).then(({ x, y }: Anchor) => {
                     Object.assign(this.popoverElement.style, {
                         margin: '0',
-                        left: `calc(${x}px - ${width})`,
-                        top: `calc(${y}px - ${height} - 1rem)`,
+                        left: `calc(${x}px - min(${width}, ${maxWidth})`,
+                        top: `calc(${y}px - min(${height}, ${maxHeight}) - ${gap})`,
+                        height: `min(${height}, ${maxHeight})`,
+                        width: `min(${width}, ${maxWidth})`,
                     });
                 });
             };
-    
+        
             // Use requestAnimationFrame to ensure synchronized calculation
             requestAnimationFrame(calculatePosition);
         }

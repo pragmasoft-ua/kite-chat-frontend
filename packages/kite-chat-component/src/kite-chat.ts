@@ -76,7 +76,11 @@ export class KiteChatElement extends LitElement {
 
     if (!CSS.supports('anchor-name', '--combobox')) {
         // The anchor-name property is not supported
-        this.anchorController = new AnchorController(this, {width: '20rem', height: '30rem'})
+        this.anchorController = new AnchorController(this, {
+          height: '30rem', 
+          margin: '1rem', 
+          gap: '1rem'
+        });
     }
   }
 

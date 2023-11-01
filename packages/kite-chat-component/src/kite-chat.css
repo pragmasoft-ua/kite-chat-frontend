@@ -77,6 +77,11 @@ main::-webkit-scrollbar-thumb {
   }
 }
 
+:host {
+  --kite-margin: 1rem;
+  --kite-gap: 1rem;
+}
+
 @supports(anchor-name: --combobox) {
   [popovertarget] {
       anchor-name: --combobox;
@@ -87,7 +92,9 @@ main::-webkit-scrollbar-thumb {
       anchor-default: --combobox;
       left: auto;
       right: anchor(right);
-      bottom: calc(anchor(top) + 1rem);
+      bottom: calc(anchor(top) + var(--kite-margin));
       top: auto;
+      max-width: calc(100vw - var(--kite-margin) * 2);
+      max-height: calc(100vh - anchor-size(height) - var(--kite-margin) * 2 - var(--kite-gap));
   }
 }
