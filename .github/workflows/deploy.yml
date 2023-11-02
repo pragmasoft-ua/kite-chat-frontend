@@ -52,7 +52,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-main-dist.outputs.cache-hit != 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm install -w @pragmasoft-ukraine/kite-chat-docs
 
       - name: Analyze Component
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
@@ -163,7 +163,6 @@ jobs:
           path: ./packages/kite-chat-docs/dist/
 
   publish_kite_chat:
-    needs: build_main
     runs-on: ubuntu-latest
     if: github.event.ref == 'refs/heads/main'
     steps:
@@ -176,10 +175,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          registry-url: 'https://registry.npmjs.org/'
+          registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install -w @pragmasoft-ukraine/kite-chat-component
+          npm install -w @pragmasoft-ukraine/kite-chat
   
       - name: Build Kite Chat component
         run: npm run build -w @pragmasoft-ukraine/kite-chat-component
@@ -196,6 +197,7 @@ jobs:
           npm publish --access public -w @pragmasoft-ukraine/kite-chat
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
   deploy:
     needs: [build_main, build_test]
