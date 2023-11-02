@@ -77,7 +77,7 @@ export class KiteMsgElement extends LitElement {
       },
     },
   })
-  status?: MsgStatus;
+  status?: keyof typeof MsgStatus;
 
   override render() {
     return html` <slot></slot
