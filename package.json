@@ -15,19 +15,19 @@
   "workspaces": [
     "./packages/kite-chat-component",
     "./packages/kite-chat",
-    "./packages/kite-chat-demo",
     "./packages/kite-chat-docs"
   ],
   "scripts": {
     "compile": "tsc -b",
-    "start": "npm run start -w ./packages/kite-chat-demo",
+    "start": "npm run start -w @pragmasoft-ukraine/kite-chat-docs",
     "build": "npm run build -ws",
     "clean": "npm run clean -ws",
     "test": "npm run test -ws",
-    "dev:docs": "npm run dev -w @pragmasoft-ukraine/kite-chat-docs",
-    "build:docs": "npm run build -w @pragmasoft-ukraine/kite-chat-docs",
-    "preview:docs": "npm run preview -w @pragmasoft-ukraine/kite-chat-docs",
-    "analyze": "npm run wca:analyze -w @pragmasoft-ukraine/kite-chat-component"
+    "lint": "npm run lint -ws",
+    "docs:start": "npm run dev -w @pragmasoft-ukraine/kite-chat-docs",
+    "docs:build": "npm run build -w @pragmasoft-ukraine/kite-chat-docs",
+    "docs:preview": "npm run preview -w @pragmasoft-ukraine/kite-chat-docs",
+    "analyze": "npm run analyze -w @pragmasoft-ukraine/kite-chat-component"
   },
   "devDependencies": {
     "@jest/globals": "^29.6.4",
