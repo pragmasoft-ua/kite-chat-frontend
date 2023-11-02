@@ -12,6 +12,7 @@ on:
 # Allow this job to clone the repo and create a page deployment
 permissions:
   contents: read
+  packages: write
   pages: write
   id-token: write
 
@@ -175,7 +176,6 @@ jobs:
         with:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
-          scope: '@pragmasoft-ukraine'
 
       - name: Install dependencies
         run: npm install
