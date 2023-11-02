@@ -164,7 +164,6 @@ jobs:
 
   publish_kite_chat:
     runs-on: ubuntu-latest
-    if: github.event.ref == 'refs/heads/main'
     steps:
       - name: Checkout main branch using git
         uses: actions/checkout@v3
@@ -176,6 +175,7 @@ jobs:
         with:
           node-version: 18
           registry-url: 'https://registry.npmjs.org'
+          scope: '@pragmasoft-ukraine'
 
       - name: Install dependencies
         run: npm install
