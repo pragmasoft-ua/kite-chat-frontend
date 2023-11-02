@@ -178,9 +178,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: |
-          npm install -w @pragmasoft-ukraine/kite-chat-component
-          npm install -w @pragmasoft-ukraine/kite-chat
+        run: npm install
   
       - name: Build Kite Chat component
         run: npm run build -w @pragmasoft-ukraine/kite-chat-component
