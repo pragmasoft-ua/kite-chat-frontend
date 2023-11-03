@@ -22,7 +22,7 @@
     "start": "npm run start -w @pragmasoft-ukraine/kite-chat-docs",
     "build": "npm run build -ws",
     "clean": "npm run clean -ws",
-    "test": "npm run test -ws",
+    "test": "npm run test -ws --if-present",
     "lint": "npm run lint -ws",
     "docs:start": "npm run dev -w @pragmasoft-ukraine/kite-chat-docs",
     "docs:build": "npm run build -w @pragmasoft-ukraine/kite-chat-docs",

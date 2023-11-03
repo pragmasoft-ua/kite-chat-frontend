@@ -39,7 +39,7 @@
     "lint": "npm run lint:eslint",
     "lint:eslint": "eslint \"src/**/*.ts\"",
     "clean": "rimraf dist types tsconfig.tsbuildinfo",
-    "test": "jest"
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "@pragmasoft-ukraine/kite-chat-component": "*"
