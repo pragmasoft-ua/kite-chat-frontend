@@ -163,6 +163,42 @@ jobs:
         with:
           path: ./packages/kite-chat-docs/dist/
 
+  publish_kite_chat:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - name: Checkout main branch using git
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Kite Chat component
+        run: npm run build -w @pragmasoft-ukraine/kite-chat-component
+
+      - name: Build Kite Chat
+        run: npm run build -w @pragmasoft-ukraine/kite-chat
+
+      - name: Analyze Component
+        run: npm run analyze
+
+      - name: Publish to npm
+        run: |
+          npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
+          npm publish --access public -w @pragmasoft-ukraine/kite-chat
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+        
   deploy:
     needs: [build_main, build_test]
     runs-on: ubuntu-latest
