@@ -8,7 +8,7 @@
     "dev": "astro dev",
     "dev:test": "NODE_ENV=test astro dev",
     "lint": "npm run lint:eslint",
-    "lint:eslint": "eslint 'src/**/*.ts'",
+    "lint:eslint": "eslint \"src/**/*.ts\"",
     "build": "rimraf ./dist && npm run copy:elements && NODE_ENV=production astro build",
     "build:test": "rimraf ./dist/test && ([ -d public ] || mkdir public) && npm run copy:module && npm run copy:elements && NODE_ENV=test astro build",
     "preview": "astro preview",
