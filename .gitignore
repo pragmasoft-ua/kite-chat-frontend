@@ -7,3 +7,4 @@ types
 .astro
 packages/kite-chat-docs/public/kite-chat-component.js
 packages/kite-chat-docs/public/kite-chat.js
+packages/kite-chat-docs/src/content/customElements
