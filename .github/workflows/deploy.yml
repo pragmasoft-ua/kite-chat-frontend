@@ -17,7 +17,7 @@ permissions:
   id-token: write
 
 jobs:
-  build_main:
+  build_main_docs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main branch using git
@@ -89,8 +89,8 @@ jobs:
           name: kite-chat
           path: ./packages/kite-chat
 
-  build_test:
-    needs: build_main
+  build_test_docs:
+    needs: build_main_docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout test branch using git
@@ -163,7 +163,7 @@ jobs:
         with:
           path: ./packages/kite-chat-docs/dist/
 
-  publish_kite_chat:
+  publish_packages:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -182,6 +182,20 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Check version - Kite Chat Component
+        run: |
+          current_version=$(node -e 'console.log(require("./node_modules/@pragmasoft-ukraine/kite-chat-component/package.json").version)')
+          npm_version=$(npm view @pragmasoft-ukraine/kite-chat-component version)
+          echo "equal={$current_version" == "$npm_version}" >> "$GITHUB_OUTPUT"
+        id: check-version-component
+
+      - name: Check version - Kite Chat
+        run: |
+          current_version=$(node -e 'console.log(require("./node_modules/@pragmasoft-ukraine/kite-chat/package.json").version)')
+          npm_version=$(npm view @pragmasoft-ukraine/kite-chat version)
+          echo "equal={$current_version" == "$npm_version}" >> "$GITHUB_OUTPUT"
+        id: check-version
+
       - name: Build Kite Chat component
         run: npm run build -w @pragmasoft-ukraine/kite-chat-component
 
@@ -191,16 +205,22 @@ jobs:
       - name: Analyze Component
         run: npm run analyze
 
-      - name: Publish to npm
-        run: |
-          npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
-          npm publish --access public -w @pragmasoft-ukraine/kite-chat
+      - name: Publish to npm - Kite Chat Component
+        if: steps.check-version-component.outputs.equal != 'true'
+        run: npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Publish to npm - Kite Chat
+        if: steps.check-version.outputs.equal != 'true'
+        run: npm publish --access public -w @pragmasoft-ukraine/kite-chat
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
         
-  deploy:
-    needs: [build_main, build_test]
+  deploy_docs:
+    needs: [build_main_docs, build_test_docs]
     runs-on: ubuntu-latest
     environment:
       name: github-pages
