@@ -29,7 +29,6 @@
   },
   "references": [
     {"path": "packages/kite-chat-component"},
-    {"path": "packages/kite-chat"},
-    {"path": "packages/kite-chat-docs"}
+    {"path": "packages/kite-chat"}
   ]
 }
