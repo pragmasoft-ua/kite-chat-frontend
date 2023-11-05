@@ -17,7 +17,34 @@ permissions:
   id-token: write
 
 jobs:
+  lint_and_test:
+    name: 🧹 Lint and Test 🧪
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch using git
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
   build_main_docs:
+    needs: lint_and_test
+    name: 📖 Build Main Docs 🏗️
+    environment:
+      name: github-pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main branch using git
@@ -90,6 +117,9 @@ jobs:
           path: ./packages/kite-chat
 
   build_test_docs:
+    name: 📝 Build Test Docs 🏗️
+    environment:
+      name: github-pages
     needs: build_main_docs
     runs-on: ubuntu-latest
     steps:
@@ -164,6 +194,8 @@ jobs:
           path: ./packages/kite-chat-docs/dist/
 
   publish_packages:
+    needs: lint_and_test
+    name: 📦 Publish Packages 📤
     runs-on: ubuntu-latest
     environment:
       name: github-pages
@@ -209,12 +241,15 @@ jobs:
         id: check-version
 
       - name: Build Kite Chat component
+        if: steps.check-version-component.outputs.equal != 'true'
         run: npm run build -w @pragmasoft-ukraine/kite-chat-component
 
       - name: Build Kite Chat
+        if: steps.check-version.outputs.equal != 'true'
         run: npm run build -w @pragmasoft-ukraine/kite-chat
 
       - name: Analyze Component
+        if: steps.check-version-component.outputs.equal != 'true'
         run: npm run analyze
 
       - name: Publish to npm - Kite Chat Component
@@ -230,8 +265,9 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
-        
+
   deploy_docs:
+    name: 🚚 Deploy Docs 📄
     needs: [build_main_docs, build_test_docs]
     runs-on: ubuntu-latest
     environment:
