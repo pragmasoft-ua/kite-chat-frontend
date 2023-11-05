@@ -14,6 +14,16 @@ function imageSchema({ image }: SchemaContext) {
 	.optional();
 }
 
+function videoSchema() {
+	return z.object({
+		/** Absolute path to an light video file */
+		light: z.object({src: z.string()}).optional(),
+		/** Absolute path to an dark video file */
+		dark: z.object({src: z.string()}).optional(),
+	})
+	.optional();
+}
+
 function bannerSchema() {
 	return z.object({
 		/** The content of the banner. Supports HTML syntax. */
@@ -29,7 +39,7 @@ export function docsSchema() {
         originalDocsSchema()({ image }).merge(
 			z.object({
 				hero: originalDocsSchema()({ image }).shape.hero.unwrap().merge(
-					z.object({image: imageSchema({ image })})
+					z.object({image: imageSchema({ image }), video: videoSchema()})
 				).optional(),
 				banner: bannerSchema(),
 			})
