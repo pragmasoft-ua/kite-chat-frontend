@@ -189,9 +189,9 @@ jobs:
           echo "current_version=$current_version"
           echo "npm_version=$npm_version"
           if [ "$current_version" == "$npm_version" ]; then
-            echo "equal=true" >> "$GITHUB_ENV"
+            echo "equal=true" >> "$GITHUB_OUTPUT"
           else
-            echo "equal=false" >> "$GITHUB_ENV"
+            echo "equal=false" >> "$GITHUB_OUTPUT"
           fi
         id: check-version-component
       
@@ -202,9 +202,9 @@ jobs:
           echo "current_version=$current_version"
           echo "npm_version=$npm_version"
           if [ "$current_version" == "$npm_version" ]; then
-            echo "equal=true" >> "$GITHUB_ENV"
+            echo "equal=true" >> "$GITHUB_OUTPUT"
           else
-            echo "equal=false" >> "$GITHUB_ENV"
+            echo "equal=false" >> "$GITHUB_OUTPUT"
           fi
         id: check-version
 
