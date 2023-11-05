@@ -30,6 +30,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - run: npm ci
 
       - name: Install dependencies
         run: npm install
@@ -69,20 +72,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-
-      - name: Cache node modules
-        if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ./*/node_modules
-            ./node_modules
-          key: ${{ runner.os }}-modules-main-${{ hashFiles('./package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-main-dist.outputs.cache-hit != 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install -w @pragmasoft-ukraine/kite-chat-docs
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - run: npm ci
 
       - name: Analyze Component
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
@@ -153,20 +145,9 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-
-      - name: Cache node modules
-        if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: |
-            ./*/node_modules
-            ./node_modules
-          key: ${{ runner.os }}-modules-test-${{ hashFiles('./package-lock.json') }}
-
-      - name: Install dependencies
-        if: steps.cache-test-dist.outputs.cache-hit != 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      - run: npm ci
 
       - name: Build Kite Chat component
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
