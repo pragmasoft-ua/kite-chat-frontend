@@ -32,7 +32,9 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: package-lock.json
-      - run: npm install
+
+      - name: Install dependencies
+        run: npm install
 
       - name: Lint code
         run: npm run lint
@@ -71,7 +73,10 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: package-lock.json
-      - run: npm install
+
+      - name: Install dependencies
+        if: steps.cache-main-dist.outputs.cache-hit != 'true'
+        run: npm install
 
       - name: Analyze Component
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
@@ -144,7 +149,10 @@ jobs:
           node-version: 18
           cache: 'npm'
           cache-dependency-path: package-lock.json
-      - run: npm install
+      
+      - name: Install dependencies
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
+        run: npm install
 
       - name: Build Kite Chat component
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
