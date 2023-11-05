@@ -184,8 +184,10 @@ jobs:
 
       - name: Check version - Kite Chat Component
         run: |
-          current_version=$(node -p "require('./packages/kite-chat-component/package.json').version")
+          current_version=$(cat ./packages/kite-chat-component/package.json | jq -r '.version')
           npm_version=$(npm view @pragmasoft-ukraine/kite-chat-component version)
+          echo "current_version=$current_version"
+          echo "npm_version=$npm_version"
           if [ "$current_version" == "$npm_version" ]; then
             echo "equal=true" >> "$GITHUB_ENV"
           else
@@ -195,8 +197,10 @@ jobs:
       
       - name: Check version - Kite Chat
         run: |
-          current_version=$(node -p "require('./packages/kite-chat/package.json').version")
+          current_version=$(cat ./packages/kite-chat/package.json | jq -r '.version')
           npm_version=$(npm view @pragmasoft-ukraine/kite-chat version)
+          echo "current_version=$current_version"
+          echo "npm_version=$npm_version"
           if [ "$current_version" == "$npm_version" ]; then
             echo "equal=true" >> "$GITHUB_ENV"
           else
