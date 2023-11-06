@@ -69,7 +69,6 @@ export class DraggableController {
     }
 
     private handleMouseMove(event: MouseEvent) {
-        event.preventDefault();
         this.move({ x: event.clientX, y: event.clientY });
     }
 
