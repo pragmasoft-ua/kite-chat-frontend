@@ -22,7 +22,9 @@ try {
 	userTranslations = Object.fromEntries(
 		(await getCollection('i18n')).map(({ id, data }) => [id, data] as const)
 	);
-} catch {}
+} catch (error) {
+	console.error('An error occurred:', error);
+}
 
 /** Default map of UI strings based on Starlight and user-configured defaults. */
 const defaults = buildDictionary(

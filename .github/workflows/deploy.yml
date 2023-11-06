@@ -17,7 +17,36 @@ permissions:
   id-token: write
 
 jobs:
-  build_main:
+  lint_and_test:
+    name: 🧹 Lint and Test 🧪
+    environment:
+      name: github-pages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current branch using git
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Run tests
+        run: npm test
+
+  build_main_docs:
+    needs: lint_and_test
+    name: 📖 Build Main Docs 🏗️
+    environment:
+      name: github-pages
     runs-on: ubuntu-latest
     steps:
       - name: Checkout main branch using git
@@ -42,18 +71,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-
-      - name: Cache node modules
-        if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-modules-main-${{ hashFiles('./package-lock.json') }}
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        if: steps.cache-main-dist.outputs.cache-hit != 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm install -w @pragmasoft-ukraine/kite-chat-docs
+        if: steps.cache-main-dist.outputs.cache-hit != 'true'
+        run: npm install
 
       - name: Analyze Component
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
@@ -89,8 +112,11 @@ jobs:
           name: kite-chat
           path: ./packages/kite-chat
 
-  build_test:
-    needs: build_main
+  build_test_docs:
+    name: 📝 Build Test Docs 🏗️
+    environment:
+      name: github-pages
+    needs: build_main_docs
     runs-on: ubuntu-latest
     steps:
       - name: Checkout test branch using git
@@ -121,17 +147,11 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-
-      - name: Cache node modules
-        if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        id: cache-node-modules
-        uses: actions/cache@v3
-        with:
-          path: ./node_modules
-          key: ${{ runner.os }}-modules-test-${{ hashFiles('./package-lock.json') }}
-
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
+      
       - name: Install dependencies
-        if: steps.cache-test-dist.outputs.cache-hit != 'true' && steps.cache-node-modules.outputs.cache-hit != 'true'
+        if: steps.cache-test-dist.outputs.cache-hit != 'true'
         run: npm install
 
       - name: Build Kite Chat component
@@ -163,8 +183,83 @@ jobs:
         with:
           path: ./packages/kite-chat-docs/dist/
 
-  deploy:
-    needs: [build_main, build_test]
+  publish_packages:
+    if: github.event.ref == 'refs/heads/main'
+    needs: lint_and_test
+    name: 📦 Publish Packages 📤
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+    steps:
+      - name: Checkout main branch using git
+        uses: actions/checkout@v3
+        with:
+          ref: main
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check version - Kite Chat Component
+        run: |
+          current_version=$(cat ./packages/kite-chat-component/package.json | jq -r '.version')
+          npm_version=$(npm view @pragmasoft-ukraine/kite-chat-component version)
+          echo "current_version=$current_version"
+          echo "npm_version=$npm_version"
+          if [ "$current_version" == "$npm_version" ]; then
+            echo "equal=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "equal=false" >> "$GITHUB_OUTPUT"
+          fi
+        id: check-version-component
+      
+      - name: Check version - Kite Chat
+        run: |
+          current_version=$(cat ./packages/kite-chat/package.json | jq -r '.version')
+          npm_version=$(npm view @pragmasoft-ukraine/kite-chat version)
+          echo "current_version=$current_version"
+          echo "npm_version=$npm_version"
+          if [ "$current_version" == "$npm_version" ]; then
+            echo "equal=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "equal=false" >> "$GITHUB_OUTPUT"
+          fi
+        id: check-version
+
+      - name: Build Kite Chat component
+        if: steps.check-version-component.outputs.equal != 'true'
+        run: npm run build -w @pragmasoft-ukraine/kite-chat-component
+
+      - name: Build Kite Chat
+        if: steps.check-version.outputs.equal != 'true'
+        run: npm run build -w @pragmasoft-ukraine/kite-chat
+
+      - name: Analyze Component
+        if: steps.check-version-component.outputs.equal != 'true'
+        run: npm run analyze
+
+      - name: Publish to npm - Kite Chat Component
+        if: steps.check-version-component.outputs.equal != 'true'
+        run: npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+      - name: Publish to npm - Kite Chat
+        if: steps.check-version.outputs.equal != 'true'
+        run: npm publish --access public -w @pragmasoft-ukraine/kite-chat
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  deploy_docs:
+    name: 🚚 Deploy Docs 📄
+    needs: [build_main_docs, build_test_docs]
     runs-on: ubuntu-latest
     environment:
       name: github-pages

@@ -3,7 +3,7 @@
   "description": "kite-chat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2023.10.4",
+  "version": "2023.10.5",
   "homepage": "https://www.k1te.chat/",
   "publishConfig": {
     "access": "public"
@@ -47,27 +47,11 @@
     "build:bundle": "vite build -c vite.bundled.config.ts",
     "clean": "rimraf dist types tsconfig.tsbuildinfo custom-elements.json",
     "lint": "npm run lint:lit-analyzer && npm run lint:eslint",
-    "lint:eslint": "eslint 'src/**/*.ts'",
+    "lint:eslint": "eslint \"src/**/*.ts\"",
     "lint:lit-analyzer": "lit-analyzer",
     "format": "prettier \"**/*.{cjs,html,js,json,md,ts}\" --ignore-path ./.eslintignore --write",
-    "docs": "npm run docs:clean && npm run build && npm run analyze && npm run docs:build && npm run docs:assets && npm run docs:gen",
-    "docs:clean": "rimraf docs",
-    "docs:gen": "eleventy --config=.eleventy.cjs",
-    "docs:gen:watch": "eleventy --config=.eleventy.cjs --watch",
-    "docs:build": "rollup -c --file docs/kite-chat.bundled.js",
-    "docs:assets": "cp node_modules/prismjs/themes/prism-okaidia.css docs/",
-    "docs:serve": "wds --root-dir=docs --node-resolve --watch",
-    "analyze": "cem analyze --litelement --globs \"src/kite-chat.ts\" \"src/kite-msg.ts\"",
-    "analyze:watch": "cem analyze --litelement --globs \"src/kite-chat.ts\" \"src/kite-msg.ts\" --watch",
-    "wca:analyze": "wca analyze \"src/index.ts\" --format json --outFile custom-elements.json",
-    "test": "jest",
-    "test:all": "npm run test:dev && npm run test:prod",
-    "test:dev": "wtr",
-    "test:watch": "wtr --watch",
-    "test:prod": "MODE=prod wtr",
-    "test:prod:watch": "MODE=prod wtr --watch",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "analyze": "wca analyze \"src/index.ts\" --format json --outFile custom-elements.json",
+    "test": "jest --passWithNoTests"
   },
   "dependencies": {
     "@oddbird/popover-polyfill": "^0.3.1",
@@ -76,15 +60,7 @@
     "pretty-bytes": "^6.1.1"
   },
   "devDependencies": {
-    "@babel/plugin-proposal-class-properties": "^7.18.6",
-    "@babel/plugin-proposal-decorators": "^7.19.3",
-    "@babel/preset-env": "^7.19.4",
-    "@babel/preset-typescript": "^7.18.6",
-    "@custom-elements-manifest/analyzer": "^0.6.3",
-    "@storybook/addon-essentials": "^6.5.12",
-    "@storybook/builder-webpack5": "^6.5.12",
-    "@storybook/manager-webpack5": "^6.5.12",
-    "@storybook/web-components": "^6.5.12",
+    "lit-analyzer": "^2.0.1",
     "postcss-loader": "^7.0.1",
     "ts-lit-plugin": "^1.2.1",
     "web-component-analyzer": "^2.0.0"

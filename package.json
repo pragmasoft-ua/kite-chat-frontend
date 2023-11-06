@@ -15,19 +15,19 @@
   "workspaces": [
     "./packages/kite-chat-component",
     "./packages/kite-chat",
-    "./packages/kite-chat-demo",
     "./packages/kite-chat-docs"
   ],
   "scripts": {
     "compile": "tsc -b",
-    "start": "npm run start -w ./packages/kite-chat-demo",
+    "start": "npm run start -w @pragmasoft-ukraine/kite-chat-docs",
     "build": "npm run build -ws",
     "clean": "npm run clean -ws",
-    "test": "npm run test -ws",
-    "dev:docs": "npm run dev -w @pragmasoft-ukraine/kite-chat-docs",
-    "build:docs": "npm run build -w @pragmasoft-ukraine/kite-chat-docs",
-    "preview:docs": "npm run preview -w @pragmasoft-ukraine/kite-chat-docs",
-    "analyze": "npm run wca:analyze -w @pragmasoft-ukraine/kite-chat-component"
+    "test": "npm run test -ws --if-present",
+    "lint": "npm run lint -ws",
+    "docs:start": "npm run dev -w @pragmasoft-ukraine/kite-chat-docs",
+    "docs:build": "npm run build -w @pragmasoft-ukraine/kite-chat-docs",
+    "docs:preview": "npm run preview -w @pragmasoft-ukraine/kite-chat-docs",
+    "analyze": "npm run analyze -w @pragmasoft-ukraine/kite-chat-component"
   },
   "devDependencies": {
     "@jest/globals": "^29.6.4",
@@ -36,11 +36,6 @@
     "@types/jest": "^29.5.4",
     "@typescript-eslint/eslint-plugin": "^6.6.0",
     "@typescript-eslint/parser": "^6.6.0",
-    "@web/dev-server": "^0.1.31",
-    "@web/dev-server-legacy": "^1.0.0",
-    "@web/test-runner": "^0.13.27",
-    "@web/test-runner-playwright": "^0.8.8",
-    "@webcomponents/webcomponentsjs": "^2.8.0",
     "concurrently": "^8.2.1",
     "eslint": "^8.49.0",
     "eslint-plugin-storybook": "^0.6.13",

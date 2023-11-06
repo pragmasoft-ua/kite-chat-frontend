@@ -4,7 +4,7 @@ import type { Props } from '@astrojs/starlight/props';
 import CallToAction from '@astrojs/starlight/components/CallToAction.astro';
 
 const { data } = Astro.props.entry;
-const { title = data.title, tagline, image, actions = [] } = data.hero || {};
+const { title = data.title, tagline, image, video, actions = [] } = data.hero || {};
 
 const imageAttrs = {
 	loading: 'lazy' as const,
@@ -18,14 +18,24 @@ const imageAttrs = {
 <div class="hero">
 	<div class="image">
 	{
-		image?.light && image?.dark && (
+		image?.light && (
 		<picture>
-			<source srcset={image.dark.src} type="image/png" media="(prefers-color-scheme: dark)" />
+			{
+				image?.dark && (<source srcset={image.dark.src} type="image/png" media="(prefers-color-scheme: dark)" />)
+			}
 			<source srcset={image.light.src} type="image/png" media="(prefers-color-scheme: light)" />
 			<img src={image.light.src} {...imageAttrs} />
 		</picture>
 		)
 	}
+	</div>
+	<div class="video">
+		{
+			video?.light && (<video class="light" src={video.light.src} autoplay muted loop poster={image?.light?.src} />)
+		}
+		{
+			video?.dark && (<video class="dark" src={video.dark.src} autoplay muted loop poster={image?.dark?.src}/>)
+		}
 	</div>
 	<div class="sl-flex stack">
 		<div class="sl-flex copy">
@@ -46,21 +56,22 @@ const imageAttrs = {
 
 <script is:inline>
 	window.addEventListener('theme-change', (event) => {
-		heroImageChange(event.detail.theme);
+		heroMediaChange(event.detail.theme);
 	})
 
-	const picture = document.querySelector('picture');
-	const dark = picture.querySelector('source[media="(prefers-color-scheme: dark)"]');
-	const light = picture.querySelector('source[media="(prefers-color-scheme: light)"]');
+	const hero = document.querySelector('.hero');
 
-	const heroImageChange = (mode) => {
-		if (mode === 'dark') {
-			dark.media = 'all';
-			light.media = 'none';
-		} else {
-			dark.media = 'none';
-			light.media = 'all';
-		}
+	const dark_p = hero.querySelector('picture source[media="(prefers-color-scheme: dark)"]');
+	const light_p = hero.querySelector('picture source[media="(prefers-color-scheme: light)"]');
+
+	const dark_v = hero.querySelector('video.dark');
+	const light_v = hero.querySelector('video.light');
+
+	const heroMediaChange = (mode) => {
+		dark_p && (dark_p.media = (mode === 'dark') ? 'all' : 'none');
+		light_p && (light_p.media = (mode === 'light') ? 'all' : 'none');
+		dark_v && (dark_v.hidden = light_v && (mode !== 'dark'));
+		light_v && (light_v.hidden = dark_v && (mode !== 'light'));
 	};   
 </script>
 
@@ -72,12 +83,14 @@ const imageAttrs = {
 		padding-bottom: 1rem;
 	}
 
-	.hero > .image {
+	.hero > .image,
+	.hero > .video {
 		object-fit: contain;
 		margin-inline: auto;
 	}
 
-	.image img {
+	.image img,
+	.video video {
 		width: 100%;
 		height: auto;
 	}
@@ -123,7 +136,8 @@ const imageAttrs = {
 			padding-block: clamp(2.5rem, calc(1rem + 10vmin), 10rem);
 		}
 
-		.hero > .image {
+		.hero > .image, 
+		.hero > .video {
 			order: 2;
 		}
 
@@ -140,3 +154,23 @@ const imageAttrs = {
 		}
 	}
 </style>
+
+{
+	(image && video) && (
+		<style>
+			.hero > .image {
+				display: none;
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.hero > .image {
+					display: initial;
+				}
+
+				.hero > .video {
+					display: none;
+				}
+			}
+		</style>
+	)
+}
