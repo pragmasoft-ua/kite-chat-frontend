@@ -153,18 +153,24 @@ const imageAttrs = {
 			justify-content: flex-start;
 		}
 	}
-
-	.hero > .image {
-		display: none;
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		.hero > .image {
-			display: initial;
-		}
-
-		.hero > .video {
-			display: none;
-		}
-	}
 </style>
+
+{
+	(image && video) && (
+		<style>
+			.hero > .image {
+				display: none;
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				.hero > .image {
+					display: initial;
+				}
+
+				.hero > .video {
+					display: none;
+				}
+			}
+		</style>
+	)
+}
