@@ -93,6 +93,9 @@ const imageAttrs = {
 	.video video {
 		width: 100%;
 		height: auto;
+		/* prevent blur */
+		transform: skew(0.01deg);
+		-webkit-transform: skew(0.01deg);
 	}
 
 	.stack {
