@@ -11,7 +11,7 @@ import {esbuildPlugin} from '@web/dev-server-esbuild';
 // https://modern-web.dev/docs/test-runner/cli-and-configuration/
 export default {
   rootDir: '.',
-  files: ['./test/**/*test.ts'],
+  files: ['./test/**/*_test.ts'],
   nodeResolve: true,
   testFramework: {
     // https://mochajs.org/api/mocha
