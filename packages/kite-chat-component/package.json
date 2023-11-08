@@ -51,7 +51,9 @@
     "lint:lit-analyzer": "lit-analyzer",
     "format": "prettier \"**/*.{cjs,html,js,json,md,ts}\" --ignore-path ./.eslintignore --write",
     "analyze": "wca analyze \"src/index.ts\" --format json --outFile custom-elements.json",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "test:wtr": "web-test-runner",
+    "test:wtr-watch": "web-test-runner --watch"
   },
   "dependencies": {
     "@oddbird/popover-polyfill": "^0.3.1",
