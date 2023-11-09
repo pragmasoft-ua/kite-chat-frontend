@@ -95,7 +95,7 @@ npm run start
 To run component dev server:
 
 ```bash
-npm run test -w @pragmasoft-ukraine/kite-chat-component
+npm run start -w @pragmasoft-ukraine/kite-chat-component
 ```
 
 [More info about component dev server](packages/kite-chat-component/README.md#dev-server)
@@ -103,7 +103,7 @@ npm run test -w @pragmasoft-ukraine/kite-chat-component
 To run component driver dev server:
 
 ```bash
-npm run test -w @pragmasoft-ukraine/kite-chat
+npm run start -w @pragmasoft-ukraine/kite-chat
 ```
 
 [More info about driver dev server](packages/kite-chat/README.md#dev-server)
