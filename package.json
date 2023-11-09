@@ -19,7 +19,7 @@
   ],
   "scripts": {
     "compile": "tsc -b",
-    "start": "npm run start -w @pragmasoft-ukraine/kite-chat-docs",
+    "start": "npm run dev -w @pragmasoft-ukraine/kite-chat-docs",
     "build": "npm run build -ws",
     "clean": "npm run clean -ws",
     "test": "npm run test -ws --if-present",

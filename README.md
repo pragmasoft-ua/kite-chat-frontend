@@ -1,9 +1,12 @@
-# 🪁 Kite chat
+# 🪁 Kite chat frontend
 
-[Demo](https://www.k1te.chat/)
+[Docs](https://www.k1te.chat/)
 
-This project includes **kite-chat** web component
-and a protocol driver to communicate with the chat backend.
+[Demo](https://www.k1te.chat/en/start/demo/)
+
+This project includes **kite-chat** web component,
+a protocol driver to communicate with the chat backend
+and docs static site.
 
 Web component is built using LitElement with TypeScript and Tailwind CSS.
 
@@ -25,54 +28,85 @@ You need to run `npm run compile` before you start working on the project in you
 
 ## Build
 
-This sample uses the TypeScript compiler to produce JavaScript that runs in modern browsers.
-
-To build the JavaScript version of your component:
+To build the packages and docs run:
 
 ```bash
 npm run build
 ```
 
-You very likely may need to edit wss endpoint in the `kite-chat-demo/.env` file after running `ngrok http 80` as explained in the backend project `kite-chat`
-
-To watch files and rebuild when the files are modified, run the following command in a separate shell:
+To build only component run:
 
 ```bash
-npm start
+npm run build -w @pragmasoft-ukraine/kite-chat-component
 ```
 
-## Testing (ignore)
+[More info about component build](packages/kite-chat-component/README.md#build)
 
-This sample uses modern-web.dev's
-[@web/test-runner](https://www.npmjs.com/package/@web/test-runner) for testing. See the
-[modern-web.dev testing documentation](https://modern-web.dev/docs/test-runner/overview) for
-more information.
+To build component driver run:
 
-Tests can be run with the `test` script, which will run your tests against Lit's development mode (with more verbose errors) as well as against Lit's production mode:
+```bash
+npm run build -w @pragmasoft-ukraine/kite-chat
+```
+
+[More info about driver build](packages/kite-chat/README.md#build)
+
+To build docs run:
+
+```bash
+npm run build -w @pragmasoft-ukraine/kite-chat-docs
+```
+
+[More info about docs build](packages/kite-chat-docs/README.md#build)
+
+## Testing
+
+Tests can be run with the `test` script, which will run test command in packages if it exist:
 
 ```bash
 npm test
 ```
 
-For local testing during development, the `test:dev:watch` command will run your tests in Lit's development mode (with verbose errors) on every change to your source files:
+To test only component run:
 
 ```bash
-npm test:watch
+npm run test -w @pragmasoft-ukraine/kite-chat-component
 ```
 
-Alternatively the `test:prod` and `test:prod:watch` commands will run your tests in Lit's production mode.
+[More info about component testing](packages/kite-chat-component/README.md#test)
 
-## Dev Server (ignore)
-
-This sample uses modern-web.dev's [@web/dev-server](https://www.npmjs.com/package/@web/dev-server) for previewing the project without additional build steps. Web Dev Server handles resolving Node-style "bare" import specifiers, which aren't supported in browsers. It also automatically transpiles JavaScript and adds polyfills to support older browsers. See [modern-web.dev's Web Dev Server documentation](https://modern-web.dev/docs/dev-server/overview/) for more information.
-
-To run the dev server and open the project in a new browser tab:
+To build component driver run:
 
 ```bash
-npm run serve
+npm run test -w @pragmasoft-ukraine/kite-chat
 ```
 
-There is a development HTML file located at `/dev/index.html` that you can view at http://localhost:8000/dev/index.html. Note that this command will serve your code using Lit's development mode (with more verbose errors). To serve your code against Lit's production mode, use `npm run serve:prod`.
+[More info about driver testing](packages/kite-chat/README.md#test)
+
+## Dev Server
+
+The default start command will run docs locally:
+
+```bash
+npm run start
+```
+
+[More info about docs dev server](packages/kite-chat-docs/README.md#dev-server)
+
+To run component dev server:
+
+```bash
+npm run test -w @pragmasoft-ukraine/kite-chat-component
+```
+
+[More info about component dev server](packages/kite-chat-component/README.md#dev-server)
+
+To run component driver dev server:
+
+```bash
+npm run test -w @pragmasoft-ukraine/kite-chat
+```
+
+[More info about driver dev server](packages/kite-chat/README.md#dev-server)
 
 ## Editing
 
@@ -106,72 +140,33 @@ npm run lint
 
 Prettier has not been configured to run when committing files, but this can be added with Husky and and `pretty-quick`. See the [prettier.io](https://prettier.io/) site for instructions.
 
-## Static Site (ignore)
+## CI/CD Workflow
 
-This project includes a simple website generated with the [eleventy](11ty.dev) static site generator and the templates and pages in `/docs-src`. The site is generated to `/docs` and intended to be checked in so that GitHub pages can serve the site [from `/docs` on the master branch](https://help.github.com/en/github/working-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+This project utilizes GitHub Actions for Continuous Integration and Deployment. The workflow includes linting, testing, documentation builds, and npm package publishing.
 
-To enable the site go to the GitHub settings and change the GitHub Pages &quot;Source&quot; setting to &quot;master branch /docs folder&quot;.</p>
+### Setup gh actions
 
-## Script to include component from CDN
+1. **GitHub Actions Secrets:**
+   - Create `NPM_TOKEN` secret with your npm token.
+   - Ensure `GITHUB_TOKEN` secret is available for deployment.
 
-`<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat@2023.2.1/dist/kite-chat.js"></script>`
+2. **Triggers:**
+   - Workflow triggers on `main` and `test` branch pushes.
+   - Manual triggering is available in the Actions tab.
 
-## Static Site with demo is located here
+3. **Dependencies:**
+   - Node.js v18 is used. Ensure compatible dependencies.
 
-https://www.k1te.chat/
+4. **Artifact Uploads:**
+   - Documentation and package builds artifacts are uploaded.
 
-To build the site, run:
-
-```bash
-npm run docs
-```
-
-To serve the site locally, run:
-
-```bash
-npm run docs:serve
-```
-
-To watch the site files, and re-build automatically, run:
-
-```bash
-npm run docs:watch
-```
-
-The site will usually be served at http://localhost:8000.
-
-## Bundling and minification (ignore)
-
-This starter project doesn't include any build-time optimizations like bundling or minification. We recommend publishing components as unoptimized JavaScript modules, and performing build-time optimizations at the application level. This gives build tools the best chance to deduplicate code, remove dead code, and so on.
-
-For information on building application projects that include LitElement components, see [Build for production](https://lit.dev/docs/tools/production/) on the Lit site.
+5. **Deployment:**
+   - Documentation auto-deploys to GitHub Pages.
+   - npm packages auto-publish with version checks.
 
 ## More information
 
-See [Get started](https://lit.dev/docs/getting-started/) on the Lit site for more information.
-
-## Debug workers
-
-[Chrome chrome://inspect/#workers](chrome://inspect/#workers)
-
-[Firefox about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox)
-
-Chat library uses inline module type shared worker for communication with the backend.
-
-Production build bundles worker module and deps to iife so production library created with `npm run build` is compatible with all modern browsers.
-
-## Storybook
-
-Tried storybook builder vite. Version 6.x depends on webpack4 manager, which has problems with outdated crypto on
-node >16, whereas new storybook version as of 7.0.0-alpha.40 does not support web components.
-
-So far, the only working version is based on webpack5
-
-## BroadcastChannel
-
-https://bugzilla.mozilla.org/show_bug.cgi?id=1821171
-
-Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid of it.
+See [Get started](https://www.k1te.chat/en/start/getting-started/) on the Lit site for more information.
 
 ## TODO
 
