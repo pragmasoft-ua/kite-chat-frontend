@@ -39,6 +39,9 @@ jobs:
       - name: Lint code
         run: npm run lint
 
+      - name: Install browser binaries
+        run: npx playwright install
+
       - name: Run tests
         run: npm test
 
