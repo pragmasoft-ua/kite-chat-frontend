@@ -40,7 +40,7 @@ jobs:
         run: npm run lint
 
       - name: Install browser binaries
-        run: npx playwright install && npx playwright install webkit
+        run: npx playwright install --with-deps
 
       - name: Run tests
         run: npm test
