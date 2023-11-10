@@ -1,0 +1,46 @@
+---
+title: Telegram bot
+description: Telegram bot usage guide.
+---
+
+## Creating a Support Channel
+
+This bot allows to set up support channel in the current chat as a host
+or call existing support channel as a client.
+
+### Commands
+
+#### Host Commands
+
+- /host channel: Set up the current chat as a support channel with the specified name.
+- /drop: Unregister the current support channel.
+
+#### Client Commands
+
+- /start channel: Initiate a conversation with the support channel named "channel."
+- /leave: Leave the current support channel.
+
+#### Channel Naming
+
+When setting up or initiating a support channel, adhere to the following guidelines:
+- Channel names should only contain alphanumeric letters, ".", "-", "_", or "~."
+- Channel names must be 8 to 32 characters long.
+
+### Message Forwarding
+Once a conversation is established, k1techatbot seamlessly forwards messages between the client and host. 
+Host messages are forwarded to the client who sent the last incoming message, ensuring a smooth and efficient communication flow.
+
+### Replying to Messages
+To respond to specific messages, use the ↰ (Reply To) feature.
+
+### Creating a Group in Telegram
+To create a group in Telegram, follow these steps:
+
+## Setup:
+
+- Open the Telegram app on your device.
+- Create a New Group
+- Once the group is created, tap on the group name, then "Add member," and search for @k1techatbot to invite it to the group.
+- Start Using k1techatbot:
+
+Now you can use k1techatbot commands within your newly created group.
