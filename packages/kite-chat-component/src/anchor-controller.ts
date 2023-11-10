@@ -85,18 +85,20 @@ export class AnchorController {
     
                 const applyNextClass = () => {
                     const lastClass = classList.pop();
-                    this.popoverElement.classList.add(lastClass);
-    
-                    const computedStyles = window.getComputedStyle(this.popoverElement);
-                    const left = parseFloat(computedStyles.left);
-                    const right = parseFloat(computedStyles.right);
-                    const top = parseFloat(computedStyles.top);
-                    const bottom = parseFloat(computedStyles.bottom);
+                    if(lastClass !== undefined) {
+                        this.popoverElement.classList.add(lastClass);
+        
+                        const computedStyles = window.getComputedStyle(this.popoverElement);
+                        const left = parseFloat(computedStyles.left);
+                        const right = parseFloat(computedStyles.right);
+                        const top = parseFloat(computedStyles.top);
+                        const bottom = parseFloat(computedStyles.bottom);
 
-                    isOverflowing = ((left < 0) || (right > window.innerWidth) || (top < 0) || (bottom > window.innerHeight));
+                        isOverflowing = ((left < 0) || (right > window.innerWidth) || (top < 0) || (bottom > window.innerHeight));
 
-                    if (isOverflowing && classList.length > 0) {
-                        applyNextClass();
+                        if (isOverflowing && classList.length > 0) {
+                            applyNextClass();
+                        }
                     }
                 };
                 applyNextClass();
