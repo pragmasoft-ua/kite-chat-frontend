@@ -3,7 +3,7 @@
   "description": "kite-chat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2023.10.5",
+  "version": "2023.10.6",
   "homepage": "https://www.k1te.chat/",
   "publishConfig": {
     "access": "public"
