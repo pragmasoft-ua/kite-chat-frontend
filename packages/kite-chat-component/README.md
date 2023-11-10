@@ -90,6 +90,14 @@ npm run lint
 
 Prettier has not been configured to run when committing files, but this can be added with Husky and and `pretty-quick`. See the [prettier.io](https://prettier.io/) site for instructions.
 
+## Publish
+
+Package is published automatically by gh actions from main branch. To upgrade version run:
+
+```bash
+npm version patch
+```
+
 ## Script to include component from CDN
 
 `<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat-component/dist/kite-chat-component.mjs"></script>`

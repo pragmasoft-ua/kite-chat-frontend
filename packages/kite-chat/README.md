@@ -92,6 +92,14 @@ Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid
 
 `<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat/dist/kite-chat.js"></script>`
 
+## Publish
+
+Package is published automatically by gh actions from main branch. To upgrade version run:
+
+```bash
+npm version patch
+```
+
 ## More information
 
 See [Backend Example](https://www.k1te.chat/en/guides/backend-example/) on the Kite Chat docs site for more information.
