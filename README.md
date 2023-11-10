@@ -12,6 +12,8 @@ and docs static site.
 
 Web component is built using LitElement with TypeScript and Tailwind CSS.
 
+![Kite Chat](kite-chat-light.png)
+
 Project is generated from the `lit-starter-ts` template in [the main Lit
 repo](https://github.com/lit/lit). Issues and PRs for this template should be
 filed in that repo.
