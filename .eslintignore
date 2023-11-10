@@ -1,5 +1,3 @@
-node_modules/*
-dist/*
-docs/*
-docs-src/*
+**/node_modules/
+packages/*/dist/
 custom-elements.json

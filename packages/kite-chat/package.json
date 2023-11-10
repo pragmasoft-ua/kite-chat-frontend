@@ -3,7 +3,7 @@
   "description": "Kite chat frontend",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2023.10.5",
+  "version": "2023.10.6",
   "homepage": "https://www.k1te.chat/",
   "repository": {
     "type": "git",
@@ -39,7 +39,8 @@
     "lint": "npm run lint:eslint",
     "lint:eslint": "eslint \"src/**/*.ts\"",
     "clean": "rimraf dist types tsconfig.tsbuildinfo",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch --passWithNoTests"
   },
   "dependencies": {
     "@pragmasoft-ukraine/kite-chat-component": "*"

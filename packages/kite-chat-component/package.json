@@ -3,7 +3,7 @@
   "description": "kite-chat web component",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
-  "version": "2023.10.5",
+  "version": "2023.10.6",
   "homepage": "https://www.k1te.chat/",
   "publishConfig": {
     "access": "public"
@@ -51,7 +51,8 @@
     "lint:lit-analyzer": "lit-analyzer",
     "format": "prettier \"**/*.{cjs,html,js,json,md,ts}\" --ignore-path ./.eslintignore --write",
     "analyze": "wca analyze \"src/index.ts\" --format json --outFile custom-elements.json",
-    "test": "jest --passWithNoTests"
+    "test": "web-test-runner",
+    "test:watch": "web-test-runner --watch"
   },
   "dependencies": {
     "@oddbird/popover-polyfill": "^0.3.1",

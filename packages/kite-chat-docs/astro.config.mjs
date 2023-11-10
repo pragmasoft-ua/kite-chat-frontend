@@ -78,7 +78,11 @@ export default defineConfig({
           'uk-UA': "Приклад бекенду",
         },
         link: '/guides/backend-example/'
-      }]
+      }, {
+        label: 'Telegram bot',
+        link: '/guides/telegram-bot/'
+      }
+    ]
     }, {
       label: 'Reference',
       translations: {
@@ -119,7 +123,7 @@ export default defineConfig({
       __WS_ENDPOINT__: WS_ENDPOINT,
       __BACKEND_PACKAGE_IMPORT__: mode === "test" 
         ? `${base}/kite-chat.js` 
-        : "https://cdn.jsdelivr.net/npm/@pragmasoft-ukraine/kite-chat/+esm"
+        : "https://unpkg.com/@pragmasoft-ukraine/kite-chat/dist/kite-chat.js"
       ,
       //override vite MODE variables
       'import.meta.env.DEV': mode === "development",
