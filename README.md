@@ -1,4 +1,6 @@
 # 🪁 Kite chat frontend
+![deploy](https://github.com/pragmasoft-ua/kite-chat-frontend/actions/workflows/deploy.yml/badge.svg)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/@pragmasoft-ukraine/kite-chat-component)
 
 [Docs](https://www.k1te.chat/)
 
