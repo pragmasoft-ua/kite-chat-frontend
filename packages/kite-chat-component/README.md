@@ -98,46 +98,36 @@ Prettier has not been configured to run when committing files, but this can be a
 
 See [Get started](https://www.k1te.chat/en/start/getting-started/) on the Kite Chat docs site for more information.
 
-## TODO
+## Features
 
 - ✅responsive dialog sizing/placement
 - ✅scroll snap
 - ✅dark/light theme
 - ✅primary color for text selection
 - ✅open/close animation
-- ✅button handlers
 - ✅focus on textarea when dialog is opened
 - ✅keyboard shortcut for send
 - ✅events
-- ✅property converter for datetime property
 - ✅shared worker
-- ✅npm publishing, unpkg cdn
-- BUG: content window does not scroll properly
+- ✅npm publishing: unpkg cdn
+- ✅file upload
+- ✅display images
+- ✅cache session in worker to survive page reloads (only if two tabs are open)
+- ✅automated npm publish with github actions
+- ✅playwright e2e tests
 - BUG: @base tailwind styles are not applicable in the context of wc (html, body)
 - switch to monorepo with pnpm build
-- storybook - use absolute instead of fixed positioning to facilitate storybook stories (may be not needed)
-- file upload
-- display images
 - new N (unread) badge on toggle button, autoopen on incoming attr
-- smarter datetime format or change display on click from time to date and back
-- cache session in worker to survive page reloads
+- smarter datetime format or change display on click from time to date and back (or sticky dates like in telegram client). Use temporal polyfill for timestamps
 - keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
 - message selection, contextual edit/delete menu items (next to close button)
 - clipboard api
 - Web push
-- BroadcastChannel
 - buttons click animation
 - display links and button menus (as pills)
-- localization
 - emoji keyboard https://emoji.julien-marcou.fr/
 - custom variables for sizing, background pattern, ...?
 - aria attributes for controls
 - virtual scrolling
 - remember input height
-- sticky dates
 - Conversation context (page url, ip, browser lang, time, timezone, location)
-- github sponsorship
-- automate npm publish with github actions
-- playwright e2e tests
-- use temporal polyfill for timestamp
-- https://github.com/43081j/postcss-lit
