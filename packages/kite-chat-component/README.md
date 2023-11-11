@@ -1,5 +1,11 @@
 # 🪁 Kite chat web component
 
+![Kite Chat](../../kite-chat-light.png)
+
+![deploy](https://github.com/pragmasoft-ua/kite-chat-frontend/actions/workflows/deploy.yml/badge.svg)
+
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/@pragmasoft-ukraine/kite-chat-component)
+
 This project includes **kite-chat** web component,
 which can be used independently of the kite-chat backend with any other backend
 and networking protocol.
@@ -16,8 +22,9 @@ npm i
 
 ## Build
 
-This sample uses the TypeScript compiler to produce JavaScript that runs in modern browsers.
-This sample uses [Vite](https://vitejs.dev/guide/) to bundle package. It bundles code with [Rollup](https://rollupjs.org/), pre-configured to output highly optimized static assets for production.
+Chat component uses the TypeScript compiler to produce JavaScript that runs in modern browsers.
+
+Chat component uses [Vite](https://vitejs.dev/guide/) to bundle package. It bundles code with [Rollup](https://rollupjs.org/), pre-configured to output highly optimized static assets for production.
 
 To build the JavaScript version of your component:
 
@@ -48,7 +55,7 @@ npm test:watch
 
 ## Dev Server
 
-This sample uses [Vite](https://vitejs.dev/guide/) as build tool. It`s dev server provides [rich feature enhancements](https://vitejs.dev/guide/features) over [native ES modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules), for example extremely fast [Hot Module Replacement (HMR)](https://vitejs.dev/guide/features#hot-module-replacement).
+Chat component uses [Vite](https://vitejs.dev/guide/) as a build tool. It`s dev server provides [rich feature enhancements](https://vitejs.dev/guide/features) over [native ES modules](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules), for example extremely fast [Hot Module Replacement (HMR)](https://vitejs.dev/guide/features#hot-module-replacement).
 
 To run the dev server and open the project in a new browser tab:
 
@@ -105,37 +112,3 @@ npm version patch
 ## More information
 
 See [Get started](https://www.k1te.chat/en/start/getting-started/) on the Kite Chat docs site for more information.
-
-## Features
-
-- ✅responsive dialog sizing/placement
-- ✅scroll snap
-- ✅dark/light theme
-- ✅primary color for text selection
-- ✅open/close animation
-- ✅focus on textarea when dialog is opened
-- ✅keyboard shortcut for send
-- ✅events
-- ✅shared worker
-- ✅npm publishing: unpkg cdn
-- ✅file upload
-- ✅display images
-- ✅cache session in worker to survive page reloads (only if two tabs are open)
-- ✅automated npm publish with github actions
-- ✅playwright e2e tests
-- BUG: @base tailwind styles are not applicable in the context of wc (html, body)
-- switch to monorepo with pnpm build
-- new N (unread) badge on toggle button, autoopen on incoming attr
-- smarter datetime format or change display on click from time to date and back (or sticky dates like in telegram client). Use temporal polyfill for timestamps
-- keyboard shortcuts for buttons (close, attach file, edit, tab to focus)
-- message selection, contextual edit/delete menu items (next to close button)
-- clipboard api
-- Web push
-- buttons click animation
-- display links and button menus (as pills)
-- emoji keyboard https://emoji.julien-marcou.fr/
-- custom variables for sizing, background pattern, ...?
-- aria attributes for controls
-- virtual scrolling
-- remember input height
-- Conversation context (page url, ip, browser lang, time, timezone, location)

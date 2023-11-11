@@ -29,7 +29,7 @@ const WORKER_NAME = 'k1te worker';
 
 const MIN_RECONNECTION_INTERVAL_MS = 60 * 1000; // 1 min
 
-const PING_INTERVAL_MS = 2 * 60 * 1000; // 2 min
+const PING_INTERVAL_MS = 60 * 1000; // 1 min
 
 const MISSED_PONGS_TO_RECONNECT = 3;
 

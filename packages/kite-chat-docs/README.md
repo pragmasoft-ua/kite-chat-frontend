@@ -1,10 +1,10 @@
-# 🪁 Kite chat docs
+# 🪁 Kite chat static documentation site
 
 [Stable version](https://www.k1te.chat/)
 
 [Test version](https://www.k1te.chat/test/)
 
-This project includes **kite-chat** docs static site built with Starlight template and Tailwind CSS.
+This project includes **kite-chat** docs static site built with Astro Starlight template and Tailwind CSS.
 
 Components are built using Astro with TypeScript.
 
