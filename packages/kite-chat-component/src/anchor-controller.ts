@@ -1,13 +1,10 @@
 import { ReactiveControllerHost } from 'lit';
 
 type Anchor = {
-    x: number; 
-    y: number;
-}
-
-type Variables = {
-    x: string;
-    y: string;
+    left: number; 
+    right: number;
+    top: number; 
+    bottom: number;
 }
 
 export class AnchorController {
@@ -16,7 +13,8 @@ export class AnchorController {
 
     constructor(
         private host: ReactiveControllerHost & HTMLElement, 
-        private variables: Variables | null = null,
+        private anchorName: string,
+        private fallbackClassList: Array<string>,
         private targetSelector = "[popovertarget]",
         private popoverSelector = "[popover]",
     ) {
@@ -58,10 +56,7 @@ export class AnchorController {
         return new Promise((resolve) => {
             const targetRect = targetElement.getBoundingClientRect();
 
-            const x = targetRect.right;
-            const y = targetRect.top;
-
-            resolve({ x, y });
+            resolve(targetRect);
         });
     }
 
@@ -69,13 +64,45 @@ export class AnchorController {
         if (this.popoverElement && this.targetElement) {
             // Use requestAnimationFrame to ensure synchronized calculation
             requestAnimationFrame(() => {
-                this.computePosition(this.targetElement).then(({ x, y }: Anchor) => {
-                    if(this.variables) {
-                        this.popoverElement.style.setProperty(this.variables.x, `${x}px`);
-                        this.variables && this.popoverElement.style.setProperty(this.variables.y, `${y}px`);
+                this.computePosition(this.targetElement).then(({ left, right, top, bottom }: Anchor) => {
+                    if(this.anchorName) {
+                        const properties = {
+                            [`${this.anchorName}-left`]: left,
+                            [`${this.anchorName}-right`]: right,
+                            [`${this.anchorName}-top`]: top,
+                            [`${this.anchorName}-bottom`]: bottom
+                        };
+                        Object.entries(properties).forEach(([property, value]) => (
+                            this.popoverElement.style.setProperty(property, `${value}px`)
+                        ));
                     }
                 });
             });
+            if (this.fallbackClassList) {
+                const classList = [...this.fallbackClassList].reverse();
+                classList.forEach(className => this.popoverElement.classList.remove(className));
+                let isOverflowing = true;
+    
+                const applyNextClass = () => {
+                    const lastClass = classList.pop();
+                    if(lastClass !== undefined) {
+                        this.popoverElement.classList.add(lastClass);
+        
+                        const computedStyles = window.getComputedStyle(this.popoverElement);
+                        const left = parseFloat(computedStyles.left);
+                        const right = parseFloat(computedStyles.right);
+                        const top = parseFloat(computedStyles.top);
+                        const bottom = parseFloat(computedStyles.bottom);
+
+                        isOverflowing = ((left < 0) || (right > window.innerWidth) || (top < 0) || (bottom > window.innerHeight));
+
+                        if (isOverflowing && classList.length > 0) {
+                            applyNextClass();
+                        }
+                    }
+                };
+                applyNextClass();
+            }
         }
     }
 }

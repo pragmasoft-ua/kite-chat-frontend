@@ -1,4 +1,6 @@
 # 🪁 Kite chat frontend
+![deploy](https://github.com/pragmasoft-ua/kite-chat-frontend/actions/workflows/deploy.yml/badge.svg)
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/@pragmasoft-ukraine/kite-chat-component)
 
 [Docs](https://www.k1te.chat/)
 
@@ -9,6 +11,8 @@ a protocol driver to communicate with the chat backend
 and docs static site.
 
 Web component is built using LitElement with TypeScript and Tailwind CSS.
+
+![Kite Chat](kite-chat-light.png)
 
 Project is generated from the `lit-starter-ts` template in [the main Lit
 repo](https://github.com/lit/lit). Issues and PRs for this template should be

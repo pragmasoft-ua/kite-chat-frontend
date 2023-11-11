@@ -78,7 +78,11 @@ export default defineConfig({
           'uk-UA': "Приклад бекенду",
         },
         link: '/guides/backend-example/'
-      }]
+      }, {
+        label: 'Telegram bot',
+        link: '/guides/telegram-bot/'
+      }
+    ]
     }, {
       label: 'Reference',
       translations: {

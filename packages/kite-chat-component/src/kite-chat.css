@@ -67,25 +67,40 @@ main::-webkit-scrollbar-thumb {
 }
 
 .kite-dialog {
-  left: calc(var(--custom-anchor-x) - var(--kite-dialog-width));
-  top: calc(var(--custom-anchor-y) - var(--kite-dialog-height) - var(--kite-gap));
-  right: auto;
-  bottom: auto;
   width: var(--kite-dialog-width);
   height: var(--kite-dialog-height);
+  right: auto;
+  bottom: auto;
+}
+
+.fallback-1 {
+  left: calc(var(--custom-anchor-right) - var(--kite-dialog-width));
+  top: calc(var(--custom-anchor-top) - var(--kite-dialog-height) - var(--kite-gap));
+}
+
+.fallback-2 {
+  left: calc(var(--custom-anchor-right) - var(--kite-dialog-width));
+  top: calc(var(--custom-anchor-bottom) + var(--kite-gap));
+}
+
+.fallback-3 {
+  left: var(--custom-anchor-left);
+  top: calc(var(--custom-anchor-top) - var(--kite-dialog-height) - var(--kite-gap));
+}
+
+.fallback-4 {
+  left: var(--custom-anchor-left);
+  top: calc(var(--custom-anchor-bottom) + var(--kite-gap));
 }
 
 @supports(anchor-name: --toggle) {
   [popovertarget] {
-      anchor-name: --toggle;
+    anchor-name: --toggle;
   }
 
-  .kite-dialog {
-      anchor-default: --toggle;
-      left: auto;
-      right: anchor(right);
-      bottom: calc(anchor(top) + var(--kite-gap));
-      top: auto;
+  [popover] {
+    anchor-default: --toggle;
+    position-fallback: --flip;
   }
 }
 
