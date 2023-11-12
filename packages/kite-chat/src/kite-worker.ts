@@ -207,6 +207,9 @@ function onTabDisconnected(port: KiteMessagePort) {
 function disconnect(reason: string = 'all active tabs closed') {
   // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4
   ws?.close(WS_CLOSE_REASON_NORMAL, reason);
+  joinChannel = null;
+  messageHistory.length = 0;
+  outgoingQueue.length = 0;
 }
 
 function triggerWsConnection() {
