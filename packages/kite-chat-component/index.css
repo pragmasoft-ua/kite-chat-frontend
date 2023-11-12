@@ -6,5 +6,5 @@
 @tailwind variants;
 
 :root {
-  --kite-primary-color: theme('colors.emerald.600');
+  --kite-primary-color: theme('colors.sky.600');
 }

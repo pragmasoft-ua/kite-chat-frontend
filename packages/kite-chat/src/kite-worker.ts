@@ -29,7 +29,7 @@ const WORKER_NAME = 'k1te worker';
 
 const MIN_RECONNECTION_INTERVAL_MS = 60 * 1000; // 1 min
 
-const PING_INTERVAL_MS = 2 * 60 * 1000; // 2 min
+const PING_INTERVAL_MS = 60 * 1000; // 1 min
 
 const MISSED_PONGS_TO_RECONNECT = 3;
 
@@ -207,6 +207,9 @@ function onTabDisconnected(port: KiteMessagePort) {
 function disconnect(reason: string = 'all active tabs closed') {
   // https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4
   ws?.close(WS_CLOSE_REASON_NORMAL, reason);
+  joinChannel = null;
+  messageHistory.length = 0;
+  outgoingQueue.length = 0;
 }
 
 function triggerWsConnection() {

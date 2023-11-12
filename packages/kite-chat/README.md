@@ -1,6 +1,12 @@
 # 🪁 Kite chat
 
-This project includes **kite-chat** protocol driver to communicate with the kite chat backend.
+![Kite Chat](../../kite-chat-light.png)
+
+![deploy](https://github.com/pragmasoft-ua/kite-chat-frontend/actions/workflows/deploy.yml/badge.svg)
+
+[![Published on webcomponents.org](https://img.shields.io/badge/webcomponents.org-published-blue.svg)](https://www.webcomponents.org/element/@pragmasoft-ukraine/kite-chat)
+
+This project includes 🪁K1te chat client to communicate with the [🪁K1te chat backend](https://github.com/pragmasoft-ua/kite-chat).
 
 ## Setup
 
@@ -86,9 +92,9 @@ Production build bundles worker module and deps to iife so production library cr
 
 https://bugzilla.mozilla.org/show_bug.cgi?id=1821171
 
-Unfortunately it does not work in Firefox, only works in Chrome. Have to get rid of it.
+Unfortunately it does not work in Firefox, only works in Chrome. Had to get rid of it.
 
-## Script to include driver with component from CDN
+## Script to include K1te chat client ESM module from the CDN
 
 `<script type="module" src="https://unpkg.com/@pragmasoft-ukraine/kite-chat/dist/kite-chat.js"></script>`
 
