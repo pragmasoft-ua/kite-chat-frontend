@@ -3,6 +3,7 @@
   "description": "kite-chat docs",
   "license": "LGPL3.0",
   "author": "Dmytro V. Zemnytskyi <pragmasoft@gmail.com>",
+  "version": "2023.10.7",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
     "dev": "astro dev",
