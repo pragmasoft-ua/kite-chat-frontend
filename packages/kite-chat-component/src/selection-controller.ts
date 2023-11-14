@@ -44,7 +44,7 @@ export class SelectionController {
 
     private startSelection() {
         this.pressTimer = setTimeout(() => {
-            this.handleSelect(true);
+            this.handleSelect(!this.host.selected);
             this.pressTimer = null;
         }, SELECTION_THRESHOLD);
         this.ignored = false;
@@ -70,6 +70,9 @@ export class SelectionController {
     }
 
     private handleSelect(selected: boolean) {
+        if(this.host.selected === selected) {
+            return;
+        }
         this.host.selected = selected;
         this.host.dispatchEvent(new CustomEvent('select', {
             ...CUSTOM_EVENT_INIT,
