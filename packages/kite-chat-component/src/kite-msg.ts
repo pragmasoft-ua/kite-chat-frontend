@@ -5,12 +5,14 @@
  *
  */
 
-import {LitElement, html, css, unsafeCSS} from 'lit';
+import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
 import kiteMsgStyles from './kite-msg.css?inline';
 import {randomStringId} from './random-string-id';
 import {MsgStatus} from './kite-payload';
+
+import {SelectionController} from './selection-controller';
 
 const componentStyles = css`
   ${unsafeCSS(kiteMsgStyles)}
@@ -78,6 +80,22 @@ export class KiteMsgElement extends LitElement {
     },
   })
   status?: MsgStatus;
+
+  /**
+   * Indicates whether the message is selected or not
+   */
+  @property({ type: Boolean, reflect: true })
+  selected = false;
+
+  protected selectionController = new SelectionController(this);
+
+  select() {
+    this.selectionController.select();
+  }
+
+  unselect() {
+    this.selectionController.unselect();
+  }
 
   override render() {
     return html` <slot></slot

@@ -5,7 +5,7 @@
  */
 
 import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
+import {customElement, property, query, queryAssignedElements, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
 
@@ -20,6 +20,7 @@ import {
 } from './kite-payload';
 import {AnchorController} from './anchor-controller';
 import {DraggableController} from './draggable-controller';
+import {KiteMsgElement} from './kite-msg';
 
 console.debug('kite-chat loaded');
 
@@ -90,12 +91,18 @@ export class KiteChatElement extends LitElement {
   @query('#kite-dialog')
   private dialog!: HTMLElement;
 
+  @queryAssignedElements()
+  private messageElements!: NodeListOf<KiteMsgElement>;
+
   @state()
   private sendEnabled = false;
 
   protected anchorController!: AnchorController;
 
   protected draggableController = new DraggableController(this, "#kite-toggle", this._toggleOpen.bind(this));
+
+  @state()
+  private selectedMessages: Array<string> = [];
 
   constructor() {
     super();
@@ -118,6 +125,18 @@ export class KiteChatElement extends LitElement {
       } else {
         this.textarea.blur();
         this.dialog.hidePopover();
+      }
+    }
+  }
+
+  private onMsgSelected(e: Event) {
+    if (e.target instanceof KiteMsgElement) {
+      const kiteMsgElement = e.target as KiteMsgElement;
+
+      if((e as CustomEvent).detail.selected) {
+        this.selectedMessages = [...this.selectedMessages, kiteMsgElement.messageId];
+      } else {
+        this.selectedMessages = [...this.selectedMessages.filter(id => kiteMsgElement.messageId !== id)];
       }
     }
   }
@@ -157,20 +176,45 @@ export class KiteChatElement extends LitElement {
           <header
             class="bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-secondary-color"
           >
-            <h3 class="kite-title flex-1">${this.heading}</h3>
-            <span
-              data-close
-              title="Close"
-              class="cursor-pointer rounded-full bg-white bg-opacity-0 py-2 px-2.5 leading-none hover:bg-opacity-30"
-              @click="${this._toggleOpen}"
-              >✕</span
-            >
+            ${
+              this.selectedMessages.length === 0
+                ? html`
+                  <h3 class="kite-title flex-1">${this.heading}</h3>
+                  <span
+                    data-close
+                    title="Close"
+                    class="cursor-pointer rounded-full bg-white bg-opacity-0 py-2 px-2.5 leading-none hover:bg-opacity-30"
+                    @click="${this._toggleOpen}"
+                    >✕</span
+                  >
+                `
+                : html`
+                  <span
+                    data-cancel
+                    title="Cancel"
+                    class="cursor-pointer rounded-full bg-white bg-opacity-0 py-2 px-2.5 leading-none hover:bg-opacity-30"
+                    @click="${this._cancel}"
+                    >✕</span
+                  >
+                  <span class="flex-1">${this.selectedMessages.length} selected</span>
+                  <span
+                    data-delete
+                    title="Delete"
+                    class="cursor-pointer h-full aspect-square rounded-full bg-white bg-opacity-0 py-1 px-1.5 leading-none hover:bg-opacity-30"
+                    @click="${this._delete}"
+                  >
+                  <svg class="h-full w-full" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="100" height="100" fill="currentColor" viewBox="0 0 50 50">
+                    <path d="M 21 2 C 19.354545 2 18 3.3545455 18 5 L 18 7 L 10.154297 7 A 1.0001 1.0001 0 0 0 9.984375 6.9863281 A 1.0001 1.0001 0 0 0 9.8398438 7 L 8 7 A 1.0001 1.0001 0 1 0 8 9 L 9 9 L 9 45 C 9 46.645455 10.354545 48 12 48 L 38 48 C 39.645455 48 41 46.645455 41 45 L 41 9 L 42 9 A 1.0001 1.0001 0 1 0 42 7 L 40.167969 7 A 1.0001 1.0001 0 0 0 39.841797 7 L 32 7 L 32 5 C 32 3.3545455 30.645455 2 29 2 L 21 2 z M 21 4 L 29 4 C 29.554545 4 30 4.4454545 30 5 L 30 7 L 20 7 L 20 5 C 20 4.4454545 20.445455 4 21 4 z M 11 9 L 18.832031 9 A 1.0001 1.0001 0 0 0 19.158203 9 L 30.832031 9 A 1.0001 1.0001 0 0 0 31.158203 9 L 39 9 L 39 45 C 39 45.554545 38.554545 46 38 46 L 12 46 C 11.445455 46 11 45.554545 11 45 L 11 9 z M 18.984375 13.986328 A 1.0001 1.0001 0 0 0 18 15 L 18 40 A 1.0001 1.0001 0 1 0 20 40 L 20 15 A 1.0001 1.0001 0 0 0 18.984375 13.986328 z M 24.984375 13.986328 A 1.0001 1.0001 0 0 0 24 15 L 24 40 A 1.0001 1.0001 0 1 0 26 40 L 26 15 A 1.0001 1.0001 0 0 0 24.984375 13.986328 z M 30.984375 13.986328 A 1.0001 1.0001 0 0 0 30 15 L 30 40 A 1.0001 1.0001 0 1 0 32 40 L 32 15 A 1.0001 1.0001 0 0 0 30.984375 13.986328 z"></path>
+                  </svg>
+                </span>
+                `
+            }
           </header>
           <main
             class="flex flex-1 snap-y flex-col-reverse overflow-y-auto bg-slate-300/50 p-2"
           >
             <div class="flex min-h-min flex-col flex-wrap items-start">
-              <slot></slot>
+              <slot @select=${this.onMsgSelected}></slot>
             </div>
           </main>
           <footer class="flex items-start gap-1 rounded-b p-2">
@@ -235,6 +279,24 @@ export class KiteChatElement extends LitElement {
         </dialog>
       </div>
     `;
+  }
+
+  private _cancel() {
+    [...this.messageElements].filter((msgElement) => (
+      msgElement.selected
+    )).forEach((msgElement) => {
+      msgElement.unselect();
+    });
+  }
+
+  private _delete() {
+    //TODO api call
+    [...this.messageElements].filter((msgElement) => (
+      this.selectedMessages.includes(msgElement.messageId)
+    )).forEach((msgElement) => {
+      msgElement.remove();
+    });
+    this.selectedMessages = [];
   }
 
   private _toggleOpen() {

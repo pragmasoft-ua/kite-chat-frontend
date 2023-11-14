@@ -40,7 +40,7 @@
     "./src/kite-msg.ts"
   ],
   "scripts": {
-    "start": "vite",
+    "start": "vite --host",
     "build": "concurrently \"npm:tsc\" \"npm:build:*\" \"npm:analyze\"",
     "tsc": "tsc -b",
     "build:module": "vite build",
