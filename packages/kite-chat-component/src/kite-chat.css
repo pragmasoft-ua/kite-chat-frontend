@@ -93,6 +93,27 @@ main::-webkit-scrollbar-thumb {
   top: calc(var(--custom-anchor-bottom) + var(--kite-gap));
 }
 
+span.edit-message {
+  position: relative;
+  padding-top: 1.5rem;
+  font-size: 0.9rem;
+  @apply flex-1 my-auto line-clamp-1;
+}
+
+span.edit-message::after {
+  content: 'Edit message';
+  opacity: 60%;
+  font-size: 0.875rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+span.edit-message_file::after {
+  content: 'Replace file';
+  @apply cursor-pointer;
+}
+
 @supports(anchor-name: --toggle) {
   [popovertarget] {
     anchor-name: --toggle;
