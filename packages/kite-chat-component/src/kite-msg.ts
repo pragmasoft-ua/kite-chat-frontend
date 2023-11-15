@@ -5,7 +5,7 @@
  *
  */
 
-import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
+import {LitElement, html, css, unsafeCSS} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 
 import kiteMsgStyles from './kite-msg.css?inline';
@@ -86,6 +86,12 @@ export class KiteMsgElement extends LitElement {
    */
   @property({ type: Boolean, reflect: true })
   selected = false;
+
+  /**
+   * Indicates whether the message was edited
+   */
+  @property({ type: Boolean, reflect: true })
+  edited = false;
 
   protected selectionController = new SelectionController(this);
 
