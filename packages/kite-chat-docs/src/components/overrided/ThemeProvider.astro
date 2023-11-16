@@ -9,11 +9,11 @@ import Default from '@astrojs/starlight/components/ThemeProvider.astro';
 <script is:inline>
 	window.StarlightThemeProvider = (() => {
 		const themeProvider = window.StarlightThemeProvider;
-
+		const prefers = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 		return {
 			updatePickers(theme) {
 				themeProvider.updatePickers(theme);
-				window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme } }));
+				window.dispatchEvent(new CustomEvent('theme-change', {detail: { theme: theme === 'auto' ? prefers : theme },}));
 			},
 		};
 	})();
