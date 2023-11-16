@@ -1,6 +1,6 @@
 # 🪁 K1te chat frontend
 
-![Kite Chat](kite-chat-light.png)
+![Kite Chat](https://github.com/pragmasoft-ua/kite-chat-frontend/blob/main/kite-chat-light.png?raw=true)
 
 ![deploy](https://github.com/pragmasoft-ua/kite-chat-frontend/actions/workflows/deploy.yml/badge.svg)
 
