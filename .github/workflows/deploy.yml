@@ -79,7 +79,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm install && npm install --save-dev @pagefind/linux-x64 -w @pragmasoft-ukraine/kite-chat-component
 
       - name: Build Docs
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
@@ -139,7 +139,7 @@ jobs:
       
       - name: Install dependencies
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        run: npm ci
+        run: npm install && npm install --save-dev @pagefind/linux-x64 -w @pragmasoft-ukraine/kite-chat-component
 
       - name: Build Kite Chat component
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
