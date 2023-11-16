@@ -34,7 +34,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Lint code
         run: npm run lint
@@ -79,11 +79,7 @@ jobs:
 
       - name: Install dependencies
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        run: npm install
-
-      - name: Analyze Component
-        if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        run: npm run analyze
+        run: npm ci
 
       - name: Build Docs
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
@@ -97,23 +93,11 @@ jobs:
           path: ./packages/kite-chat-docs/dist
           key: ${{ runner.os }}-dist-main-${{ hashFiles('./package-lock.json') }}
 
-      - name: Upload Main Artifact
+      - name: Upload Main Docs Artifact
         uses: actions/upload-artifact@v3
         with:
           name: main-dist
           path: ./packages/kite-chat-docs/dist/
-
-      - name: Upload Kite Chat Component Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: kite-chat-component
-          path: ./packages/kite-chat-component
-
-      - name: Upload Kite Chat Artifact
-        uses: actions/upload-artifact@v3
-        with:
-          name: kite-chat
-          path: ./packages/kite-chat
 
   build_test_docs:
     name: 📝 Build Test Docs 🏗️
@@ -155,7 +139,7 @@ jobs:
       
       - name: Install dependencies
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        run: npm install
+        run: npm ci
 
       - name: Build Kite Chat component
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
@@ -206,7 +190,7 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Check version - Kite Chat Component
         run: |
