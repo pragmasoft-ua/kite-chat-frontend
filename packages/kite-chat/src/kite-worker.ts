@@ -22,6 +22,7 @@ import {
   UploadRequest,
   UploadResponse,
   FileVerification,
+  PlainTextVerification,
 } from './kite-types';
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
 import {SUBPROTOCOL} from './shared-constants';
@@ -46,6 +47,8 @@ const SUPPORTED_FILE_FORMATS = {
   "video/mp4": 20 * 1024 * 1024,
   "image/webp": 20 * 1024 * 1024,
 };
+
+const PLAIN_MAX_SIZE = 4 * 1024; // 4KB
 
 const ZIP_FILE_FORMAT = "application/zip";
 
@@ -187,6 +190,16 @@ function verifyFile(file: File): FileVerification {
   return FileVerification.SUCCEED;
 }
 
+function verifyPlainText(text: string): PlainTextVerification {
+  const blob = new Blob([text]);
+
+  if (blob.size > PLAIN_MAX_SIZE) {
+    return PlainTextVerification.EXCEED_SIZE;
+  }
+
+  return PlainTextVerification.SUCCEED;
+}
+
 function zipFile(file: File, resultType = "application/zip"): Promise<File> {
   return new Promise((resolve, reject) => {
     const zip = new JSZip();
@@ -203,10 +216,37 @@ function zipFile(file: File, resultType = "application/zip"): Promise<File> {
   });
 }
 
+function formatSize(size: number): string {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let unitIndex = 0;
+
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+
+  return `${size.toFixed(2)} ${units[unitIndex]}`;
+}
+
 function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
   broadcast(payload, tabPort);
-  queue(payload);
+
+  const result = verifyPlainText(payload.text);
+
+  switch (result) {
+    case PlainTextVerification.EXCEED_SIZE:
+      tabPort.postMessage({
+        type: MsgType.FAILED, 
+        reason: result,
+        messageId: payload.messageId,
+        description: `Text message size exceeds ${formatSize(PLAIN_MAX_SIZE)} limit.`,
+      });
+      break;
+    case PlainTextVerification.SUCCEED:
+      queue(payload);
+      break;
+  }
 }
 
 function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
@@ -234,18 +274,7 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
     });
   }
 
-  const maxSize = (type: string) => {
-    let size = SUPPORTED_FILE_FORMATS[type as keyof typeof SUPPORTED_FILE_FORMATS];
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let unitIndex = 0;
-
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024;
-      unitIndex++;
-    }
-
-    return `${size.toFixed(2)} ${units[unitIndex]}`;
-  };
+  const maxSize = (type: string) => formatSize(SUPPORTED_FILE_FORMATS[type as keyof typeof SUPPORTED_FILE_FORMATS]);
 
   const result = verifyFile(payload.file);
 

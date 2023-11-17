@@ -138,9 +138,14 @@ export enum FileVerification {
   SUCCEED = "SUCCEED"
 }
 
+export enum PlainTextVerification {
+  EXCEED_SIZE = "EXCEED_SIZE",
+  SUCCEED = "SUCCEED"
+}
+
 export type FailedMsg = {
   type: MsgType.FAILED;
-  reason: FileVerification;
+  reason: FileVerification|PlainTextVerification;
   messageId: string;
   description?: string;
 };
