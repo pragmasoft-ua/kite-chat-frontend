@@ -7,9 +7,10 @@ import type {
   Connected,
   FileMsg,
   ContentMsg,
+  FailedMsg,
 } from './kite-types';
 
-import {MsgType} from './kite-types';
+import {MsgType, FileVerification} from './kite-types';
 
 import {
   KiteChatElement,
@@ -181,6 +182,9 @@ export class KiteChat {
       case MsgType.ERROR:
         this.onErrorMessage(payload);
         break;
+      case MsgType.FAILED:
+        this.onFailedMessage(payload);
+        break;
       case MsgType.ONLINE:
       case MsgType.OFFLINE:
         this.log(payload);
@@ -216,6 +220,26 @@ export class KiteChat {
   protected onErrorMessage(e: ErrorMsg) {
     // TODO display error as a text message
     console.error(e.code, e.reason);
+  }
+
+  protected onFailedMessage(e: FailedMsg) {
+    console.debug('onFailedMessage', e);
+    const msgElement = document.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${e.messageId}"]`
+    ) as KiteMsgElement | undefined;
+    if (msgElement) {
+      msgElement.status = MsgStatus.failed;
+    }
+    let errorMessage = '';
+    switch (e.reason) {
+      case FileVerification.EXCEED_SIZE:
+        errorMessage = 'File size is too big.';
+        break;
+      case FileVerification.UNSUPPORTED_TYPE:
+        errorMessage = 'File type is unsupported.';
+        break;
+    }
+    this.element?.appendMsg({text: errorMessage, status: MsgStatus.unknown});
   }
 
   protected onDeliveryError(msg: MessageEvent<unknown>) {

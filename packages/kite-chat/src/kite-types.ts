@@ -16,6 +16,7 @@ export enum MsgStatus {
   sent = 1,
   delivered = 2,
   read = 3,
+  failed = 4,
 }
 
 export enum MsgType {
@@ -33,6 +34,7 @@ export enum MsgType {
   OFFLINE = 'OFFLINE',
   PING = 'PING',
   PONG = 'PONG',
+  FAILED = "FAILED",
 }
 
 export type JoinChannel = {
@@ -130,6 +132,18 @@ export type OK = {
 
 export type ContentMsg = PlaintextMsg | FileMsg;
 
+export enum FileVerification {
+  UNSUPPORTED_TYPE = "UNSUPPORTED_TYPE",
+  EXCEED_SIZE = "EXCEED_SIZE",
+  SUCCEED = "SUCCEED"
+}
+
+export type FailedMsg = {
+  type: MsgType.FAILED;
+  reason: FileVerification;
+  messageId: string;
+};
+
 export type KiteMsg =
   | JoinChannel
   | OK
@@ -144,4 +158,5 @@ export type KiteMsg =
   | Online
   | Offline
   | Ping
-  | Pong;
+  | Pong
+  | FailedMsg;

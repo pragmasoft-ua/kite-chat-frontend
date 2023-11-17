@@ -3,6 +3,7 @@ export enum MsgStatus {
   sent = 1,
   delivered = 2,
   read = 3,
+  failed = 4,
 }
 
 export type BaseMsg = {
