@@ -10,7 +10,7 @@ import type {
   FailedMsg,
 } from './kite-types';
 
-import {MsgType, FileVerification} from './kite-types';
+import {MsgType} from './kite-types';
 
 import {
   KiteChatElement,
