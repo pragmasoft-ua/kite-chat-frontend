@@ -142,6 +142,7 @@ export type FailedMsg = {
   type: MsgType.FAILED;
   reason: FileVerification;
   messageId: string;
+  description?: string;
 };
 
 export type KiteMsg =

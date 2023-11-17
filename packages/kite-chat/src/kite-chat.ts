@@ -230,16 +230,8 @@ export class KiteChat {
     if (msgElement) {
       msgElement.status = MsgStatus.failed;
     }
-    let errorMessage = '';
-    switch (e.reason) {
-      case FileVerification.EXCEED_SIZE:
-        errorMessage = '⛔️The file size exceeds the maximum allowed size.';
-        break;
-      default:
-        errorMessage = 'Unknown error.';
-        break;
-    }
-    this.element?.appendMsg({text: errorMessage, status: MsgStatus.unknown});
+    const errorMessage = e.description || 'Unknown error.';
+    this.element?.appendMsg({text: `⛔️${errorMessage}`, status: MsgStatus.unknown});
   }
 
   protected onDeliveryError(msg: MessageEvent<unknown>) {

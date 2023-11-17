@@ -47,6 +47,8 @@ const SUPPORTED_FILE_FORMATS = {
   "image/webp": 20 * 1024 * 1024,
 };
 
+const ZIP_FILE_FORMAT = "application/zip";
+
 interface KiteMessagePort extends MessagePort {
   postMessage(value: KiteMsg): void;
 }
@@ -223,23 +225,40 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
     queue(upload);
   };
 
-  const failedFile = async (reason: FileVerification) => {
+  const failedFile = async (reason: FileVerification, errorMessage?: string) => {
     tabPort.postMessage({
       type: MsgType.FAILED, 
-      reason: reason, 
+      reason: reason,
       messageId: payload.messageId,
+      description: errorMessage,
     });
   }
+
+  const maxSize = (type: string) => {
+    let size = SUPPORTED_FILE_FORMATS[type as keyof typeof SUPPORTED_FILE_FORMATS];
+    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+    let unitIndex = 0;
+
+    while (size >= 1024 && unitIndex < units.length - 1) {
+      size /= 1024;
+      unitIndex++;
+    }
+
+    return `${size.toFixed(2)} ${units[unitIndex]}`;
+  };
 
   const result = verifyFile(payload.file);
 
   switch (result) {
     case FileVerification.UNSUPPORTED_TYPE:
-      if(payload.file.size > SUPPORTED_FILE_FORMATS["application/zip"]) {
-        failedFile(FileVerification.EXCEED_SIZE);
+      if(payload.file.size > SUPPORTED_FILE_FORMATS[ZIP_FILE_FORMAT]) {
+        failedFile(
+          FileVerification.EXCEED_SIZE,
+          `${ZIP_FILE_FORMAT} size exceeds ${maxSize(ZIP_FILE_FORMAT)} limit.`
+        );
         break;
       }
-      zipFile(payload.file)
+      zipFile(payload.file, ZIP_FILE_FORMAT)
         .then(zippedFile => {
           uploadFile(zippedFile);
         })
@@ -248,7 +267,10 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
         });
       break;
     case FileVerification.EXCEED_SIZE:
-      failedFile(result)
+      failedFile(
+        FileVerification.EXCEED_SIZE,
+        `${payload.file.type} size exceeds ${maxSize(payload.file.type)} limit.`
+      );
       break;
     case FileVerification.SUCCEED:
       uploadFile(payload.file);
