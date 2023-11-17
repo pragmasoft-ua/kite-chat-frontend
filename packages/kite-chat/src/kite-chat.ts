@@ -22,7 +22,7 @@ import {
   isFileMsg,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
-import sharedWorkerUrl from './kite-worker?inline-shared-worker';
+import KiteWorker from './kite-worker?sharedworker&inline';
 import {assert} from './assert';
 
 export type KiteChatOptions = {
@@ -67,7 +67,7 @@ export class KiteChat {
 
     const onWorkerMessageBound = this.onWorkerMessage.bind(this);
 
-    const kiteWorker = new SharedWorker(sharedWorkerUrl);
+    const kiteWorker = new KiteWorker();
 
     const endpoint = new URL(this.opts.endpoint);
 
@@ -233,10 +233,10 @@ export class KiteChat {
     let errorMessage = '';
     switch (e.reason) {
       case FileVerification.EXCEED_SIZE:
-        errorMessage = 'File size is too big.';
+        errorMessage = '⛔️The file size exceeds the maximum allowed size.';
         break;
-      case FileVerification.UNSUPPORTED_TYPE:
-        errorMessage = 'File type is unsupported.';
+      default:
+        errorMessage = 'Unknown error.';
         break;
     }
     this.element?.appendMsg({text: errorMessage, status: MsgStatus.unknown});

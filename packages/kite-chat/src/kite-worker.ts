@@ -26,6 +26,8 @@ import {
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
 import {SUBPROTOCOL} from './shared-constants';
 
+import JSZip from 'jszip';
+
 const WORKER_NAME = 'k1te worker';
 
 const MIN_RECONNECTION_INTERVAL_MS = 60 * 1000; // 1 min
@@ -183,6 +185,22 @@ function verifyFile(file: File): FileVerification {
   return FileVerification.SUCCEED;
 }
 
+function zipFile(file: File, resultType = "application/zip"): Promise<File> {
+  return new Promise((resolve, reject) => {
+    const zip = new JSZip();
+    zip.file(file.name, file);
+    
+    zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 0 } })
+      .then(blob => {
+        const zipFileName = `${file.name.replace(/\.[^/.]+$/, '')}.zip`;
+        resolve(new File([blob], zipFileName, {type: resultType}));
+      })
+      .catch(error => {
+        reject(error);
+      });
+  });
+}
+
 function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
   broadcast(payload, tabPort);
@@ -192,24 +210,50 @@ function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
 function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
   broadcast(payload, tabPort);
-  const result = verifyFile(payload.file);
-  if(result !== FileVerification.SUCCEED) {
+
+  const uploadFile = async (file: File) => {
+    const upload: UploadRequest = {
+      type: MsgType.UPLOAD,
+      messageId: payload.messageId,
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      timestamp: payload.timestamp,
+    };
+    queue(upload);
+  };
+
+  const failedFile = async (reason: FileVerification) => {
     tabPort.postMessage({
       type: MsgType.FAILED, 
-      reason: result, 
+      reason: reason, 
       messageId: payload.messageId,
     });
-    return;
   }
-  const upload: UploadRequest = {
-    type: MsgType.UPLOAD,
-    messageId: payload.messageId,
-    fileName: payload.file.name,
-    fileType: payload.file.type,
-    fileSize: payload.file.size,
-    timestamp: payload.timestamp,
-  };
-  queue(upload);
+
+  const result = verifyFile(payload.file);
+
+  switch (result) {
+    case FileVerification.UNSUPPORTED_TYPE:
+      if(payload.file.size > SUPPORTED_FILE_FORMATS["application/zip"]) {
+        failedFile(FileVerification.EXCEED_SIZE);
+        break;
+      }
+      zipFile(payload.file)
+        .then(zippedFile => {
+          uploadFile(zippedFile);
+        })
+        .catch(error => {
+          console.error('Error zipping file:', error);
+        });
+      break;
+    case FileVerification.EXCEED_SIZE:
+      failedFile(result)
+      break;
+    case FileVerification.SUCCEED:
+      uploadFile(payload.file);
+      break;
+  }
 }
 
 function onJoinChannel(payload: JoinChannel) {
