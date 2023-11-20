@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@pragmasoft-ukraine/kite-chat-component": "*",
+    "idb": "^7.1.1",
     "jszip": "^3.10.1"
   }
 }

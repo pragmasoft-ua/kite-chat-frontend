@@ -24,6 +24,14 @@ import {
 
 import KiteWorker from './kite-worker?sharedworker&inline';
 import {assert} from './assert';
+import {
+  KiteDB, 
+  openDatabase, 
+  getMessages, 
+  addMessage, 
+  messageById, 
+  modifyMessage
+} from './kite-storage';
 
 export type KiteChatOptions = {
   endpoint: string;
@@ -46,6 +54,7 @@ export class KiteChat {
   protected readonly opts: KiteChatOptions;
   protected kiteWorker: SharedWorker | null;
   readonly element: KiteChatElement | null;
+  private db: KiteDB | null;
 
   constructor(opts: KiteChatOptions) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
@@ -59,6 +68,22 @@ export class KiteChat {
     this.element = this.findOrCreateElement(
       this.opts.createIfMissing as boolean
     );
+
+    openDatabase().then((db: KiteDB) => {
+      this.db = db;
+      this.restore();
+    }).catch((e: Error) => {
+      console.error("Failed to open indexedDB:", e.message);
+    })
+
+    addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        this.disconnect();
+      } else {
+        this.connect();
+        this.restore();
+      }
+    });
     this.connect();
   }
 
@@ -110,6 +135,43 @@ export class KiteChat {
     this.kiteWorker = null;
   }
 
+  private save(msg: ContentMsg) {
+    if(!this.db) {
+      return;
+    }
+    addMessage(msg, this.db);
+  }
+
+  private update(messageId: string, updatedMsg: ContentMsg) {
+    if(!this.db) {
+      return;
+    }
+    messageById(messageId, this.db).then((msg) => {
+      this.db && modifyMessage(messageId, {...msg, ...updatedMsg}, this.db);
+    });
+  }
+
+  private restore() {
+    if(!this.db) {
+      return;
+    }
+    const msgElements = document.querySelectorAll(
+      `${KiteMsgElement.TAG}`
+    )
+    const lastElement = msgElements.length > 0 
+      ? (msgElements[msgElements.length - 1] as KiteMsgElement).messageId 
+      : undefined;
+    getMessages(this.db, lastElement).then((messages: ContentMsg[]) => {
+      console.debug("getMessages", messages);
+      if (!this.element) return;
+      for (const msg of messages) {
+        this.element.appendMsg(msg);
+      }
+    }).catch((e: Error) => {
+      console.error("Failed to get messages from storage:", e.message);
+    });
+  }
+
   protected persistentRandomId(): string {
     let savedId = localStorage.getItem(KITE_USER_ID_STORE_KEY);
     if (!savedId) {
@@ -139,6 +201,7 @@ export class KiteChat {
       throw new Error('Not connected');
     }
     console.debug('outgoing', outgoing);
+    this.save(outgoing);
     this.kiteWorker.port.postMessage(outgoing);
   }
 
@@ -194,16 +257,12 @@ export class KiteChat {
 
   protected onContentMessage(incoming: ContentMsg) {
     console.debug('onContentMessage', incoming.messageId, incoming.timestamp);
+    this.save(incoming);
     this.element?.appendMsg(incoming);
   }
 
   protected onConnected(payload: Connected) {
     console.debug('connected', payload);
-    const {messageHistory} = payload;
-    if (!this.element) return;
-    for (const msg of messageHistory) {
-      this.element.appendMsg(msg);
-    }
   }
 
   protected onMessageAck(ack: MsgAck) {
@@ -215,6 +274,10 @@ export class KiteChat {
       msgElement.messageId = ack.destiationMessageId;
       msgElement.status = MsgStatus.delivered;
     }
+    this.update(ack.messageId, {
+      messageId: ack.destiationMessageId,
+      status: MsgStatus.delivered,
+    } as ContentMsg);
   }
 
   protected onErrorMessage(e: ErrorMsg) {

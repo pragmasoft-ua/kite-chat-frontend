@@ -122,7 +122,6 @@ function onTabConnected(e: MessageEvent) {
   console.debug(WORKER_NAME, 'tab connected', tabPorts.size);
   port.postMessage({
     type: MsgType.CONNECTED,
-    messageHistory,
   });
 }
 
