@@ -261,6 +261,7 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
       fileSize: file.size,
       timestamp: payload.timestamp,
     };
+    messageHistory.push({...payload, file});
     queue(upload);
   };
 
