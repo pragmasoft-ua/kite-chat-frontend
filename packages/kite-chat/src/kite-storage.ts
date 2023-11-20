@@ -70,8 +70,8 @@ export async function getMessages(db: KiteDB, lastMessageId?: string) {
 
     if (lastMessageId) {
         // Retrieve only new messages based on the lastMessageId
-        const index = await store.index(MESSAGES_KEY).getKey(lastMessageId);
-        const cursor = await store.openCursor(IDBKeyRange.lowerBound(index), 'next');
+        const primaryKey = await store.index(MESSAGES_KEY).getKey(lastMessageId);
+        const cursor = await store.openCursor(IDBKeyRange.lowerBound(primaryKey), 'next');
         const result: ContentMsg[] = [];
 
         const iterateCursor = async (cursor: IDBPCursorWithValue<KiteDBSchema> | null) => {
@@ -108,7 +108,7 @@ export async function modifyMessage(messageId: string, modifiedMessage: ContentM
     const tx = db.transaction(MESSAGES_STORE_NAME, 'readwrite');
     const store = tx.objectStore(MESSAGES_STORE_NAME);
 
-    const index = await store.index(MESSAGES_KEY).getKey(messageId);
-    await store.put(modifiedMessage, index);
+    const primaryKey = await store.index(MESSAGES_KEY).getKey(messageId);
+    await store.put(modifiedMessage, primaryKey);
     await tx.done;
 }
