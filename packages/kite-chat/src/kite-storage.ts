@@ -67,10 +67,10 @@ export async function addMessage(message: ContentMsg, db: KiteDB) {
 export async function getMessages(db: KiteDB, lastMessageId?: string) {
     const tx = db.transaction(MESSAGES_STORE_NAME, 'readonly');
     const store = tx.objectStore(MESSAGES_STORE_NAME);
+    const primaryKey = lastMessageId && await store.index(MESSAGES_KEY).getKey(lastMessageId);
 
-    if (lastMessageId) {
-        // Retrieve only new messages based on the lastMessageId
-        const primaryKey = await store.index(MESSAGES_KEY).getKey(lastMessageId);
+    if (primaryKey) {
+        // Retrieve only new messages based on the lastMessageId        
         const cursor = await store.openCursor(IDBKeyRange.lowerBound(primaryKey), 'next');
         const result: ContentMsg[] = [];
 
