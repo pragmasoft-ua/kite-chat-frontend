@@ -35,6 +35,7 @@ export enum MsgType {
   PING = 'PING',
   PONG = 'PONG',
   FAILED = "FAILED",
+  ACTIVE_TAB = "ACT_TAB"
 }
 
 export type JoinChannel = {
@@ -130,6 +131,10 @@ export type OK = {
   type: MsgType.OK;
 };
 
+export type ActiveTab = {
+  type: MsgType.ACTIVE_TAB;
+};
+
 export type ContentMsg = PlaintextMsg | FileMsg;
 
 export enum FileVerification {
@@ -165,4 +170,5 @@ export type KiteMsg =
   | Offline
   | Ping
   | Pong
-  | FailedMsg;
+  | FailedMsg
+  | ActiveTab;

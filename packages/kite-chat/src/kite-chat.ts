@@ -77,10 +77,10 @@ export class KiteChat {
     })
 
     addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'hidden') {
-        this.disconnect();
-      } else {
-        this.connect();
+      if (document.visibilityState === 'visible') {
+        this.kiteWorker?.port.postMessage({
+          type: MsgType.ACTIVE_TAB,
+        });
         this.restore();
       }
     });

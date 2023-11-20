@@ -53,6 +53,7 @@ const PLAIN_MAX_SIZE = 4 * 1024; // 4KB
 const ZIP_FILE_FORMAT = "application/zip";
 
 interface KiteMessagePort extends MessagePort {
+  active: boolean;
   postMessage(value: KiteMsg): void;
 }
 
@@ -86,13 +87,10 @@ const tabPorts = new Set<KiteMessagePort>();
 
 let pingerTimer: ReturnType<typeof setInterval> | null = null;
 
-const broadcast = (msg: KiteMsg, exclude?: KiteMessagePort) => {
-  for (const tabPort of tabPorts) {
-    if (tabPort !== exclude) {
-      tabPort.postMessage(msg);
-    }
-  }
-};
+const toActiveTab = (msg: KiteMsg) => {
+  const activePort = Array.from(tabPorts).find((port) => port.active);
+  activePort?.postMessage(msg);
+}
 
 const messageById = (messageId: string) =>
   messageHistory.findLast((msg) => msg.messageId === messageId);
@@ -125,6 +123,12 @@ function onTabConnected(e: MessageEvent) {
   });
 }
 
+function onActiveTab(port: KiteMessagePort) {
+  for (const p of tabPorts) {
+    p.active = (p === port);
+  }
+}
+
 function onTabMessage(e: MessageEvent<KiteMsg>) {
   const tabPort = e.target as unknown as KiteMessagePort;
   const payload = e.data;
@@ -139,6 +143,9 @@ function onTabMessage(e: MessageEvent<KiteMsg>) {
       break;
     case MsgType.FILE:
       onFileMessage(payload, tabPort);
+      break;
+    case MsgType.ACTIVE_TAB:
+      onActiveTab(tabPort);
       break;
     case MsgType.DISCONNECTED:
       onTabDisconnected(tabPort);
@@ -229,7 +236,6 @@ function formatSize(size: number): string {
 
 function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
-  broadcast(payload, tabPort);
 
   const result = verifyPlainText(payload.text);
 
@@ -250,7 +256,6 @@ function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
 
 function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
-  broadcast(payload, tabPort);
 
   const uploadFile = async (file: File) => {
     const upload: UploadRequest = {
@@ -406,7 +411,7 @@ function onWsClose(e: CloseEvent) {
     )} minutes`,
     e
   );
-  broadcast({type: MsgType.OFFLINE, sessionDurationMs});
+  toActiveTab({type: MsgType.OFFLINE, sessionDurationMs});
   if (!online) {
     console.warn(WORKER_NAME, 'offline, do not reconnect');
     ws = null;
@@ -434,12 +439,12 @@ function onWsError(e: Event) {
 function onWsJoined() {
   console.debug(WORKER_NAME, 'ws joined');
   flushQueue();
-  broadcast({type: MsgType.ONLINE});
+  toActiveTab({type: MsgType.ONLINE});
 }
 
 function onWsPlaintextMessage(payload: PlaintextMsg) {
   messageHistory.push(payload);
-  broadcast(payload);
+  toActiveTab(payload);
 }
 
 async function onWsBinaryMessage(payload: BinaryMsg) {
@@ -451,10 +456,10 @@ async function onWsBinaryMessage(payload: BinaryMsg) {
       file,
     };
     messageHistory.push(incoming);
-    broadcast(incoming);
+    toActiveTab(incoming);
   } catch (error) {
     if (error instanceof HttpError) {
-      broadcast({
+      toActiveTab({
         type: MsgType.ERROR,
         reason: error.message,
         code: error.status,
@@ -484,13 +489,13 @@ async function onWsUploadResponse(payload: UploadResponse) {
     queue(outgoing);
   } catch (error) {
     if (error instanceof HttpError) {
-      broadcast({
+      toActiveTab({
         type: MsgType.ERROR,
         reason: error.message,
         code: error.status,
       });
     } else if (error instanceof Error) {
-      broadcast({
+      toActiveTab({
         type: MsgType.ERROR,
         reason: error.message,
         code: 0,
@@ -510,7 +515,7 @@ function onMessageAck(payload: MsgAck) {
     console.warn(WORKER_NAME, 'Unexpected Ack', payload.messageId);
   }
   // TODO handle properly in tab controller
-  broadcast(payload);
+  toActiveTab(payload);
 }
 
 function onErrorResponse(payload: ErrorMsg) {
