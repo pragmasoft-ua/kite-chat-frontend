@@ -295,6 +295,9 @@ export class KiteChat {
     }
     const errorMessage = e.description || 'Unknown error.';
     this.element?.appendMsg({text: `⛔️${errorMessage}`, status: MsgStatus.unknown});
+    this.update(e.messageId, {
+      status: MsgStatus.failed,
+    } as ContentMsg);
   }
 
   protected onDeliveryError(msg: MessageEvent<unknown>) {
