@@ -21,12 +21,12 @@ import {
 import {
   SelectionContainerMixin,
   VisibilityMixin,
-  FileInputMixin
 } from './mixins';
 import {
   AnchorController, 
   DraggableController
 } from './controllers';
+import {KiteChatFooterElement, KiteFooterChange} from './components';
 import {KiteMsgElement} from './kite-msg';
 
 console.debug('kite-chat loaded');
@@ -82,12 +82,19 @@ const CUSTOM_EVENT_INIT = {
  * @csspart toggle - The toggle button TODO implement
  */
 @customElement('kite-chat')
-export class KiteChatElement extends FileInputMixin(VisibilityMixin(SelectionContainerMixin(LitElement, KiteMsgElement), {show: 'kite-chat.show', hide: 'kite-chat.hide'})) {
+export class KiteChatElement extends 
+    VisibilityMixin(
+      SelectionContainerMixin(
+          LitElement, 
+          KiteMsgElement
+        ), 
+      {show: 'kite-chat.show', hide: 'kite-chat.hide'}
+    ) {
   @property()
   heading = '🪁Kite chat';
 
-  @query('textarea')
-  private textarea!: HTMLTextAreaElement;
+  @query('kite-chat-footer')
+  private footer!: KiteChatFooterElement;
 
   @query('#kite-dialog')
   private dialog!: HTMLElement;
@@ -104,9 +111,6 @@ export class KiteChatElement extends FileInputMixin(VisibilityMixin(SelectionCon
 
   @state()
   private editMessage: KiteMsgElement|null = null;
-
-  @state()
-  private sendEnabled = false;
 
   protected anchorController!: AnchorController;
 
@@ -180,45 +184,11 @@ export class KiteChatElement extends FileInputMixin(VisibilityMixin(SelectionCon
               ${this._renderSelectionContainer()}
             </div>
           </main>
-          <footer class="flex flex-col">
-            ${this.renderEdited()}
-            <div class="flex items-start gap-1 rounded-b p-2">
-              ${this._renderFileInput()}
-              <textarea
-                required
-                rows="1"
-                autocomplete="on"
-                spellcheck="true"
-                wrap="soft"
-                placeholder="Type a message"
-                class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
-                @input=${this._handleEnabled}
-                @keyup=${this._handleKeyUp}
-              ></textarea>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="${classMap({
-                  'opacity-50': this.sendEnabled,
-                  'hover:opacity-100': this.sendEnabled,
-                  'cursor-pointer': this.sendEnabled,
-                  'opacity-30': !this.sendEnabled,
-                  'pointer-events-none': !this.sendEnabled,
-                })} h-6 w-6"
-                @click=${this._sendText}
-              >
-                <title>Send (Ctrl+↩)</title>
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
-                />
-              </svg>
-            </div>
-          </footer>
+          <kite-chat-footer
+            @kite-chat-footer.change=${this._handleSend}
+            .editMessage=${this.editMessage}
+          >
+          </kite-chat-footer>
         </dialog>
       </div>
     `;
@@ -264,55 +234,8 @@ export class KiteChatElement extends FileInputMixin(VisibilityMixin(SelectionCon
     `;
   }
 
-  private renderEdited() {
-    if(!this.editMessage) {
-      return null;
-    }
-    const file = this.editMessage.querySelector('kite-file');
-    return html`
-      <div class="flex items-center gap-1 rounded-b p-2">
-        ${!file
-          ? html`<span class="edit-message">${this.editMessage.textContent}</span>`
-          : html`<span 
-            class="edit-message edit-message_file" 
-            @click="${() => this.fileInput.click()}"
-          >${file.name}</span>`
-        }
-        <span
-          data-cancel
-          title="Cancel"
-          class="cursor-pointer py-2 px-2.5"
-          @click="${this._cancelEdit}"
-          >
-          <svg xmlns="http://www.w3.org/2000/svg" class="opacity-30 pointer-events-none  h-6 w-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" />
-          </svg>
-          </span
-        >
-      </div>
-    `;
-  }
-
-  private _cancelEdit() {
-    if(!this.editMessage) {
-      return;
-    }
-    if(!this.editMessage.querySelector('kite-file')) {
-      this.textarea.value = '';
-      this.textarea.blur();
-    }
-    this.editMessage = null;
-  }
-
   private _edit() {
     this.editMessage = this.selectedElements[0] ?? null;
-    if (this.editMessage) {
-      this.editMessage.unselect();
-      if(!this.editMessage.querySelector('kite-file')) {
-        this.textarea.value = this.editMessage.innerText;
-        this.textarea.focus();
-      }
-    }
   }
 
   private _delete() {
@@ -324,10 +247,10 @@ export class KiteChatElement extends FileInputMixin(VisibilityMixin(SelectionCon
 
   override _visibilityCallback(): void {
     if (this.open) {
-      this.textarea.focus();
+      this.footer.focus();
       this.dialog.showPopover();
     } else {
-      this.textarea.blur();
+      this.footer.blur();
       this.dialog.hidePopover();
     }
   }
@@ -352,46 +275,13 @@ export class KiteChatElement extends FileInputMixin(VisibilityMixin(SelectionCon
     this.editMessage = null;
   }
 
-  private _sendText() {
-    if (this.textarea.value?.length > 0) {
-      const message: PlaintextMsg = {
-        messageId: this.editMessage ? this.editMessage.messageId : randomStringId(),
-        timestamp: new Date(),
-        status: MsgStatus.unknown,
-        text: this.textarea.value,
-        edited: !!this.editMessage,
-      };
-      if (this._dispatchMsg(message)) {
-        if(this.editMessage) {
-          this.editMsg(message);
-        } else {
-          this.appendMsg(message);
-        }
-        this.textarea.value = '';
-        this.textarea.focus();
-        this._handleEnabled();
-      }
-    }
-  }
-
-  private _handleKeyUp(event: KeyboardEvent) {
-    if (event.key === 'Enter' && event.ctrlKey) {
-      event.preventDefault();
-      this._sendText();
-    }
-  }
-
-  private _handleEnabled() {
-    this.sendEnabled = this.textarea.value.length > 0;
-  }
-
-  override _fileInputCallback(file: File) {
-    const message: FileMsg = {
+  private _handleSend(e: CustomEvent<KiteFooterChange>) {
+    const message: KiteMsg = {
       messageId: this.editMessage ? this.editMessage.messageId : randomStringId(),
       timestamp: new Date(),
       status: MsgStatus.unknown,
       edited: !!this.editMessage,
-      file,
+      ...e.detail,
     };
     if (this._dispatchMsg(message)) {
       if(this.editMessage) {
@@ -433,3 +323,5 @@ export class KiteChatElement extends FileInputMixin(VisibilityMixin(SelectionCon
 
   static override styles = [sharedStyles, componentStyles];
 }
+
+export {KiteChatFooterElement};

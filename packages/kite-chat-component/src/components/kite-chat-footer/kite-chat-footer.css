@@ -1,0 +1,43 @@
+@config "../../../tailwind.config.lit.cjs";
+
+textarea {
+  scrollbar-width: thin;
+}
+
+textarea::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+textarea::-webkit-scrollbar-thumb {
+  background-color: theme('colors.neutral.500');
+}
+
+:host {
+  @apply flex flex-col;
+}
+
+span.edit-message {
+  position: relative;
+  padding-top: 1.5rem;
+  font-size: 0.9rem;
+  @apply flex-1 my-auto line-clamp-1;
+}
+
+span.edit-message::after {
+  content: 'Edit message';
+  opacity: 60%;
+  font-size: 0.875rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+span.edit-message_file::after {
+  content: 'Replace file';
+  @apply cursor-pointer;
+}
