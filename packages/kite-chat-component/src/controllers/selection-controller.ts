@@ -8,8 +8,10 @@ const CUSTOM_EVENT_INIT = {
     cancelable: true,
 };
 
-type SelectableElement = HTMLElement & {
+export type SelectableElement = HTMLElement & {
     selected: boolean;
+    select(): void;
+    unselect(): void;
 }
 
 export class SelectionController {

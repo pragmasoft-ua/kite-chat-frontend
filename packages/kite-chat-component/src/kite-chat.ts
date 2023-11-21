@@ -4,7 +4,7 @@
  * LGPLv3
  */
 
-import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
+import {LitElement, html, css, unsafeCSS} from 'lit';
 import {customElement, property, query, queryAssignedElements, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
@@ -18,8 +18,15 @@ import {
   MsgStatus,
   PlaintextMsg,
 } from './kite-payload';
-import {AnchorController} from './anchor-controller';
-import {DraggableController} from './draggable-controller';
+import {
+  SelectionContainerMixin,
+  VisibilityMixin,
+  FileInputMixin
+} from './mixins';
+import {
+  AnchorController, 
+  DraggableController
+} from './controllers';
 import {KiteMsgElement} from './kite-msg';
 
 console.debug('kite-chat loaded');
@@ -75,35 +82,23 @@ const CUSTOM_EVENT_INIT = {
  * @csspart toggle - The toggle button TODO implement
  */
 @customElement('kite-chat')
-export class KiteChatElement extends LitElement {
-  /**
-   * opens chat dialog
-   */
-  @property({type: Boolean, reflect: true})
-  open = false;
-
+export class KiteChatElement extends FileInputMixin(VisibilityMixin(SelectionContainerMixin(LitElement, KiteMsgElement), {show: 'kite-chat.show', hide: 'kite-chat.hide'})) {
   @property()
   heading = '🪁Kite chat';
 
   @query('textarea')
   private textarea!: HTMLTextAreaElement;
 
-  @query('input[type="file"]')
-  private fileInput!: HTMLInputElement;
-
   @query('#kite-dialog')
   private dialog!: HTMLElement;
-
-  @queryAssignedElements()
-  private messageElements!: NodeListOf<KiteMsgElement>;
 
   @queryAssignedElements({selector: '[status]'})
   private sentMessageElements!: NodeListOf<KiteMsgElement>;
 
   private get editable() {
-    return this.selectedMessages.length === 1 
+    return this.selectedElements.length === 1 
       && [...this.sentMessageElements].find((msgElement) => (
-        this.selectedMessages[0] === msgElement.messageId
+        this.selectedElements[0].isEqualNode(msgElement)
       ));
   }
 
@@ -117,9 +112,6 @@ export class KiteChatElement extends LitElement {
 
   protected draggableController = new DraggableController(this, "#kite-toggle", this._toggleOpen.bind(this));
 
-  @state()
-  private selectedMessages: Array<string> = [];
-
   constructor() {
     super();
 
@@ -130,30 +122,6 @@ export class KiteChatElement extends LitElement {
           ['fallback-1', 'fallback-2', 'fallback-3', 'fallback-4'],
           '.kite-toggle', '.kite-dialog'
         );
-    }
-  }
-
-  override updated(changedProperties: PropertyValues<this>): void {
-    if (changedProperties.has('open')) {
-      if (this.open) {
-        this.textarea.focus();
-        this.dialog.showPopover();
-      } else {
-        this.textarea.blur();
-        this.dialog.hidePopover();
-      }
-    }
-  }
-
-  private onMsgSelected(e: Event) {
-    if (e.target instanceof KiteMsgElement) {
-      const kiteMsgElement = e.target as KiteMsgElement;
-
-      if((e as CustomEvent).detail.selected) {
-        this.selectedMessages = [...this.selectedMessages, kiteMsgElement.messageId];
-      } else {
-        this.selectedMessages = [...this.selectedMessages.filter(id => kiteMsgElement.messageId !== id)];
-      }
     }
   }
 
@@ -209,36 +177,13 @@ export class KiteChatElement extends LitElement {
             class="flex flex-1 snap-y flex-col-reverse overflow-y-auto bg-slate-300/50 p-2"
           >
             <div class="flex min-h-min flex-col flex-wrap items-start">
-              <slot @select=${this.onMsgSelected}></slot>
+              ${this._renderSelectionContainer()}
             </div>
           </main>
           <footer class="flex flex-col">
             ${this.renderEdited()}
             <div class="flex items-start gap-1 rounded-b p-2">
-              <label>
-                <input
-                  type="file"
-                  class="hidden"
-                  aria-hidden="true"
-                  multiple
-                  @change=${this._sendFile}
-                />
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="h-6 w-6 cursor-pointer opacity-50 hover:opacity-100"
-                >
-                  <title>Attach file</title>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"
-                  />
-                </svg>
-              </label>
+              ${this._renderFileInput()}
               <textarea
                 required
                 rows="1"
@@ -280,7 +225,7 @@ export class KiteChatElement extends LitElement {
   }
 
   private renderSelected() {
-    if(this.selectedMessages.length === 0) {
+    if(this.selectedElements.length === 0) {
       return null;
     }
     return html`
@@ -288,10 +233,10 @@ export class KiteChatElement extends LitElement {
         data-cancel
         title="Cancel"
         class="cursor-pointer rounded-full bg-white bg-opacity-0 py-2 px-2.5 leading-none hover:bg-opacity-30"
-        @click="${this._cancel}"
+        @click="${this._unselect}"
         >✕</span
       >
-      <span class="flex-1">${this.selectedMessages.length} selected</span>
+      <span class="flex-1">${this.selectedElements.length} selected</span>
       ${
         this.editable ? html`
           <span
@@ -348,14 +293,6 @@ export class KiteChatElement extends LitElement {
     `;
   }
 
-  private _cancel() {
-    [...this.messageElements].filter((msgElement) => (
-      msgElement.selected
-    )).forEach((msgElement) => {
-      msgElement.unselect();
-    });
-  }
-
   private _cancelEdit() {
     if(!this.editMessage) {
       return;
@@ -368,9 +305,7 @@ export class KiteChatElement extends LitElement {
   }
 
   private _edit() {
-    this.editMessage = [...this.messageElements].find((msgElement) => (
-      this.selectedMessages.includes(msgElement.messageId)
-    )) ?? null;
+    this.editMessage = this.selectedElements[0] ?? null;
     if (this.editMessage) {
       this.editMessage.unselect();
       if(!this.editMessage.querySelector('kite-file')) {
@@ -382,16 +317,19 @@ export class KiteChatElement extends LitElement {
 
   private _delete() {
     //TODO api call
-    [...this.messageElements].filter((msgElement) => (
-      this.selectedMessages.includes(msgElement.messageId)
-    )).forEach((msgElement) => {
+    this.selectedElements.forEach((msgElement) => {
       msgElement.remove();
     });
-    this.selectedMessages = [];
   }
 
-  private _toggleOpen() {
-    this.open ? this.hide() : this.show();
+  override _visibilityCallback(): void {
+    if (this.open) {
+      this.textarea.focus();
+      this.dialog.showPopover();
+    } else {
+      this.textarea.blur();
+      this.dialog.hidePopover();
+    }
   }
 
   editMsg(msg: KiteMsg) {
@@ -447,25 +385,19 @@ export class KiteChatElement extends LitElement {
     this.sendEnabled = this.textarea.value.length > 0;
   }
 
-  private _sendFile(event: Event) {
-    const target = event.target as HTMLInputElement;
-    const numFiles = target.files?.length ?? 0;
-    for (let i = 0; i < numFiles; i++) {
-      const file = target.files?.item(i);
-      if (!file) continue;
-      const message: FileMsg = {
-        messageId: this.editMessage ? this.editMessage.messageId : randomStringId(),
-        timestamp: new Date(),
-        status: MsgStatus.unknown,
-        edited: !!this.editMessage,
-        file,
-      };
-      if (this._dispatchMsg(message)) {
-        if(this.editMessage) {
-          this.editMsg(message);
-        } else {
-          this.appendMsg(message);
-        }
+  override _fileInputCallback(file: File) {
+    const message: FileMsg = {
+      messageId: this.editMessage ? this.editMessage.messageId : randomStringId(),
+      timestamp: new Date(),
+      status: MsgStatus.unknown,
+      edited: !!this.editMessage,
+      file,
+    };
+    if (this._dispatchMsg(message)) {
+      if(this.editMessage) {
+        this.editMsg(message);
+      } else {
+        this.appendMsg(message);
       }
     }
   }
@@ -477,28 +409,6 @@ export class KiteChatElement extends LitElement {
     });
     this.dispatchEvent(e);
     return !e.defaultPrevented;
-  }
-
-  hide() {
-    if (!this.open) {
-      return;
-    }
-    const e = new CustomEvent('kite-chat.hide', CUSTOM_EVENT_INIT);
-    this.dispatchEvent(e);
-    if (!e.defaultPrevented) {
-      this.open = false;
-    }
-  }
-
-  show() {
-    if (this.open) {
-      return;
-    }
-    const e = new CustomEvent('kite-chat.show', CUSTOM_EVENT_INIT);
-    this.dispatchEvent(e);
-    if (!e.defaultPrevented) {
-      this.open = true;
-    }
   }
 
   appendMsg(msg: KiteMsg) {
