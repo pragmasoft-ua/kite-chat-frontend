@@ -35,7 +35,8 @@ export enum MsgType {
   PING = 'PING',
   PONG = 'PONG',
   FAILED = "FAILED",
-  ACTIVE_TAB = "ACT_TAB"
+  ACTIVE_TAB = "ACT_TAB",
+  ZIPPED = "ZIP"
 }
 
 export type JoinChannel = {
@@ -135,6 +136,12 @@ export type ActiveTab = {
   type: MsgType.ACTIVE_TAB;
 };
 
+export type ZippedMsg = {
+  type: MsgType.ZIPPED;
+  messageId: string;
+  file: File;
+};
+
 export type ContentMsg = PlaintextMsg | FileMsg;
 
 export enum FileVerification {
@@ -171,4 +178,5 @@ export type KiteMsg =
   | Ping
   | Pong
   | FailedMsg
-  | ActiveTab;
+  | ActiveTab
+  | ZippedMsg;

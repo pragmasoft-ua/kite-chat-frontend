@@ -8,6 +8,7 @@ import type {
   FileMsg,
   ContentMsg,
   FailedMsg,
+  ZippedMsg,
 } from './kite-types';
 
 import {MsgType} from './kite-types';
@@ -15,6 +16,7 @@ import {MsgType} from './kite-types';
 import {
   KiteChatElement,
   KiteMsgElement,
+  KiteFileElement,
   KiteMsg as KiteChatMsg,
   randomStringId,
   isPlaintextMsg,
@@ -248,6 +250,9 @@ export class KiteChat {
       case MsgType.FAILED:
         this.onFailedMessage(payload);
         break;
+      case MsgType.ZIPPED:
+        this.onZippedMessage(payload);
+        break;
       case MsgType.ONLINE:
       case MsgType.OFFLINE:
         this.log(payload);
@@ -283,6 +288,19 @@ export class KiteChat {
   protected onErrorMessage(e: ErrorMsg) {
     // TODO display error as a text message
     console.error(e.code, e.reason);
+  }
+
+  protected onZippedMessage(e: ZippedMsg) {
+    console.debug('onZippedMessage', e);
+    const fileElement = document.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${e.messageId}"] > ${KiteFileElement.TAG}`
+    ) as KiteFileElement | undefined;
+    if (fileElement) {
+      fileElement.file = e.file;
+    }
+    this.update(e.messageId, {
+      file: e.file,
+    } as ContentMsg);
   }
 
   protected onFailedMessage(e: FailedMsg) {

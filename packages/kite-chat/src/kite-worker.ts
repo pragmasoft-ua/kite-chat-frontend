@@ -257,7 +257,7 @@ function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
 function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
 
-  const uploadFile = async (file: File) => {
+  const uploadFile = (file: File) => {
     const upload: UploadRequest = {
       type: MsgType.UPLOAD,
       messageId: payload.messageId,
@@ -270,12 +270,20 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
     queue(upload);
   };
 
-  const failedFile = async (reason: FileVerification, errorMessage?: string) => {
+  const failedFile = (reason: FileVerification, errorMessage?: string) => {
     tabPort.postMessage({
       type: MsgType.FAILED, 
       reason: reason,
       messageId: payload.messageId,
       description: errorMessage,
+    });
+  }
+
+  const zippedFile = (file: File) => {
+    tabPort.postMessage({
+      type: MsgType.ZIPPED, 
+      messageId: payload.messageId,
+      file: file,
     });
   }
 
@@ -293,8 +301,9 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
         break;
       }
       zipFile(payload.file, ZIP_FILE_FORMAT)
-        .then(zippedFile => {
-          uploadFile(zippedFile);
+        .then(file => {
+          zippedFile(file);
+          uploadFile(file);
         })
         .catch(error => {
           console.error('Error zipping file:', error);
