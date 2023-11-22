@@ -1,0 +1,6 @@
+@config "../../../tailwind.config.lit.cjs";
+
+
+:host {
+  @apply bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-secondary-color;
+}

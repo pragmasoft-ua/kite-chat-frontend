@@ -31,7 +31,7 @@ type ChangeFile = {
   file: File;
 }
 
-export type KiteFooterChange = ChangeTextarea | ChangeFile;
+export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
 
 /**
  * KiteChat component footer
@@ -84,7 +84,7 @@ export class KiteChatFooterElement extends LitElement {
   }
 
   private _sendText() {
-    this.dispatchEvent(new CustomEvent<KiteFooterChange>('kite-chat-footer.change', {
+    this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
       ...CUSTOM_EVENT_INIT,
       detail: {
         text: this.textarea.value
@@ -101,7 +101,7 @@ export class KiteChatFooterElement extends LitElement {
     for (let i = 0; i < numFiles; i++) {
         const file = target.files?.item(i);
         if (!file) continue;
-        this.dispatchEvent(new CustomEvent<KiteFooterChange>('kite-chat-footer.change', {
+        this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
           ...CUSTOM_EVENT_INIT,
           detail: {
             file: file
