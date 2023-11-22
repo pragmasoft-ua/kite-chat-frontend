@@ -27,7 +27,7 @@ import {
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
 import {SUBPROTOCOL} from './shared-constants';
 
-import JSZip from 'jszip';
+import type JSZip from 'jszip';
 
 const WORKER_NAME = 'k1te worker';
 
@@ -51,6 +51,8 @@ const SUPPORTED_FILE_FORMATS = {
 const PLAIN_MAX_SIZE = 4 * 1024; // 4KB
 
 const ZIP_FILE_FORMAT = "application/zip";
+
+const JSZIP_CDN = 'https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js';
 
 interface KiteMessagePort extends MessagePort {
   active: boolean;
@@ -206,20 +208,18 @@ function verifyPlainText(text: string): PlainTextVerification {
   return PlainTextVerification.SUCCEED;
 }
 
-function zipFile(file: File, resultType = "application/zip"): Promise<File> {
-  return new Promise((resolve, reject) => {
-    const zip = new JSZip();
-    zip.file(file.name, file);
-    
-    zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 0 } })
-      .then(blob => {
-        const zipFileName = `${file.name.replace(/\.[^/.]+$/, '')}.zip`;
-        resolve(new File([blob], zipFileName, {type: resultType}));
-      })
-      .catch(error => {
-        reject(error);
-      });
-  });
+async function zipFile(file: File, resultType = "application/zip"): Promise<File> {
+  // Import JSZip module dynamically
+  await import(/* @vite-ignore */ JSZIP_CDN);
+
+  const extendedSelf  = self as unknown as typeof self & {JSZip: JSZip};
+  const zip: JSZip = new extendedSelf.JSZip();
+
+  zip.file(file.name, file);
+
+  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 0 } });
+  const zipFileName = `${file.name.replace(/\.[^/.]+$/, '')}.zip`;
+  return new File([blob], zipFileName, {type: resultType});
 }
 
 function formatSize(size: number): string {
