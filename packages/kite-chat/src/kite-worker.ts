@@ -83,6 +83,10 @@ let joinChannel: JoinChannel | null = null;
  */
 const messageHistory = new Array<ContentMsg>();
 
+let batchAccumulator = new Array<FileMsg>();
+
+let zipQueue = new Array<FileMsg>();
+
 const outgoingQueue = new Array<KiteMsg>();
 
 const tabPorts = new Set<KiteMessagePort>();
@@ -208,17 +212,21 @@ function verifyPlainText(text: string): PlainTextVerification {
   return PlainTextVerification.SUCCEED;
 }
 
-async function zipFile(file: File, resultType = "application/zip"): Promise<File> {
+async function zipFiles(files: File[], resultType = "application/zip", timestamp = new Date()): Promise<File> {
   // Import JSZip module dynamically
   await import(/* @vite-ignore */ JSZIP_CDN);
 
   const extendedSelf  = self as unknown as typeof self & {JSZip: JSZip};
   const zip: JSZip = new extendedSelf.JSZip();
 
-  zip.file(file.name, file);
+  files.forEach((file) => {
+    zip.file(file.name, file);
+  });
 
+  const zipFileName = files.length === 1 
+    ? `${files[0].name.replace(/\.[^/.]+$/, '')}.zip`
+    : `${timestamp.toISOString()}.zip`;
   const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 0 } });
-  const zipFileName = `${file.name.replace(/\.[^/.]+$/, '')}.zip`;
   return new File([blob], zipFileName, {type: resultType});
 }
 
@@ -255,9 +263,7 @@ function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
 }
 
 function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
-  messageHistory.push(payload);
-
-  const uploadFile = (file: File) => {
+  const uploadFile = (payload: FileMsg, file: File = payload.file) => {
     const upload: UploadRequest = {
       type: MsgType.UPLOAD,
       messageId: payload.messageId,
@@ -279,46 +285,68 @@ function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
     });
   }
 
-  const zippedFile = (file: File) => {
-    tabPort.postMessage({
-      type: MsgType.ZIPPED, 
-      messageId: payload.messageId,
-      file: file,
-    });
-  }
-
   const maxSize = (type: string) => formatSize(SUPPORTED_FILE_FORMATS[type as keyof typeof SUPPORTED_FILE_FORMATS]);
 
   const result = verifyFile(payload.file);
+  const {file} = payload;
 
   switch (result) {
     case FileVerification.UNSUPPORTED_TYPE:
-      if(payload.file.size > SUPPORTED_FILE_FORMATS[ZIP_FILE_FORMAT]) {
-        failedFile(
-          FileVerification.EXCEED_SIZE,
-          `${ZIP_FILE_FORMAT} size exceeds ${maxSize(ZIP_FILE_FORMAT)} limit.`
-        );
-        break;
+      if(file.size > SUPPORTED_FILE_FORMATS[ZIP_FILE_FORMAT]) {
+        failedFile(FileVerification.EXCEED_SIZE, `${ZIP_FILE_FORMAT} size exceeds ${maxSize(ZIP_FILE_FORMAT)} limit.`);
+      } else {
+        zipQueue.push(payload);
       }
-      zipFile(payload.file, ZIP_FILE_FORMAT)
-        .then(file => {
-          zippedFile(file);
-          uploadFile(file);
-        })
-        .catch(error => {
-          console.error('Error zipping file:', error);
-        });
       break;
     case FileVerification.EXCEED_SIZE:
-      failedFile(
-        FileVerification.EXCEED_SIZE,
-        `${payload.file.type} size exceeds ${maxSize(payload.file.type)} limit.`
-      );
+      failedFile(FileVerification.EXCEED_SIZE, `${file.type} size exceeds ${maxSize(file.type)} limit.`);
       break;
     case FileVerification.SUCCEED:
-      uploadFile(payload.file);
+      uploadFile(payload);
       break;
   }
+
+  batchAccumulator.push(payload);
+
+  if(payload.totalFiles !== batchAccumulator.length) {
+    return;
+  }
+
+  const chunks = new Array<FileMsg[]>();
+
+  while (zipQueue.length > 0) {
+    const chunk = zipQueue.reduce((acc, msg) => {
+      const newSize = acc.size + msg.file.size;
+      if (newSize <= SUPPORTED_FILE_FORMATS[ZIP_FILE_FORMAT]) {
+        acc.messages.push(msg);
+        acc.size = newSize;
+      }
+      return acc;
+    }, { size: 0, messages: new Array<FileMsg>()});
+
+    chunks.push(chunk.messages);
+    zipQueue = zipQueue.filter(msg => !chunk.messages.includes(msg));
+  }
+  
+  for(const chunk of chunks) {
+    zipFiles(chunk.map(msg => msg.file), ZIP_FILE_FORMAT, payload.timestamp)
+      .then(file => {
+        const {messageId} = chunk[0];
+        const messageIds = chunk.map(msg => msg.messageId);
+        tabPort.postMessage({
+          type: MsgType.ZIPPED, 
+          messageId: messageId,
+          zippedIds: messageIds.filter(id => id !== messageId),
+          file: file,
+        });
+        uploadFile(chunk[0], file);
+      })
+      .catch(error => {
+        console.error('Error zipping file:', error);
+      });
+  }
+
+  batchAccumulator = [];
 }
 
 function onJoinChannel(payload: JoinChannel) {

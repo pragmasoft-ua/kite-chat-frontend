@@ -74,6 +74,8 @@ export type FileMsg = {
   file: File;
   timestamp: Date;
   status?: MsgStatus;
+  batchId?: string;
+  totalFiles?: number;
 };
 
 export type UploadRequest = {
@@ -139,6 +141,7 @@ export type ActiveTab = {
 export type ZippedMsg = {
   type: MsgType.ZIPPED;
   messageId: string;
+  zippedIds: string[];
   file: File;
 };
 

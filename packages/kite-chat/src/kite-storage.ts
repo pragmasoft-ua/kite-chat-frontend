@@ -105,10 +105,26 @@ export async function messageById(messageId: string, db: KiteDB) {
  * Function to modify an existing message in the database.
  */
 export async function modifyMessage(messageId: string, modifiedMessage: ContentMsg, db: KiteDB) {
+    const oldMessage = await messageById(messageId, db);
+
     const tx = db.transaction(MESSAGES_STORE_NAME, 'readwrite');
     const store = tx.objectStore(MESSAGES_STORE_NAME);
 
     const primaryKey = await store.index(MESSAGES_KEY).getKey(messageId);
-    await store.put(modifiedMessage, primaryKey);
+    await store.put({...oldMessage, ...modifiedMessage}, primaryKey);
+    await tx.done;
+}
+
+/**
+ * Function to delete a message by its messageId.
+ */
+export async function deleteMessage(messageId: string, db: KiteDB) {
+    const tx = db.transaction(MESSAGES_STORE_NAME, 'readwrite');
+    const store = tx.objectStore(MESSAGES_STORE_NAME);
+
+    const primaryKey = await store.index(MESSAGES_KEY).getKey(messageId);
+    if (primaryKey) {
+        await store.delete(primaryKey);
+    }
     await tx.done;
 }

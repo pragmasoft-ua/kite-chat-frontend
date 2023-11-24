@@ -30,9 +30,9 @@ import {
   KiteDB, 
   openDatabase, 
   getMessages, 
-  addMessage, 
-  messageById, 
-  modifyMessage
+  addMessage,
+  modifyMessage,
+  deleteMessage
 } from './kite-storage';
 
 export type KiteChatOptions = {
@@ -148,10 +148,16 @@ export class KiteChat {
     if(!this.db) {
       return;
     }
-    messageById(messageId, this.db).then((msg) => {
-      this.db && modifyMessage(messageId, {...msg, ...updatedMsg}, this.db);
-    });
+    modifyMessage(messageId, updatedMsg, this.db);
   }
+
+  private delete(messageId: string) {
+    if(!this.db) {
+      return;
+    }
+    deleteMessage(messageId, this.db);
+  }
+
 
   private restore() {
     if(!this.db) {
@@ -295,12 +301,17 @@ export class KiteChat {
     const fileElement = document.querySelector(
       `${KiteMsgElement.TAG}[messageId="${e.messageId}"] > ${KiteFileElement.TAG}`
     ) as KiteFileElement | undefined;
-    if (fileElement) {
-      fileElement.file = e.file;
-    }
+    fileElement && (fileElement.file = e.file);
     this.update(e.messageId, {
       file: e.file,
     } as ContentMsg);
+    e.zippedIds.forEach(id => {
+      const msgElement = document.querySelector(
+        `${KiteMsgElement.TAG}[messageId="${id}"]`
+      ) as KiteFileElement | undefined;
+      msgElement?.remove();
+      this.delete(id);
+    })
   }
 
   protected onFailedMessage(e: FailedMsg) {

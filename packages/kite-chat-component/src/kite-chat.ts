@@ -271,18 +271,19 @@ export class KiteChatElement extends LitElement {
 
   private _sendFile(event: Event) {
     const target = event.target as HTMLInputElement;
-    const numFiles = target.files?.length ?? 0;
-    for (let i = 0; i < numFiles; i++) {
-      const file = target.files?.item(i);
-      if (!file) continue;
+    const files = Array.from(target.files || []).filter(file => file);
+    const batchId = randomStringId();
+    files.forEach(file => {
       const message: FileMsg = {
         messageId: randomStringId(),
         timestamp: new Date(),
         status: MsgStatus.unknown,
         file,
+        batchId,
+        totalFiles: files.length,
       };
       this._dispatchMsg(message) && this.appendMsg(message);
-    }
+    });
   }
 
   private _dispatchMsg(detail: KiteMsg): boolean {

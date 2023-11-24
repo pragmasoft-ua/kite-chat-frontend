@@ -18,6 +18,8 @@ export type PlaintextMsg = BaseMsg & {
 
 export type FileMsg = BaseMsg & {
   file: File;
+  batchId?: string;
+  totalFiles?: number;
 };
 
 export type KiteMsg = PlaintextMsg | FileMsg;
