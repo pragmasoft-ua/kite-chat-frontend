@@ -102,6 +102,7 @@ export type BinaryMsg = {
   fileType?: string;
   fileSize?: number;
   timestamp: Date;
+  status?: MsgStatus;
 };
 
 export type Connected = {

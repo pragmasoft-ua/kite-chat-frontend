@@ -32,7 +32,8 @@ import {
   getMessages, 
   addMessage,
   modifyMessage,
-  deleteMessage
+  deleteMessage,
+  messageById
 } from './kite-storage';
 
 export type KiteChatOptions = {
@@ -142,6 +143,7 @@ export class KiteChat {
       return;
     }
     addMessage(msg, this.db);
+    this.element?.appendMsg(msg);
   }
 
   private update(messageId: string, updatedMsg: ContentMsg) {
@@ -155,9 +157,12 @@ export class KiteChat {
     if(!this.db) {
       return;
     }
+    const msgElement = document.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
+    ) as KiteFileElement | undefined;
+    msgElement?.remove();
     deleteMessage(messageId, this.db);
   }
-
 
   private restore() {
     if(!this.db) {
@@ -209,7 +214,7 @@ export class KiteChat {
       throw new Error('Not connected');
     }
     console.debug('outgoing', outgoing);
-    this.save(outgoing);
+    this.db && addMessage(outgoing, this.db);
     this.kiteWorker.port.postMessage(outgoing);
   }
 
@@ -268,8 +273,16 @@ export class KiteChat {
 
   protected onContentMessage(incoming: ContentMsg) {
     console.debug('onContentMessage', incoming.messageId, incoming.timestamp);
-    this.save(incoming);
-    this.element?.appendMsg(incoming);
+    if(!this.db) {
+      return;
+    }
+    messageById(incoming.messageId, this.db).then(message => {
+      if(!message) {
+        this.db && this.save(incoming);
+      } else {
+        this.db && this.update(incoming.messageId, incoming);
+      }
+    })
   }
 
   protected onConnected(payload: Connected) {
@@ -305,13 +318,7 @@ export class KiteChat {
     this.update(e.messageId, {
       file: e.file,
     } as ContentMsg);
-    e.zippedIds.forEach(id => {
-      const msgElement = document.querySelector(
-        `${KiteMsgElement.TAG}[messageId="${id}"]`
-      ) as KiteFileElement | undefined;
-      msgElement?.remove();
-      this.delete(id);
-    })
+    e.zippedIds.forEach(id => this.delete(id));
   }
 
   protected onFailedMessage(e: FailedMsg) {
