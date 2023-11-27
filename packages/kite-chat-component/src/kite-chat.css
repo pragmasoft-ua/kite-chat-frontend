@@ -123,6 +123,20 @@ span.edit-message_file::after {
     anchor-default: --toggle;
     position-fallback: --flip;
   }
+
+  @media (max-width: 22rem) {
+    [popover] {
+      anchor-default: initial;
+      position-fallback: initial;
+    }
+  }
+
+  @media (max-height: 35rem) {
+    [popover] {
+      anchor-default: initial;
+      position-fallback: initial;
+    }
+  }
 }
 
 @media (max-width: 22rem) {
