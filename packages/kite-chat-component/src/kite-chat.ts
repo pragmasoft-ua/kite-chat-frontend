@@ -12,11 +12,9 @@ import {sharedStyles} from './shared-styles';
 import kiteChatStyles from './kite-chat.css?inline';
 import {randomStringId} from './random-string-id';
 import {
-  FileMsg,
   isPlaintextMsg,
   KiteMsg,
   MsgStatus,
-  PlaintextMsg,
 } from './kite-payload';
 import {
   SelectionContainerMixin,

@@ -16,7 +16,7 @@ export declare class SelectionContainerInterface<T extends SelectableElement> {
 
 export const SelectionContainerMixin = <T extends Constructor<LitElement>, U extends SelectableElement>(
     superClass: T,
-    selectedElementType: Constructor<U>
+    _selectedElementType: Constructor<U>
 ) => {
     class SelectionContainerElement extends superClass {
         static styles = [
@@ -27,7 +27,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
          * Constructor that simply delegates to the super's constructor
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        constructor(...params: any) {
+        constructor(..._params: any) {
             super();
         }
 

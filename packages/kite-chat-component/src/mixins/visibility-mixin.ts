@@ -39,7 +39,7 @@ export const VisibilityMixin = <T extends Constructor<LitElement>>(
          * Constructor that simply delegates to the super's constructor
          */
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        constructor(...params: any) {
+        constructor(..._params: any) {
             super();
         }
 
