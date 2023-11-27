@@ -96,11 +96,11 @@ export class KiteMsgElement extends LitElement {
   protected selectionController = new SelectionController(this);
 
   select() {
-    this.selectionController.select();
+    this.selected = true;
   }
 
   unselect() {
-    this.selectionController.unselect();
+    this.selected = false;
   }
 
   override render() {
