@@ -1,24 +1,28 @@
 @config "../tailwind.config.lit.cjs";
 
 :host {
+  @apply flex flex-col items-start w-full;
+}
+
+.message-container {
   max-width: 80%;
   @apply selection:bg-primary-color relative my-1.5 block select-text snap-end scroll-my-1 whitespace-pre-line break-words rounded px-2 py-1 text-left shadow selection:text-white;
 }
 
-:host(:not([status])) {
+:host(:not([status])) .message-container {
   background: var(--kite-msg-bg, white);
 }
 
-:host([status]) {
+:host([status]) .message-container {
   background: var(--kite-msg-sent-bg, theme('colors.stone.300'));
   @apply self-end;
 }
 
-:host([selected]) {
+:host([selected]) .message-container {
   filter: opacity(0.7);
 }
 
-:host::before {
+.message-container::before {
   content: '';
   position: absolute;
   width: 0;
@@ -27,12 +31,12 @@
   border: 10px solid transparent !important;
 }
 
-:host(:not([status]))::before {
+:host(:not([status])) .message-container::before {
   left: -0.375rem;
   border-top-color: var(--kite-msg-border, white) !important;
 }
 
-:host([status])::before {
+:host([status]) .message-container::before {
   right: -0.375rem;
   border-top-color: var(--kite-msg-sent-border, theme('colors.stone.300')) !important;
 }
@@ -87,4 +91,23 @@ span.read::after {
 
 span {
   @apply text-neutral-200;
+}
+
+.message-container::after {
+  content: url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-circle-check-filled' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z' stroke-width='0' fill='currentColor' /></svg>");
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  right: -2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: none;
+}
+
+:host([selected]) .message-container::after {
+  display: block;
+}
+
+:host([status]) .message-container::after {
+  left: -2rem;
 }

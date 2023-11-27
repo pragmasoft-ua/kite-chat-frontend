@@ -104,8 +104,8 @@ export class KiteMsgElement extends LitElement {
   }
 
   override render() {
-    return html` <slot></slot
-      >${this._renderStatus()}${this._renderTimestamp()}`;
+    return html` <div class="message-container"><slot></slot
+      >${this._renderStatus()}${this._renderTimestamp()}</div>`;
   }
 
   private _renderStatus() {
