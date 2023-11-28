@@ -75,7 +75,9 @@ export const VisibilityMixin = <T extends Constructor<LitElement>>(
         override updated(changedProperties: PropertyValues<this>): void {
             super.updated(changedProperties);
 
-            this._visibilityCallback();
+            if (changedProperties.has('open')) {
+                this._visibilityCallback();
+            }
         }
 
         override firstUpdated(changedProperties: PropertyValues<this>): void {
