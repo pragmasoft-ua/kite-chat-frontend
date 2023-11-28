@@ -86,6 +86,7 @@ export class KiteMsgElement extends LitElement {
   @property({ type: Boolean, reflect: true })
   selected = false;
 
+  // GET RID OF IT WHEN :host-context() supported
   @state()
   multiselect = false;
 

@@ -62,8 +62,18 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             this.selectedElements = this.selectedElements.filter(el => this._slotElements.includes(el));
         }
 
+        // To use with :host-context(.multiselect)
+        /*  override updated(changedProperties: PropertyValues<this>): void {
+            super.updated(changedProperties);
+
+            if (changedProperties.has('selectedElements')) {
+                this.classList.toggle('multiselect', this.selectedElements.length > 0);
+            }
+        } */
+
+
         _renderSelectionContainer() {
-            return html`<slot 
+            return html`<slot
                 @slotchange=${this.handleSlotchange} 
                 @mousedown=${this.startSelection}
                 @mouseup=${this.endSelection}
@@ -123,6 +133,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             this.selectedElements = [];
         }
 
+        // GET RID OF IT WHEN :host-context() supported
         private handleMouseOver(e: MouseEvent) {
             if (!(e.target instanceof _selectedElementType)) {
                 return;
