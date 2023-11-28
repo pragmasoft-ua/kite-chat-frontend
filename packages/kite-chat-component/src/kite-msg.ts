@@ -6,7 +6,8 @@
  */
 
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, state} from 'lit/decorators.js';
+import {classMap} from 'lit/directives/class-map.js';
 
 import kiteMsgStyles from './kite-msg.css?inline';
 import {randomStringId} from './random-string-id';
@@ -87,6 +88,9 @@ export class KiteMsgElement extends LitElement {
   @property({ type: Boolean, reflect: true })
   selected = false;
 
+  @state()
+  multiselect = false;
+
   /**
    * Indicates whether the message was edited
    */
@@ -104,7 +108,9 @@ export class KiteMsgElement extends LitElement {
   }
 
   override render() {
-    return html` <div class="message-container"><slot></slot
+    return html` <div class="message-container ${classMap({
+      'multiselect': this.multiselect,
+    })}"><slot></slot
       >${this._renderStatus()}${this._renderTimestamp()}</div>`;
   }
 
