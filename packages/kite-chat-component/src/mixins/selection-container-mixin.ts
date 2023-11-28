@@ -59,6 +59,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             [...this.selectedElements].forEach((element) => {
                 element.unselect();
             });
+            this.selectedElements = [];
         }
     }
 

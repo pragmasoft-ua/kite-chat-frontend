@@ -196,6 +196,7 @@ export class KiteChatElement extends
 
   private _edit() {
     this.editMessage = this.selectedElements[0] ?? null;
+    this._unselect();
   }
 
   private _delete() {
