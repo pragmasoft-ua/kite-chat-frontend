@@ -13,8 +13,6 @@ import kiteMsgStyles from './kite-msg.css?inline';
 import {randomStringId} from './random-string-id';
 import {MsgStatus} from './kite-payload';
 
-import {SelectionController} from './controllers';
-
 const componentStyles = css`
   ${unsafeCSS(kiteMsgStyles)}
 `;
@@ -96,8 +94,6 @@ export class KiteMsgElement extends LitElement {
    */
   @property({ type: Boolean, reflect: true })
   edited = false;
-
-  protected selectionController = new SelectionController(this);
 
   select() {
     this.selected = true;
