@@ -1,4 +1,5 @@
 import { ReactiveControllerHost } from 'lit';
+import { vibrate } from '../utils';
 
 const SELECTION_THRESHOLD = 500;
 
@@ -56,6 +57,7 @@ export class SelectionController {
     private startSelection() {
         this.pressTimer = setTimeout(() => {
             this.handleSelect(!this.host.selected);
+            vibrate('LONG_PRESS');
             this.pressTimer = null;
         }, SELECTION_THRESHOLD);
         this.ignored = false;
@@ -67,7 +69,8 @@ export class SelectionController {
         }
         if (!this.ignored && this.pressTimer !== null) {
             clearTimeout(this.pressTimer);
-            this.handleSelect(this.host.multiselect ? !this.host.selected : false);
+            this.handleSelect(this.isMultiselect() ? !this.host.selected : false);
+            vibrate('SHORT_PRESS');
         }
     }
 
@@ -90,10 +93,14 @@ export class SelectionController {
     }
 
     private handleMouseOver() {
-        const isSelected = this.host.parentElement?.querySelector('[selected]');
-        if (isSelected && !this.host.selected) {
+        if (this.isMultiselect()) {
             this.host.multiselect = true;
         }
+    }
+
+    private isMultiselect() {
+        const selectedNode = this.host.parentElement?.querySelector('[selected]');
+        return selectedNode && !selectedNode.isEqualNode(this.host);
     }
 
     private handleMouseOut() {
