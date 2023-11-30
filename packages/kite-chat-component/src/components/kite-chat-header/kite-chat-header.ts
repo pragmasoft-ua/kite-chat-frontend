@@ -13,7 +13,7 @@ import headerStyles from './kite-chat-header.css?inline';
 
 const CUSTOM_EVENT_INIT = {
   bubbles: true,
-  composed: true,
+  composed: false,
   cancelable: false,
 };
 

@@ -16,7 +16,7 @@ import {randomStringId} from '../../random-string-id';
 
 const CUSTOM_EVENT_INIT = {
   bubbles: true,
-  composed: true,
+  composed: false,
   cancelable: false,
 };
 
