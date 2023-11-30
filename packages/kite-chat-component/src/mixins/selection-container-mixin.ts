@@ -42,7 +42,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         }
 
         @queryAssignedElements({selector: '[selected]'})
-        _slotElements!: Array<U>;
+        _selectedSlotElements!: Array<U>;
 
         @state()
         selectedElements: Array<U> = [];
@@ -59,7 +59,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         }
 
         private handleSlotchange() {
-            this.selectedElements = this.selectedElements.filter(el => this._slotElements.includes(el));
+            this.selectedElements = this.selectedElements.filter(el => this._selectedSlotElements.includes(el));
         }
 
         // To use with :host-context(.multiselect)
@@ -111,7 +111,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             const selectableElement = e.target as SelectableElement;
             if (!this.ignored && this.pressTimer !== null) {
                 clearTimeout(this.pressTimer);
-                const isMultiselect = this._slotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
+                const isMultiselect = this._selectedSlotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
                 selectableElement.selected = isMultiselect ? !selectableElement.selected : false;
                 vibrate('SHORT_PRESS');
                 this.onSelected(selectableElement);
@@ -139,7 +139,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
                 return;
             }
             const selectableElement = e.target as SelectableElement;
-            selectableElement.multiselect = this._slotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
+            selectableElement.multiselect = this._selectedSlotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
         }
 
         private handleMouseOut(e: MouseEvent) {
