@@ -56,6 +56,7 @@
   },
   "dependencies": {
     "@oddbird/popover-polyfill": "^0.3.1",
+    "@romanenko.pavlo/simple-timestamp": "^1.0.4",
     "lit": "^2.8.0",
     "nanoid": "^4.0.2",
     "pretty-bytes": "^6.1.1"

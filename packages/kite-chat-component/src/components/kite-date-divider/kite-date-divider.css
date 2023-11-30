@@ -1,0 +1,5 @@
+@config "../../../tailwind.config.lit.cjs";
+
+:host {
+    @apply block w-full text-center;
+}

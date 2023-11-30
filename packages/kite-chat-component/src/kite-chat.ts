@@ -24,6 +24,7 @@ import {
   SelectionContainerMixin,
   VisibilityMixin,
   NotificationContainerMixin,
+  TimelineContainerMixin,
 } from './mixins';
 import {
   AnchorController, 
@@ -91,13 +92,15 @@ const CUSTOM_EVENT_INIT = {
  */
 @customElement('kite-chat')
 export class KiteChatElement extends 
-    NotificationContainerMixin(
-      VisibilityMixin(
-        SelectionContainerMixin(
-            LitElement, 
-            KiteMsgElement
-          ), 
-        {show: 'kite-chat.show', hide: 'kite-chat.hide'}
+    TimelineContainerMixin(
+      NotificationContainerMixin(
+        VisibilityMixin(
+          SelectionContainerMixin(
+              LitElement, 
+              KiteMsgElement
+            ), 
+          {show: 'kite-chat.show', hide: 'kite-chat.hide'}
+        )
       )
     ) {
   @property()
