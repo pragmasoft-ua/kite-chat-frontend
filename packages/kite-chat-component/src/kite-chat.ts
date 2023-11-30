@@ -15,6 +15,10 @@ import {
   isPlaintextMsg,
   KiteMsg,
   MsgStatus,
+  MsgOperation,
+  KiteMsgSend,
+  KiteMsgDelete,
+  KiteMsgEvent,
 } from './kite-payload';
 import {
   SelectionContainerMixin,
@@ -211,7 +215,11 @@ export class KiteChatElement extends
 
   private _delete() {
     this.selectedElements.forEach((msgElement) => {
-      msgElement.remove();
+      const {messageId} = msgElement;
+      const message: KiteMsgDelete = {messageId};
+      if (this._dispatchMsg({type: MsgOperation.delete, detail: message})) {
+        this.removeMsg(messageId);
+      }
     });
   }
 
@@ -225,24 +233,28 @@ export class KiteChatElement extends
     }
   }
 
-  editMsg(msg: KiteMsg) {
-    if(!msg.messageId || !this.editMessage) {
+  editMsg(messageId: string, msg: KiteMsg) {
+    const msgElement = this.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
+    ) as KiteMsgElement | undefined;
+    if(!msgElement) {
       return;
     }
-    const {messageId, timestamp = new Date(), status} = msg;
-    this.editMessage.messageId = messageId;
-    this.editMessage.timestamp = timestamp;
-    this.editMessage.status = status;
-    this.editMessage.edited = true;
+    const {messageId: newMessageId = messageId, timestamp = new Date(), status} = msg;
+    msgElement.messageId = newMessageId;
+    msgElement.timestamp = timestamp;
+    msgElement.status = status;
+    msgElement.edited = true;
     if (isPlaintextMsg(msg)) {
-      this.editMessage.innerText = msg.text;
+      msgElement.innerText = msg.text;
     } else {
       const {file} = msg;
-      const fileElement = this.editMessage.querySelector('kite-file');
+      const fileElement = msgElement.querySelector('kite-file');
       fileElement && (fileElement.file = file);
     }
-    this.editMessage.scrollIntoView(false);
-    this.editMessage = null;
+    requestAnimationFrame(() => {
+      msgElement.scrollIntoView(false);
+    });
   }
 
   private _handleSend(e: CustomEvent<KiteChatFooterChange>) {
@@ -253,20 +265,34 @@ export class KiteChatElement extends
       edited: !!this.editMessage,
       ...e.detail,
     };
-    if (this._dispatchMsg(message)) {
+    if (this._dispatchMsg({type: MsgOperation.send, detail: message})) {
       if(this.editMessage) {
-        this.editMsg(message);
+        this.editMsg(this.editMessage.messageId, message);
+        this.editMessage = null;
       } else {
         this.appendMsg(message);
       }
     }
   }
 
-  private _dispatchMsg(detail: KiteMsg): boolean {
-    const e = new CustomEvent<KiteMsg>('kite-chat.send', {
-      ...CUSTOM_EVENT_INIT,
-      detail,
-    });
+  private _dispatchMsg({type, detail}: KiteMsgEvent): boolean {
+    let e;
+
+    switch(type) {
+      case MsgOperation.send:
+        e = new CustomEvent<KiteMsgSend>('kite-chat.send', {
+          ...CUSTOM_EVENT_INIT,
+          detail,
+        });
+      break;
+      case MsgOperation.delete:
+        e = new CustomEvent<KiteMsgDelete>('kite-chat.delete', {
+          ...CUSTOM_EVENT_INIT,
+          detail,
+        });
+      break;
+    }
+
     this.dispatchEvent(e);
     return !e.defaultPrevented;
   }
@@ -287,8 +313,17 @@ export class KiteChatElement extends
       msgElement.appendChild(fileElement);
     }
     this.appendChild(msgElement);
-    msgElement.scrollIntoView(false);
-    this.show();
+    requestAnimationFrame(() => {
+      msgElement.scrollIntoView(false);
+      this.show();
+    });
+  }
+
+  removeMsg(messageId: string) {
+    const msgElement = this.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
+    ) as KiteMsgElement | undefined;
+    msgElement?.remove();
   }
 
   static override styles = [...[super.styles?? []], sharedStyles, componentStyles];

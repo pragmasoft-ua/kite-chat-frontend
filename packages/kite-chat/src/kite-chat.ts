@@ -23,6 +23,7 @@ import {
   MsgStatus,
   isFileMsg,
   NotificationType,
+  KiteMsgDelete,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 import KiteWorker from './kite-worker?sharedworker&inline';
@@ -214,9 +215,23 @@ export class KiteChat {
     if (!this.kiteWorker) {
       throw new Error('Not connected');
     }
-    console.debug('outgoing', outgoing);
-    this.db && addMessage(outgoing, this.db);
-    this.kiteWorker.port.postMessage(outgoing);
+    if(!outgoing.edited) {
+      console.debug('outgoing', outgoing);
+      this.db && addMessage(outgoing, this.db);
+      this.kiteWorker.port.postMessage(outgoing);
+    } else {
+      this.db && modifyMessage(outgoing.messageId, outgoing, this.db);
+      //TODO backend message editing
+      //this.kiteWorker.port.postMessage(outgoing);
+    }
+  }
+
+  protected onDeleteMessage(msg: CustomEvent<KiteMsgDelete>) {
+    const {detail} = msg;
+    console.debug('onDeleteMessage', detail);
+    this.delete(detail.messageId);
+    //TODO backend message deleting
+    //this.kiteWorker.port.postMessage(outgoing);
   }
 
   protected onElementShow() {
@@ -236,6 +251,10 @@ export class KiteChat {
     element.addEventListener(
       'kite-chat.send',
       this.onOutgoingMessage.bind(this)
+    );
+    element.addEventListener(
+      'kite-chat.delete',
+      this.onDeleteMessage.bind(this)
     );
     element.addEventListener('kite-chat.show', this.onElementShow.bind(this));
     return element;

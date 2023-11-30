@@ -23,7 +23,30 @@ export type FileMsg = BaseMsg & {
   totalFiles?: number;
 };
 
+export enum MsgOperation {
+  delete = 1,
+  send = 2,
+}
+
 export type KiteMsg = PlaintextMsg | FileMsg;
+
+export type KiteMsgSend = KiteMsg;
+
+export type KiteMsgDelete = {
+  messageId: string;
+};
+
+export type MsgSend  = {
+  type: MsgOperation.send;
+  detail: KiteMsgSend;
+}
+
+export type MsgDelete  = {
+  type: MsgOperation.delete;
+  detail: KiteMsgDelete;
+}
+
+export type KiteMsgEvent = MsgSend | MsgDelete;
 
 export function isPlaintextMsg(msg: KiteMsg): msg is PlaintextMsg {
   return (msg as PlaintextMsg).text !== undefined;

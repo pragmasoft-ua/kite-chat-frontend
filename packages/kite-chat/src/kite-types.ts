@@ -66,6 +66,7 @@ export type PlaintextMsg = {
   text: string;
   timestamp: Date;
   status?: MsgStatus;
+  edited?: boolean;
 };
 
 export type FileMsg = {
@@ -76,6 +77,7 @@ export type FileMsg = {
   status?: MsgStatus;
   batchId?: string;
   totalFiles?: number;
+  edited?: boolean;
 };
 
 export type UploadRequest = {
