@@ -94,7 +94,7 @@ export class KiteMsgElement extends LitElement {
    * Indicates whether the message was edited
    */
   @property({ type: Boolean, reflect: true })
-  edited = false;
+  edited? = false;
 
   select() {
     this.selected = true;

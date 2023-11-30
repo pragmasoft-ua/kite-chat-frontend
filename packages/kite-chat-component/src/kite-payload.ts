@@ -10,7 +10,7 @@ export type BaseMsg = {
   messageId?: string;
   timestamp?: Date;
   status?: MsgStatus;
-  edited: boolean; 
+  edited?: boolean; 
 };
 
 export type PlaintextMsg = BaseMsg & {
