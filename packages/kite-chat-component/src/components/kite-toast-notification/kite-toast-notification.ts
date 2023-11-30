@@ -18,6 +18,12 @@ const componentStyles = css`
   ${unsafeCSS(kiteToastStyles)}
 `;
 
+export enum NotificationState {
+  NEW = "new",
+  ACTIVE = "active",
+  VIEWED = "viewed",
+}
+
 @customElement(KiteNotificationElement.TAG)
 export class KiteNotificationElement extends LitElement {
   static TAG = 'kite-toast-notification';
@@ -25,12 +31,11 @@ export class KiteNotificationElement extends LitElement {
   @property({ type: String }) message? = '';
   @property({ reflect: true, type: String }) type?: NotificationType = NotificationType.INFO;
   @property({ reflect: true, type: Boolean }) open? = false;
-  @property({ reflect: true, type: Boolean }) viewed? = false;
-  @property({ reflect: true, type: Boolean }) new? = true;
+  @property({ reflect: true, type: String }) state?: NotificationState = NotificationState.NEW;
   @property({ type: Number }) duration? = null;
 
   override updated(changedProperties: PropertyValues<this>) {
-    if (changedProperties.has('new') && !this.new) {
+    if (changedProperties.has('state') && this.state === NotificationState.ACTIVE) {
       this.duration && setTimeout(() => {
         this.dismiss();
       }, this.duration);
@@ -38,7 +43,7 @@ export class KiteNotificationElement extends LitElement {
   }
 
   dismiss() {
-    this.viewed = true;
+    this.state = NotificationState.VIEWED;
   }
 
   toggle() {

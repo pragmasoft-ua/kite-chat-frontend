@@ -1,7 +1,7 @@
 import {TemplateResult, LitElement, html, css} from 'lit';
 import {queryAssignedElements} from 'lit/decorators.js';
 import {KiteNotification} from '../kite-payload';
-import {KiteNotificationElement} from '../components';
+import {KiteNotificationElement, NotificationState} from '../components';
 
 /**
  * Type definition of a constructor.
@@ -34,11 +34,11 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
                     transform: translateX(0%);
                     opacity: 1;
                 }
-                slot[name="notification"]::slotted([viewed]) {
+                slot[name="notification"]::slotted([state="viewed"]) {
                     transform: translateX(100%);
                     opacity: 0;
                 }
-                slot[name="notification"]::slotted([new]) {
+                slot[name="notification"]::slotted([state="new"]) {
                     transform: translateX(-100%);
                     opacity: 0;
                 }
@@ -61,14 +61,14 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
                 name=${NOTIFICATION_SLOT}
                 @transitionend=${(e: TransitionEvent) => {
                     const current = (e.target as KiteNotificationElement);
-                    if(current?.viewed) {
+                    if(current?.state === NotificationState.VIEWED) {
                         current.remove()
                     }
                 }}
                 @slotchange=${() => {
                     const current = this._notificationSlotElements.toReversed()[0];
                     current && setTimeout(() => {
-                        current.new = false;
+                        current.state = NotificationState.ACTIVE;
                     }, 0);
                 }}
             ></slot>`;
