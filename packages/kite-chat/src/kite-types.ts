@@ -16,6 +16,7 @@ export enum MsgStatus {
   sent = 1,
   delivered = 2,
   read = 3,
+  failed = 4,
 }
 
 export enum MsgType {
@@ -33,6 +34,9 @@ export enum MsgType {
   OFFLINE = 'OFFLINE',
   PING = 'PING',
   PONG = 'PONG',
+  FAILED = "FAILED",
+  ACTIVE_TAB = "ACT_TAB",
+  ZIPPED = "ZIP"
 }
 
 export type JoinChannel = {
@@ -70,6 +74,8 @@ export type FileMsg = {
   file: File;
   timestamp: Date;
   status?: MsgStatus;
+  batchId?: string;
+  totalFiles?: number;
 };
 
 export type UploadRequest = {
@@ -96,6 +102,7 @@ export type BinaryMsg = {
   fileType?: string;
   fileSize?: number;
   timestamp: Date;
+  status?: MsgStatus;
 };
 
 export type Connected = {
@@ -128,7 +135,36 @@ export type OK = {
   type: MsgType.OK;
 };
 
+export type ActiveTab = {
+  type: MsgType.ACTIVE_TAB;
+};
+
+export type ZippedMsg = {
+  type: MsgType.ZIPPED;
+  messageId: string;
+  zippedIds: string[];
+  file: File;
+};
+
 export type ContentMsg = PlaintextMsg | FileMsg;
+
+export enum FileVerification {
+  UNSUPPORTED_TYPE = "UNSUPPORTED_TYPE",
+  EXCEED_SIZE = "EXCEED_SIZE",
+  SUCCEED = "SUCCEED"
+}
+
+export enum PlainTextVerification {
+  EXCEED_SIZE = "EXCEED_SIZE",
+  SUCCEED = "SUCCEED"
+}
+
+export type FailedMsg = {
+  type: MsgType.FAILED;
+  reason: FileVerification|PlainTextVerification;
+  messageId: string;
+  description?: string;
+};
 
 export type KiteMsg =
   | JoinChannel
@@ -144,4 +180,7 @@ export type KiteMsg =
   | Online
   | Offline
   | Ping
-  | Pong;
+  | Pong
+  | FailedMsg
+  | ActiveTab
+  | ZippedMsg;

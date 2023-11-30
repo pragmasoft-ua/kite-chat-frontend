@@ -3,6 +3,7 @@ export enum MsgStatus {
   sent = 1,
   delivered = 2,
   read = 3,
+  failed = 4,
 }
 
 export type BaseMsg = {
@@ -18,6 +19,8 @@ export type PlaintextMsg = BaseMsg & {
 
 export type FileMsg = BaseMsg & {
   file: File;
+  batchId?: string;
+  totalFiles?: number;
 };
 
 export type KiteMsg = PlaintextMsg | FileMsg;

@@ -78,6 +78,16 @@ const BINARY_MESSAGE_FIELDS: Array<keyof BinaryMsg> = [
   'timestamp',
 ];
 
+const INCOMING_PLAINTEXT_MESSAGE_FIELDS: Array<keyof PlaintextMsg> = [
+  ...PLAINTEXT_MESSAGE_FIELDS,
+  'status',
+];
+
+const INCOMING_BINARY_MESSAGE_FIELDS: Array<keyof BinaryMsg> = [
+  ...BINARY_MESSAGE_FIELDS,
+  'status',
+];
+
 const UPLOAD_REQUEST_FIELDS: Array<keyof UploadRequest> = [
   'type',
   'messageId',
@@ -104,9 +114,9 @@ const KITE_MSG_DECODERS: Partial<Record<MsgType, Decoder>> = {
   [MsgType.ACK]: decoderFactory(MESSAGE_ACK_FIELDS),
   [MsgType.OK]: decoderFactory(OK_FIELDS),
   [MsgType.ERROR]: decoderFactory(ERROR_RESPONSE_FIELDS),
-  [MsgType.PLAINTEXT]: decoderFactory(PLAINTEXT_MESSAGE_FIELDS),
+  [MsgType.PLAINTEXT]: decoderFactory(INCOMING_PLAINTEXT_MESSAGE_FIELDS),
   [MsgType.UPLOAD]: decoderFactory(UPLOAD_RESPONSE_FIELDS),
-  [MsgType.BIN]: decoderFactory(BINARY_MESSAGE_FIELDS),
+  [MsgType.BIN]: decoderFactory(INCOMING_BINARY_MESSAGE_FIELDS),
   [MsgType.PONG]: decoderFactory(PONG_FIELDS),
 };
 

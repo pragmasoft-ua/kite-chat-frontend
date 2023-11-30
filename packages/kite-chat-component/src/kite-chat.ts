@@ -4,7 +4,7 @@
  * LGPLv3
  */
 
-import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
+import {LitElement, html, css, unsafeCSS} from 'lit';
 import {customElement, property, query, queryAssignedElements, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
@@ -15,7 +15,6 @@ import {
   isPlaintextMsg,
   KiteMsg,
   MsgStatus,
-  NotificationType,
 } from './kite-payload';
 import {
   SelectionContainerMixin,

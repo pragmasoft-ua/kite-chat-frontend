@@ -89,6 +89,11 @@ span.read::after {
   content: '✓✓';
 }
 
+span.failed::after {
+  content: '✗';
+  color: theme('colors.red.500');
+}
+
 span {
   @apply text-neutral-200;
 }

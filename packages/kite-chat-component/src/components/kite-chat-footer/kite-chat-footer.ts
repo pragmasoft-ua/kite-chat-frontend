@@ -12,6 +12,7 @@ import {sharedStyles} from '../../shared-styles';
 import footerStyles from './kite-chat-footer.css?inline';
 
 import {KiteMsgElement} from '../../kite-msg';
+import {randomStringId} from '../../random-string-id';
 
 const CUSTOM_EVENT_INIT = {
   bubbles: true,
@@ -29,6 +30,8 @@ type ChangeTextarea = {
 
 type ChangeFile = {
   file: File;
+  batchId: string;
+  totalFiles: number;
 }
 
 export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
@@ -97,17 +100,18 @@ export class KiteChatFooterElement extends LitElement {
 
   private _onFileInput(event: Event) {
     const target = event.target as HTMLInputElement;
-    const numFiles = target.files?.length ?? 0;
-    for (let i = 0; i < numFiles; i++) {
-        const file = target.files?.item(i);
-        if (!file) continue;
-        this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
-          ...CUSTOM_EVENT_INIT,
-          detail: {
-            file: file
-          }
-        }))
-    }
+    const files = Array.from(target.files || []).filter(file => file);
+    const batchId = randomStringId();
+    files.forEach(file => {
+      this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
+        ...CUSTOM_EVENT_INIT,
+        detail: {
+          file,
+          batchId,
+          totalFiles: files.length,
+        }
+      }))
+    });
 }
 
   private _renderFileInput() {

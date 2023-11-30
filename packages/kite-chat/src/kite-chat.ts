@@ -7,6 +7,8 @@ import type {
   Connected,
   FileMsg,
   ContentMsg,
+  FailedMsg,
+  ZippedMsg,
 } from './kite-types';
 
 import {MsgType} from './kite-types';
@@ -14,6 +16,7 @@ import {MsgType} from './kite-types';
 import {
   KiteChatElement,
   KiteMsgElement,
+  KiteFileElement,
   KiteMsg as KiteChatMsg,
   randomStringId,
   isPlaintextMsg,
@@ -21,8 +24,17 @@ import {
   isFileMsg,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
-import sharedWorkerUrl from './kite-worker?inline-shared-worker';
+import KiteWorker from './kite-worker?sharedworker&inline';
 import {assert} from './assert';
+import {
+  KiteDB, 
+  openDatabase, 
+  getMessages, 
+  addMessage,
+  modifyMessage,
+  deleteMessage,
+  messageById
+} from './kite-storage';
 
 export type KiteChatOptions = {
   endpoint: string;
@@ -45,6 +57,7 @@ export class KiteChat {
   protected readonly opts: KiteChatOptions;
   protected kiteWorker: SharedWorker | null;
   readonly element: KiteChatElement | null;
+  private db: KiteDB | null;
 
   constructor(opts: KiteChatOptions) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
@@ -58,6 +71,22 @@ export class KiteChat {
     this.element = this.findOrCreateElement(
       this.opts.createIfMissing as boolean
     );
+
+    openDatabase().then((db: KiteDB) => {
+      this.db = db;
+      this.restore();
+    }).catch((e: Error) => {
+      console.error("Failed to open indexedDB:", e.message);
+    })
+
+    addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'visible') {
+        this.kiteWorker?.port.postMessage({
+          type: MsgType.ACTIVE_TAB,
+        });
+        this.restore();
+      }
+    });
     this.connect();
   }
 
@@ -66,7 +95,7 @@ export class KiteChat {
 
     const onWorkerMessageBound = this.onWorkerMessage.bind(this);
 
-    const kiteWorker = new SharedWorker(sharedWorkerUrl);
+    const kiteWorker = new KiteWorker();
 
     const endpoint = new URL(this.opts.endpoint);
 
@@ -109,6 +138,53 @@ export class KiteChat {
     this.kiteWorker = null;
   }
 
+  private save(msg: ContentMsg) {
+    if(!this.db) {
+      return;
+    }
+    addMessage(msg, this.db);
+    this.element?.appendMsg(msg);
+  }
+
+  private update(messageId: string, updatedMsg: ContentMsg) {
+    if(!this.db) {
+      return;
+    }
+    modifyMessage(messageId, updatedMsg, this.db);
+  }
+
+  private delete(messageId: string) {
+    if(!this.db) {
+      return;
+    }
+    const msgElement = document.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
+    ) as KiteFileElement | undefined;
+    msgElement?.remove();
+    deleteMessage(messageId, this.db);
+  }
+
+  private restore() {
+    if(!this.db) {
+      return;
+    }
+    const msgElements = document.querySelectorAll(
+      `${KiteMsgElement.TAG}`
+    )
+    const lastElement = msgElements.length > 0 
+      ? (msgElements[msgElements.length - 1] as KiteMsgElement).messageId 
+      : undefined;
+    getMessages(this.db, lastElement).then((messages: ContentMsg[]) => {
+      console.debug("getMessages", messages);
+      if (!this.element) return;
+      for (const msg of messages) {
+        this.element.appendMsg(msg);
+      }
+    }).catch((e: Error) => {
+      console.error("Failed to get messages from storage:", e.message);
+    });
+  }
+
   protected persistentRandomId(): string {
     let savedId = localStorage.getItem(KITE_USER_ID_STORE_KEY);
     if (!savedId) {
@@ -138,6 +214,7 @@ export class KiteChat {
       throw new Error('Not connected');
     }
     console.debug('outgoing', outgoing);
+    this.db && addMessage(outgoing, this.db);
     this.kiteWorker.port.postMessage(outgoing);
   }
 
@@ -181,6 +258,12 @@ export class KiteChat {
       case MsgType.ERROR:
         this.onErrorMessage(payload);
         break;
+      case MsgType.FAILED:
+        this.onFailedMessage(payload);
+        break;
+      case MsgType.ZIPPED:
+        this.onZippedMessage(payload);
+        break;
       case MsgType.ONLINE:
       case MsgType.OFFLINE:
         this.log(payload);
@@ -190,16 +273,20 @@ export class KiteChat {
 
   protected onContentMessage(incoming: ContentMsg) {
     console.debug('onContentMessage', incoming.messageId, incoming.timestamp);
-    this.element?.appendMsg(incoming);
+    if(!this.db) {
+      return;
+    }
+    messageById(incoming.messageId, this.db).then(message => {
+      if(!message) {
+        this.db && this.save(incoming);
+      } else {
+        this.db && this.update(incoming.messageId, incoming);
+      }
+    })
   }
 
   protected onConnected(payload: Connected) {
     console.debug('connected', payload);
-    const {messageHistory} = payload;
-    if (!this.element) return;
-    for (const msg of messageHistory) {
-      this.element.appendMsg(msg);
-    }
   }
 
   protected onMessageAck(ack: MsgAck) {
@@ -211,11 +298,42 @@ export class KiteChat {
       msgElement.messageId = ack.destiationMessageId;
       msgElement.status = MsgStatus.delivered;
     }
+    this.update(ack.messageId, {
+      messageId: ack.destiationMessageId,
+      status: MsgStatus.delivered,
+    } as ContentMsg);
   }
 
   protected onErrorMessage(e: ErrorMsg) {
     // TODO display error as a text message
     console.error(e.code, e.reason);
+  }
+
+  protected onZippedMessage(e: ZippedMsg) {
+    console.debug('onZippedMessage', e);
+    const fileElement = document.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${e.messageId}"] > ${KiteFileElement.TAG}`
+    ) as KiteFileElement | undefined;
+    fileElement && (fileElement.file = e.file);
+    this.update(e.messageId, {
+      file: e.file,
+    } as ContentMsg);
+    e.zippedIds.forEach(id => this.delete(id));
+  }
+
+  protected onFailedMessage(e: FailedMsg) {
+    console.debug('onFailedMessage', e);
+    const msgElement = document.querySelector(
+      `${KiteMsgElement.TAG}[messageId="${e.messageId}"]`
+    ) as KiteMsgElement | undefined;
+    if (msgElement) {
+      msgElement.status = MsgStatus.failed;
+    }
+    const errorMessage = e.description || 'Unknown error.';
+    this.element?.appendMsg({text: `⛔️${errorMessage}`, status: MsgStatus.unknown});
+    this.update(e.messageId, {
+      status: MsgStatus.failed,
+    } as ContentMsg);
   }
 
   protected onDeliveryError(msg: MessageEvent<unknown>) {

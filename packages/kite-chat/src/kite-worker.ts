@@ -21,9 +21,13 @@ import {
   PlaintextMsg,
   UploadRequest,
   UploadResponse,
+  FileVerification,
+  PlainTextVerification,
 } from './kite-types';
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
 import {SUBPROTOCOL} from './shared-constants';
+
+import type JSZip from 'jszip';
 
 const WORKER_NAME = 'k1te worker';
 
@@ -33,7 +37,25 @@ const PING_INTERVAL_MS = 60 * 1000; // 1 min
 
 const MISSED_PONGS_TO_RECONNECT = 3;
 
+const SUPPORTED_FILE_FORMATS = {
+  "application/pdf": 20 * 1024 * 1024, // 20MB
+  "application/zip": 20 * 1024 * 1024,
+  "application/x-zip-compressed": 20 * 1024 * 1024,
+  "image/jpeg": 5 * 1024 * 1024, // 5MB
+  "image/png": 5 * 1024 * 1024,
+  "image/gif": 20 * 1024 * 1024,
+  "video/mp4": 20 * 1024 * 1024,
+  "image/webp": 20 * 1024 * 1024,
+};
+
+const PLAIN_MAX_SIZE = 4 * 1024; // 4KB
+
+const ZIP_FILE_FORMAT = "application/zip";
+
+const JSZIP_CDN = 'https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js';
+
 interface KiteMessagePort extends MessagePort {
+  active: boolean;
   postMessage(value: KiteMsg): void;
 }
 
@@ -61,19 +83,20 @@ let joinChannel: JoinChannel | null = null;
  */
 const messageHistory = new Array<ContentMsg>();
 
+let batchAccumulator = new Array<FileMsg>();
+
+let zipQueue = new Array<FileMsg>();
+
 const outgoingQueue = new Array<KiteMsg>();
 
 const tabPorts = new Set<KiteMessagePort>();
 
 let pingerTimer: ReturnType<typeof setInterval> | null = null;
 
-const broadcast = (msg: KiteMsg, exclude?: KiteMessagePort) => {
-  for (const tabPort of tabPorts) {
-    if (tabPort !== exclude) {
-      tabPort.postMessage(msg);
-    }
-  }
-};
+const toActiveTab = (msg: KiteMsg) => {
+  const activePort = Array.from(tabPorts).find((port) => port.active);
+  activePort?.postMessage(msg);
+}
 
 const messageById = (messageId: string) =>
   messageHistory.findLast((msg) => msg.messageId === messageId);
@@ -103,8 +126,13 @@ function onTabConnected(e: MessageEvent) {
   console.debug(WORKER_NAME, 'tab connected', tabPorts.size);
   port.postMessage({
     type: MsgType.CONNECTED,
-    messageHistory,
   });
+}
+
+function onActiveTab(port: KiteMessagePort) {
+  for (const p of tabPorts) {
+    p.active = (p === port);
+  }
 }
 
 function onTabMessage(e: MessageEvent<KiteMsg>) {
@@ -121,6 +149,9 @@ function onTabMessage(e: MessageEvent<KiteMsg>) {
       break;
     case MsgType.FILE:
       onFileMessage(payload, tabPort);
+      break;
+    case MsgType.ACTIVE_TAB:
+      onActiveTab(tabPort);
       break;
     case MsgType.DISCONNECTED:
       onTabDisconnected(tabPort);
@@ -157,24 +188,165 @@ function onOffline() {
   ws = null;
 }
 
+function verifyFile(file: File): FileVerification {
+  const maxSize = SUPPORTED_FILE_FORMATS[file.type as keyof typeof SUPPORTED_FILE_FORMATS];
+
+  if (!maxSize) {
+    return FileVerification.UNSUPPORTED_TYPE;
+  }
+
+  if (file.size > maxSize) {
+    return FileVerification.EXCEED_SIZE;
+  }
+
+  return FileVerification.SUCCEED;
+}
+
+function verifyPlainText(text: string): PlainTextVerification {
+  const blob = new Blob([text]);
+
+  if (blob.size > PLAIN_MAX_SIZE) {
+    return PlainTextVerification.EXCEED_SIZE;
+  }
+
+  return PlainTextVerification.SUCCEED;
+}
+
+async function zipFiles(files: File[], resultType = "application/zip", timestamp = new Date()): Promise<File> {
+  // Import JSZip module dynamically
+  await import(/* @vite-ignore */ JSZIP_CDN);
+
+  const extendedSelf  = self as unknown as typeof self & {JSZip: JSZip};
+  const zip: JSZip = new extendedSelf.JSZip();
+
+  files.forEach((file) => {
+    zip.file(file.name, file);
+  });
+
+  const zipFileName = files.length === 1 
+    ? `${files[0].name.replace(/\.[^/.]+$/, '')}.zip`
+    : `${timestamp.toISOString()}.zip`;
+  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 0 } });
+  return new File([blob], zipFileName, {type: resultType});
+}
+
+function formatSize(size: number): string {
+  const units = ['B', 'KB', 'MB', 'GB', 'TB'];
+  let unitIndex = 0;
+
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex++;
+  }
+
+  return `${size.toFixed(2)} ${units[unitIndex]}`;
+}
+
 function onPlaintextMessage(payload: PlaintextMsg, tabPort: KiteMessagePort) {
   messageHistory.push(payload);
-  broadcast(payload, tabPort);
-  queue(payload);
+
+  const result = verifyPlainText(payload.text);
+
+  switch (result) {
+    case PlainTextVerification.EXCEED_SIZE:
+      tabPort.postMessage({
+        type: MsgType.FAILED, 
+        reason: result,
+        messageId: payload.messageId,
+        description: `Text message size exceeds ${formatSize(PLAIN_MAX_SIZE)} limit.`,
+      });
+      break;
+    case PlainTextVerification.SUCCEED:
+      queue(payload);
+      break;
+  }
 }
 
 function onFileMessage(payload: FileMsg, tabPort: KiteMessagePort) {
-  messageHistory.push(payload);
-  broadcast(payload, tabPort);
-  const upload: UploadRequest = {
-    type: MsgType.UPLOAD,
-    messageId: payload.messageId,
-    fileName: payload.file.name,
-    fileType: payload.file.type,
-    fileSize: payload.file.size,
-    timestamp: payload.timestamp,
+  const uploadFile = (payload: FileMsg, file: File = payload.file) => {
+    const upload: UploadRequest = {
+      type: MsgType.UPLOAD,
+      messageId: payload.messageId,
+      fileName: file.name,
+      fileType: file.type,
+      fileSize: file.size,
+      timestamp: payload.timestamp,
+    };
+    messageHistory.push({...payload, file});
+    queue(upload);
   };
-  queue(upload);
+
+  const failedFile = (reason: FileVerification, errorMessage?: string) => {
+    tabPort.postMessage({
+      type: MsgType.FAILED, 
+      reason: reason,
+      messageId: payload.messageId,
+      description: errorMessage,
+    });
+  }
+
+  const maxSize = (type: string) => formatSize(SUPPORTED_FILE_FORMATS[type as keyof typeof SUPPORTED_FILE_FORMATS]);
+
+  const result = verifyFile(payload.file);
+  const {file} = payload;
+
+  switch (result) {
+    case FileVerification.UNSUPPORTED_TYPE:
+      if(file.size > SUPPORTED_FILE_FORMATS[ZIP_FILE_FORMAT]) {
+        failedFile(FileVerification.EXCEED_SIZE, `${ZIP_FILE_FORMAT} size exceeds ${maxSize(ZIP_FILE_FORMAT)} limit.`);
+      } else {
+        zipQueue.push(payload);
+      }
+      break;
+    case FileVerification.EXCEED_SIZE:
+      failedFile(FileVerification.EXCEED_SIZE, `${file.type} size exceeds ${maxSize(file.type)} limit.`);
+      break;
+    case FileVerification.SUCCEED:
+      uploadFile(payload);
+      break;
+  }
+
+  batchAccumulator.push(payload);
+
+  if(payload.totalFiles !== batchAccumulator.length) {
+    return;
+  }
+
+  const chunks = new Array<FileMsg[]>();
+
+  while (zipQueue.length > 0) {
+    const chunk = zipQueue.reduce((acc, msg) => {
+      const newSize = acc.size + msg.file.size;
+      if (newSize <= SUPPORTED_FILE_FORMATS[ZIP_FILE_FORMAT]) {
+        acc.messages.push(msg);
+        acc.size = newSize;
+      }
+      return acc;
+    }, { size: 0, messages: new Array<FileMsg>()});
+
+    chunks.push(chunk.messages);
+    zipQueue = zipQueue.filter(msg => !chunk.messages.includes(msg));
+  }
+  
+  for(const chunk of chunks) {
+    zipFiles(chunk.map(msg => msg.file), ZIP_FILE_FORMAT, payload.timestamp)
+      .then(file => {
+        const {messageId} = chunk[0];
+        const messageIds = chunk.map(msg => msg.messageId);
+        tabPort.postMessage({
+          type: MsgType.ZIPPED, 
+          messageId: messageId,
+          zippedIds: messageIds.filter(id => id !== messageId),
+          file: file,
+        });
+        uploadFile(chunk[0], file);
+      })
+      .catch(error => {
+        console.error('Error zipping file:', error);
+      });
+  }
+
+  batchAccumulator = [];
 }
 
 function onJoinChannel(payload: JoinChannel) {
@@ -276,7 +448,7 @@ function onWsClose(e: CloseEvent) {
     )} minutes`,
     e
   );
-  broadcast({type: MsgType.OFFLINE, sessionDurationMs});
+  toActiveTab({type: MsgType.OFFLINE, sessionDurationMs});
   if (!online) {
     console.warn(WORKER_NAME, 'offline, do not reconnect');
     ws = null;
@@ -304,12 +476,12 @@ function onWsError(e: Event) {
 function onWsJoined() {
   console.debug(WORKER_NAME, 'ws joined');
   flushQueue();
-  broadcast({type: MsgType.ONLINE});
+  toActiveTab({type: MsgType.ONLINE});
 }
 
 function onWsPlaintextMessage(payload: PlaintextMsg) {
   messageHistory.push(payload);
-  broadcast(payload);
+  toActiveTab(payload);
 }
 
 async function onWsBinaryMessage(payload: BinaryMsg) {
@@ -321,10 +493,10 @@ async function onWsBinaryMessage(payload: BinaryMsg) {
       file,
     };
     messageHistory.push(incoming);
-    broadcast(incoming);
+    toActiveTab(incoming);
   } catch (error) {
     if (error instanceof HttpError) {
-      broadcast({
+      toActiveTab({
         type: MsgType.ERROR,
         reason: error.message,
         code: error.status,
@@ -354,13 +526,13 @@ async function onWsUploadResponse(payload: UploadResponse) {
     queue(outgoing);
   } catch (error) {
     if (error instanceof HttpError) {
-      broadcast({
+      toActiveTab({
         type: MsgType.ERROR,
         reason: error.message,
         code: error.status,
       });
     } else if (error instanceof Error) {
-      broadcast({
+      toActiveTab({
         type: MsgType.ERROR,
         reason: error.message,
         code: 0,
@@ -380,7 +552,7 @@ function onMessageAck(payload: MsgAck) {
     console.warn(WORKER_NAME, 'Unexpected Ack', payload.messageId);
   }
   // TODO handle properly in tab controller
-  broadcast(payload);
+  toActiveTab(payload);
 }
 
 function onErrorResponse(payload: ErrorMsg) {
