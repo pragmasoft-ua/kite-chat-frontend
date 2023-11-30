@@ -1,6 +1,5 @@
-import {TemplateResult, LitElement, html} from 'lit';
-import {state, queryAssignedElements} from 'lit/decorators.js';
-import {eventOptions} from 'lit/decorators.js';
+import {LitElement, PropertyValues} from 'lit';
+import {state, queryAssignedElements, query} from 'lit/decorators.js';
 import { vibrate } from '../utils';
 
 /**
@@ -11,8 +10,7 @@ type Constructor<T> = new (...args: any[]) => T;
 
 export declare class SelectionContainerInterface<T extends SelectableElement> {
     readonly selectedElements: Array<T>;
-    _unselect(): void;
-    _renderSelectionContainer(): TemplateResult<1>;
+    unselectAll(): void;
 }
 
 export type SelectableElement = HTMLElement & {
@@ -42,7 +40,10 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         }
 
         @queryAssignedElements({selector: '[selected]'})
-        _selectedSlotElements!: Array<U>;
+        private _selectedSlotElements!: Array<U>;
+
+        @query(`slot:not([name])`)
+        private _defaultSlot!: HTMLSlotElement;
 
         @state()
         selectedElements: Array<U> = [];
@@ -71,23 +72,35 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             }
         } */
 
-
-        _renderSelectionContainer() {
-            return html`<slot
-                @slotchange=${this.handleSlotchange} 
-                @mousedown=${this.startSelection}
-                @mouseup=${this.endSelection}
-                @mousemove=${this.ignoreSelection}
-                @touchstart=${this.startSelection}
-                @touchmove=${this.ignoreSelection}
-                @touchend=${this.endSelection}
-                @mouseover=${this.handleMouseOver}
-                @mouseout=${this.handleMouseOut}
-            ></slot>`;
+        override firstUpdated(changedProperties: PropertyValues<this>): void {
+            super.firstUpdated(changedProperties);
+            const slot = this._defaultSlot;
+            slot.addEventListener('slotchange', this.handleSlotchange.bind(this));
+            slot.addEventListener('mousedown', this.startSelection.bind(this));
+            slot.addEventListener('mouseup', this.endSelection.bind(this));
+            slot.addEventListener('mousemove', this.ignoreSelection.bind(this));
+            slot.addEventListener('touchstart', this.startSelection.bind(this), {passive: true});
+            slot.addEventListener('touchmove', this.ignoreSelection.bind(this), {passive: true});
+            slot.addEventListener('touchend', this.endSelection.bind(this));
+            slot.addEventListener('mouseover', this.handleMouseOver.bind(this));
+            slot.addEventListener('mouseout', this.handleMouseOut.bind(this));
         }
 
-        @eventOptions({passive: true})
-        private startSelection(e: MouseEvent) {
+        override disconnectedCallback() {
+            super.disconnectedCallback();
+            const slot = this._defaultSlot;
+            slot.removeEventListener('slotchange', this.handleSlotchange.bind(this));
+            slot.removeEventListener('mousedown', this.startSelection.bind(this));
+            slot.removeEventListener('mouseup', this.endSelection.bind(this));
+            slot.removeEventListener('mousemove', this.ignoreSelection.bind(this));
+            slot.removeEventListener('touchstart', this.startSelection.bind(this));
+            slot.removeEventListener('touchmove', this.ignoreSelection.bind(this));
+            slot.removeEventListener('touchend', this.endSelection.bind(this));
+            slot.removeEventListener('mouseover', this.handleMouseOver.bind(this));
+            slot.removeEventListener('mouseout', this.handleMouseOut.bind(this));
+        }
+
+        private startSelection(e: MouseEvent|TouchEvent) {
             if (!(e.target instanceof _selectedElementType)) {
                 return;
             }
@@ -118,7 +131,6 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             }
         }
 
-        @eventOptions({passive: true})
         private ignoreSelection() {
             if (this.pressTimer !== null) {
                 clearTimeout(this.pressTimer);
@@ -126,7 +138,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             }
         }
 
-        _unselect() {
+        unselectAll() {
             [...this.selectedElements].forEach((element) => {
                 element.unselect();
             });

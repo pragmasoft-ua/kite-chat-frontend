@@ -152,7 +152,7 @@ export class KiteChatElement extends
         })} selection:bg-primary-color outline-none fixed p-0 z-40 flex origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
       >
         <kite-chat-header
-          @kite-chat-header.cancel=${this._unselect}
+          @kite-chat-header.cancel=${this._cancel}
           @kite-chat-header.edit=${this._edit}
           @kite-chat-header.delete=${this._delete}
           @kite-chat-header.close=${this._toggleOpen}
@@ -167,11 +167,11 @@ export class KiteChatElement extends
           <aside 
             class="notification overflow-x-hidden overflow-y-auto z-40"
           >
-            ${this._renderNotificationContainer()}
+            <slot name="notification"></slot>
           </aside>
           <div class="flex flex-1 flex-col-reverse snap-y overflow-y-auto p-2">
             <div class="flex min-h-min flex-col flex-wrap items-start">
-              ${this._renderSelectionContainer()}
+              <slot></slot>
             </div>
           </div>
         </main>
@@ -211,7 +211,11 @@ export class KiteChatElement extends
 
   private _edit() {
     this.editMessage = this.selectedElements[0] ?? null;
-    this._unselect();
+    this.unselectAll();
+  }
+
+  private _cancel() {
+    this.unselectAll();
   }
 
   private _delete() {
