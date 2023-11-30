@@ -123,6 +123,7 @@ function onTabConnected(e: MessageEvent) {
   port.onmessage = onTabMessage;
   port.onmessageerror = console.error;
   tabPorts.add(port as unknown as KiteMessagePort);
+  onActiveTab(port as unknown as KiteMessagePort);
   console.debug(WORKER_NAME, 'tab connected', tabPorts.size);
   port.postMessage({
     type: MsgType.CONNECTED,
