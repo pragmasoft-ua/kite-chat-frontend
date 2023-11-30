@@ -66,4 +66,5 @@ export enum NotificationType {
 export type KiteNotification = {
   message?: string;
   type?: NotificationType;
+  duration?: number | 'auto';
 }

@@ -15,6 +15,7 @@ export declare class NotificationContainerInterface {
 }
 
 const NOTIFICATION_SLOT = 'notification';
+const DEFAULT_DURATION = 5000;
 
 export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
     superClass: T,
@@ -76,10 +77,11 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
         }
 
         appendNotification(notification: KiteNotification) {
-            const {message, type} = notification;
+            const {message, type, duration} = notification;
             const notificationElement = document.createElement('kite-toast-notification') as KiteNotificationElement;
             notificationElement.message = message;
             notificationElement.type = type;
+            notificationElement.duration = duration === "auto" ? DEFAULT_DURATION : duration;
 
             notificationElement.slot = NOTIFICATION_SLOT;
             this.appendChild(notificationElement);

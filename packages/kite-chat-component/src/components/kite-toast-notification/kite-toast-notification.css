@@ -3,7 +3,7 @@
 :host {
     background-color: theme('colors.gray.500');
     color: #fff;
-    @apply flex w-full text-white my-0.5 rounded shadow-md;
+    @apply flex w-full text-white my-0.5 rounded shadow-md overflow-hidden;
 }
 
 .wrapper {
@@ -54,14 +54,31 @@ span.toggle {
 }
 
 span.icon {
-    width: 20px;
-    height: 20px;
-    background: none;
-    @apply px-1.5 pb-4 pt-2;
+    max-width: 20px;
+    @apply flex flex-1 px-1.5 pb-4 pt-2 relative;
+}
+
+:host([duration][state="active"])  span.icon::after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background: rgba(255, 255, 255, 0.1);
+    animation: progressBar var(--kite-notification-duration, 5000ms) linear forwards;
+    @apply absolute bottom-0 left-0;
+}
+
+@keyframes progressBar {
+    to {
+        height: 0%;
+    }
 }
 
 span.icon::before {
+    width: 20px;
+    height: 20px;
     filter: invert(1);
+    z-index: 1;
 }
 
 :host([type="warning"]) span.icon::before {

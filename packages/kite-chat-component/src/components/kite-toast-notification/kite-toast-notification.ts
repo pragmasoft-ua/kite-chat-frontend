@@ -33,7 +33,7 @@ export class KiteNotificationElement extends LitElement {
   @property({ reflect: true, type: String }) type?: NotificationType = NotificationType.INFO;
   @property({ reflect: true, type: Boolean }) open? = false;
   @property({ reflect: true, type: String }) state?: NotificationState = NotificationState.NEW;
-  @property({ type: Number }) duration? = null;
+  @property({ reflect: true, type: Number }) duration?: number;
 
   @query('.message')
   private _messageElement!: HTMLElement;
@@ -42,9 +42,12 @@ export class KiteNotificationElement extends LitElement {
 
   override updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has('state') && this.state === NotificationState.ACTIVE) {
-      this.duration && setTimeout(() => {
-        this.dismiss();
-      }, this.duration);
+      if(this.duration) {
+        this.style.setProperty('--kite-notification-duration', `${this.duration}ms`);
+        setTimeout(() => {
+          this.dismiss();
+        }, this.duration);
+      }
     }
     
     if (changedProperties.has('message') && this._messageElement) {
