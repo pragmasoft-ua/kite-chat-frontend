@@ -6,7 +6,8 @@
  */
 
 import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
+import {classMap} from 'lit/directives/class-map.js';
 
 import kiteToastStyles from './kite-toast-notification.css?inline';
 
@@ -34,12 +35,27 @@ export class KiteNotificationElement extends LitElement {
   @property({ reflect: true, type: String }) state?: NotificationState = NotificationState.NEW;
   @property({ type: Number }) duration? = null;
 
+  @query('.message')
+  private _messageElement!: HTMLElement;
+  @state()
+  private _overflow = false;
+
   override updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has('state') && this.state === NotificationState.ACTIVE) {
       this.duration && setTimeout(() => {
         this.dismiss();
       }, this.duration);
     }
+    
+    if (changedProperties.has('message') && this._messageElement) {
+      setTimeout(() => {
+        this._overflow = this.isOverflow(this._messageElement);
+      }, 0);
+    }
+  }
+
+  private isOverflow(el: HTMLElement) {
+    return el.scrollHeight > el.clientHeight;
   }
 
   dismiss() {
@@ -53,7 +69,9 @@ export class KiteNotificationElement extends LitElement {
   override render() {
     return html`
       <span class="icon"></span>
-      <div class="wrapper">
+      <div class="wrapper ${classMap({
+          'overflow': this._overflow,
+        })}">
         <span class="toggle" @click=${this.toggle}>▶</span>
         <span class="message">${this.message}</span>
         <span class="close" @click=${this.dismiss}>✕</span>

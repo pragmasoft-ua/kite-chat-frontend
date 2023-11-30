@@ -11,15 +11,11 @@
 }
 
 span.message {
-    @apply px-2;
+    @apply px-2 flex-1;
 }
 
-span.message {
-    @apply flex-1 overflow-hidden line-clamp-1 h-6;
-}
-
-:host([open]) span.message {
-    @apply flex-1 overflow-hidden line-clamp-none h-fit;
+:host(:not([open])) span.message {
+    @apply overflow-hidden line-clamp-2;
 }
 
 span.close {
@@ -34,7 +30,11 @@ span.close:hover {
 }
 
 span.toggle {
-    @apply h-6 w-6 p-0 cursor-pointer leading-none select-none;
+    @apply h-6 w-6 p-0 cursor-pointer leading-none select-none hidden;
+}
+
+.overflow span.toggle {
+    display: block;
 }
 
 :host([open]) span.toggle {

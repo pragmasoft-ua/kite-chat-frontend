@@ -31,16 +31,15 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
                     
                     z-index: 1;
                     transition: all 300ms ease-in-out;
-                    transform: translateX(0%);
-                    opacity: 1;
+                    transform: translateX(-100%);
+                    opacity: 0;
                 }
                 slot[name="notification"]::slotted([state="viewed"]) {
                     transform: translateX(100%);
-                    opacity: 0;
                 }
-                slot[name="notification"]::slotted([state="new"]) {
-                    transform: translateX(-100%);
-                    opacity: 0;
+                slot[name="notification"]::slotted([state="active"]) {
+                    transform: translateX(0%);
+                    opacity: 1;
                 }
             `
         ]
