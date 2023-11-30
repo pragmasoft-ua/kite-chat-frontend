@@ -1,23 +1,23 @@
 @config "../tailwind.config.lit.cjs";
 
 textarea,
-main {
+main > * {
   scrollbar-width: thin;
 }
 
 textarea::-webkit-scrollbar,
-main::-webkit-scrollbar {
+main > *::-webkit-scrollbar {
   width: 3px;
   height: 3px;
 }
 
 textarea::-webkit-scrollbar-track,
-main::-webkit-scrollbar-track {
+main > *::-webkit-scrollbar-track {
   background: transparent;
 }
 
 textarea::-webkit-scrollbar-thumb,
-main::-webkit-scrollbar-thumb {
+main > *::-webkit-scrollbar-thumb {
   background-color: theme('colors.neutral.500');
 }
 

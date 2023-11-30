@@ -4,7 +4,7 @@
  * LGPLv3
  */
 
-import {LitElement, html, css, unsafeCSS} from 'lit';
+import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
 import {customElement, property, query, queryAssignedElements, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
@@ -15,10 +15,12 @@ import {
   isPlaintextMsg,
   KiteMsg,
   MsgStatus,
+  NotificationType,
 } from './kite-payload';
 import {
   SelectionContainerMixin,
   VisibilityMixin,
+  NotificationContainerMixin,
 } from './mixins';
 import {
   AnchorController, 
@@ -85,12 +87,14 @@ const CUSTOM_EVENT_INIT = {
  */
 @customElement('kite-chat')
 export class KiteChatElement extends 
-    VisibilityMixin(
-      SelectionContainerMixin(
-          LitElement, 
-          KiteMsgElement
-        ), 
-      {show: 'kite-chat.show', hide: 'kite-chat.hide'}
+    NotificationContainerMixin(
+      VisibilityMixin(
+        SelectionContainerMixin(
+            LitElement, 
+            KiteMsgElement
+          ), 
+        {show: 'kite-chat.show', hide: 'kite-chat.hide'}
+      )
     ) {
   @property()
   heading = '🪁Kite chat';
@@ -154,10 +158,17 @@ export class KiteChatElement extends
         >
         </kite-chat-header>
         <main
-          class="flex flex-1 snap-y flex-col-reverse overflow-y-auto bg-slate-300/50 p-2"
+          class="relative flex flex-1 overflow-hidden flex-col bg-slate-300/50"
         >
-          <div class="flex min-h-min flex-col flex-wrap items-start">
-            ${this._renderSelectionContainer()}
+          <aside 
+            class="notification overflow-x-hidden overflow-y-auto z-40"
+          >
+            ${this._renderNotificationContainer()}
+          </aside>
+          <div class="flex flex-1 flex-col-reverse snap-y overflow-y-auto p-2">
+            <div class="flex min-h-min flex-col flex-wrap items-start">
+              ${this._renderSelectionContainer()}
+            </div>
           </div>
         </main>
         <kite-chat-footer
@@ -200,7 +211,6 @@ export class KiteChatElement extends
   }
 
   private _delete() {
-    //TODO api call
     this.selectedElements.forEach((msgElement) => {
       msgElement.remove();
     });
@@ -282,7 +292,7 @@ export class KiteChatElement extends
     this.show();
   }
 
-  static override styles = [sharedStyles, componentStyles];
+  static override styles = [...[super.styles?? []], sharedStyles, componentStyles];
 }
 
 export {KiteChatFooterElement, KiteChatHeaderElement};

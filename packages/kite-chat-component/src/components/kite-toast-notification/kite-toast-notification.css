@@ -1,0 +1,81 @@
+@config "../../../tailwind.config.lit.cjs";
+
+:host {
+    background-color: theme('colors.gray.500');
+    color: #fff;
+    @apply flex w-full text-white my-0.5 rounded shadow-md;
+}
+
+.wrapper {
+    @apply flex flex-1 px-2 py-2 bg-white bg-opacity-20;
+}
+
+span.message {
+    @apply px-2;
+}
+
+span.message {
+    @apply flex-1 overflow-hidden line-clamp-1 h-6;
+}
+
+:host([open]) span.message {
+    @apply flex-1 overflow-hidden line-clamp-none h-fit;
+}
+
+span.close {
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.8em;
+}
+
+span.close:hover {
+    color: #ccc;
+}
+
+span.toggle {
+    @apply h-6 w-6 p-0 cursor-pointer leading-none select-none;
+}
+
+:host([open]) span.toggle {
+    transform: rotate(90deg) translateY(10%);
+}
+
+:host([type="success"]) {
+    background-color: theme('colors.green.700');
+}
+
+:host([type="warning"]) {
+    background-color: theme('colors.yellow.500');
+}
+
+:host([type="error"]) {
+    background-color: theme('colors.red.500');
+}
+
+span.icon {
+    width: 20px;
+    height: 20px;
+    background: none;
+    @apply px-1.5 pb-4 pt-2;
+}
+
+span.icon::before {
+    filter: invert(1);
+}
+
+:host([type="warning"]) span.icon::before {
+    content: url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-alert-triangle' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M12 9v4' /><path d='M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z' /><path d='M12 16h.01' /></svg>");
+}
+
+:host([type="info"]) span.icon::before {
+    content: url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-info-circle' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0' /><path d='M12 9h.01' /><path d='M11 12h1v4h1' /></svg>");
+}
+
+:host([type="success"]) span.icon::before {
+    content: url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-mood-check' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M20.925 13.163a8.998 8.998 0 0 0 -8.925 -10.163a9 9 0 0 0 0 18' /><path d='M9 10h.01' /><path d='M15 10h.01' /><path d='M9.5 15c.658 .64 1.56 1 2.5 1s1.842 -.36 2.5 -1' /><path d='M15 19l2 2l4 -4' /></svg>");
+}
+
+:host([type="error"]) span.icon::before {
+    content: url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-bug' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M9 9v-1a3 3 0 0 1 6 0v1' /><path d='M8 9h8a6 6 0 0 1 1 3v3a5 5 0 0 1 -10 0v-3a6 6 0 0 1 1 -3' /><path d='M3 13l4 0' /><path d='M17 13l4 0' /><path d='M12 20l0 -6' /><path d='M4 19l3.35 -2' /><path d='M20 19l-3.35 -2' /><path d='M4 7l3.75 2.4' /><path d='M20 7l-3.75 2.4' /></svg>");
+}

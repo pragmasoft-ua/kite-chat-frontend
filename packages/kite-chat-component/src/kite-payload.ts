@@ -29,3 +29,15 @@ export function isPlaintextMsg(msg: KiteMsg): msg is PlaintextMsg {
 export function isFileMsg(msg: KiteMsg): msg is FileMsg {
   return (msg as FileMsg).file !== undefined;
 }
+
+export enum NotificationType {
+  INFO = 'info',
+  SUCCESS = 'success',
+  WARNING = 'warning',
+  ERROR = 'error',
+}
+
+export type KiteNotification = {
+  message?: string;
+  type?: NotificationType;
+}
