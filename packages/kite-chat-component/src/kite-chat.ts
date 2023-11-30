@@ -80,6 +80,7 @@ const CUSTOM_EVENT_INIT = {
  * @fires {CustomEvent} kite-chat.show - Chat window opens
  * @fires {CustomEvent} kite-chat.hide - Chat window closes
  * @fires {CustomEvent} kite-chat.send - Outgoing message is sent
+ * @fires {CustomEvent} kite-chat.delete - Chat message is deleted
  * @attr {Boolean} open - displays chat window if true or only toggle button if false or missing
  * @attr {"light" | "dark"} theme - defines kite chat theme, using prefers-color-scheme by default
  * @attr {string} heading - Chat dialog heading
