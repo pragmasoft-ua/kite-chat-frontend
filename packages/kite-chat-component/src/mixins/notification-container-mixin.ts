@@ -65,7 +65,9 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
                     }
                 }}
                 @slotchange=${() => {
-                    const current = this._notificationSlotElements.toReversed()[0];
+                    const current = this._notificationSlotElements
+                        .filter(el => el.state = NotificationState.NEW)
+                        .toReversed()[0];
                     current && setTimeout(() => {
                         current.state = NotificationState.ACTIVE;
                     }, 0);

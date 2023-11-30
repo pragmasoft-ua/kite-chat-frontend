@@ -22,6 +22,7 @@ import {
   isPlaintextMsg,
   MsgStatus,
   isFileMsg,
+  NotificationType,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 import KiteWorker from './kite-worker?sharedworker&inline';
@@ -229,7 +230,7 @@ export class KiteChat {
         return null;
       }
       element = new KiteChatElement();
-      element.open = this.opts.open as boolean;
+      this.opts.open ? element.show() : element.hide();
       document.body.appendChild(element);
     }
     element.addEventListener(
@@ -330,7 +331,7 @@ export class KiteChat {
       msgElement.status = MsgStatus.failed;
     }
     const errorMessage = e.description || 'Unknown error.';
-    this.element?.appendMsg({text: `⛔️${errorMessage}`, status: MsgStatus.unknown});
+    this.element?.appendNotification({message: errorMessage, type: NotificationType.ERROR});
     this.update(e.messageId, {
       status: MsgStatus.failed,
     } as ContentMsg);
