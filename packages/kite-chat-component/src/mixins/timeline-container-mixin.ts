@@ -1,5 +1,5 @@
 import {LitElement, PropertyValues} from 'lit';
-import {queryAssignedElements} from 'lit/decorators.js';
+import {queryAssignedElements, query} from 'lit/decorators.js';
 import {KiteDateDivider} from '../components';
 import {formatDate} from '../utils';
 
@@ -34,35 +34,45 @@ export const TimelineContainerMixin = <T extends Constructor<LitElement>>(
         }
 
         @queryAssignedElements()
-        private _defaultSlotElements!: Array<TimestampElement>;
+        private _defaultSlotElements!: Array<TimestampElement|KiteDateDivider>;
 
-        // To use with :host-context(.multiselect)
-        /*  override updated(changedProperties: PropertyValues<this>): void {
-            super.updated(changedProperties);
+        @query(`slot:not([name])`)
+        private _defaultSlot!: HTMLSlotElement;
 
-            if (changedProperties.has('selectedElements')) {
-                this.classList.toggle('multiselect', this.selectedElements.length > 0);
-            }
-        } */
-
-        override async firstUpdated(changedProperties: PropertyValues<this>) {
-            super.firstUpdated(changedProperties);
-            let currentDate: string | null = null;
-            for (const el of this._defaultSlotElements) {
-                const formatted = formatDate(new Date(el.timestamp));
-                
+        private appendDivider() {
+            const lastDivider = this._defaultSlotElements.findLastIndex((el) => el instanceof KiteDateDivider);
+            const toUpdate = [...this._defaultSlotElements].splice(lastDivider + 1) as Array<TimestampElement>;
+            let currentDate: string | null = (this._defaultSlotElements[lastDivider] as KiteDateDivider|undefined)?.date ?? null;
+            for(const el of toUpdate) {
+                const date = el.timestamp ? new Date(el.timestamp) : new Date();
+                const formatted = formatDate(date);
+        
                 if (currentDate !== formatted) {
                     currentDate = formatted;
                     const divider = document.createElement('kite-date-divider') as KiteDateDivider;
                     divider.date = currentDate ?? '';
                     this.insertBefore(divider, el);
+                    return;
                 }
             }
         }
 
-        override disconnectedCallback() {
-            super.disconnectedCallback();
+        private handleSlotchange() {
+            this.appendDivider();
         }
+
+        override firstUpdated(changedProperties: PropertyValues<this>): void {
+            super.firstUpdated(changedProperties);
+            const slot = this._defaultSlot;
+            slot.addEventListener('slotchange', this.handleSlotchange.bind(this));
+        }
+
+        override disconnectedCallback(): void {
+            super.disconnectedCallback();
+            const slot = this._defaultSlot;
+            slot.removeEventListener('slotchange', this.handleSlotchange.bind(this));
+        }
+
     }
 
     return TimelineContainerElement as Constructor<TimelineContainerInterface> & T;
