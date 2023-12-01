@@ -57,20 +57,20 @@ export const TimelineContainerMixin = <T extends Constructor<LitElement>>(
             }
         }
 
-        private handleSlotchange() {
+        private handleTimelineSlotchange() {
             this.appendDivider();
         }
 
         override firstUpdated(changedProperties: PropertyValues<this>): void {
             super.firstUpdated(changedProperties);
             const slot = this._defaultSlot;
-            slot.addEventListener('slotchange', this.handleSlotchange.bind(this));
+            slot.addEventListener('slotchange', this.handleTimelineSlotchange.bind(this));
         }
 
         override disconnectedCallback(): void {
             super.disconnectedCallback();
             const slot = this._defaultSlot;
-            slot.removeEventListener('slotchange', this.handleSlotchange.bind(this));
+            slot.removeEventListener('slotchange', this.handleTimelineSlotchange.bind(this));
         }
 
     }

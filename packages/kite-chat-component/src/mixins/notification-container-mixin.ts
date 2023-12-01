@@ -59,7 +59,7 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
         @query(`slot[name="${slotName}"]`)
         private _notificationSlot!: HTMLSlotElement;
 
-        private handleSlotchange() {
+        private updateNotifications() {
             const current = this._notificationSlotElements
                 .filter(el => el.state = NotificationState.NEW)
                 .toReversed()[0];
@@ -68,7 +68,11 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
             }, 0);
         }
 
-        private handleTransitionend(e: TransitionEvent) {
+        private handleNotificationSlotchange() {
+            this.updateNotifications();
+        }
+
+        private handleNotificationTransitionend(e: TransitionEvent) {
             const current = (e.target as KiteNotificationElement);
             if(current?.state === NotificationState.VIEWED) {
                 current.remove()
@@ -78,15 +82,15 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
         override firstUpdated(changedProperties: PropertyValues<this>): void {
             super.firstUpdated(changedProperties);
             const slot = this._notificationSlot;
-            slot.addEventListener('slotchange', this.handleSlotchange.bind(this));
-            slot.addEventListener('transitionend', this.handleTransitionend.bind(this));
+            slot.addEventListener('slotchange', this.handleNotificationSlotchange.bind(this));
+            slot.addEventListener('transitionend', this.handleNotificationTransitionend.bind(this));
         }
 
         override disconnectedCallback(): void {
             super.disconnectedCallback();
             const slot = this._notificationSlot;
-            slot.removeEventListener('slotchange', this.handleSlotchange.bind(this));
-            slot.removeEventListener('transitionend', this.handleTransitionend.bind(this));
+            slot.removeEventListener('slotchange', this.handleNotificationSlotchange.bind(this));
+            slot.removeEventListener('transitionend', this.handleNotificationTransitionend.bind(this));
         }
 
         appendNotification(notification: KiteNotification) {
@@ -94,7 +98,9 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
             const notificationElement = document.createElement('kite-toast-notification') as KiteNotificationElement;
             notificationElement.message = message;
             notificationElement.type = type;
-            notificationElement.duration = duration === "auto" ? DEFAULT_DURATION : duration;
+            if(duration) {
+                notificationElement.duration = duration === "auto" ? DEFAULT_DURATION : duration;
+            }
 
             notificationElement.slot = slotName;
             this.appendChild(notificationElement);

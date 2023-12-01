@@ -59,7 +59,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             }
         }
 
-        private handleSlotchange() {
+        private handleSelectionSlotchange() {
             this.selectedElements = this.selectedElements.filter(el => this._selectedSlotElements.includes(el));
         }
 
@@ -75,32 +75,32 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         override firstUpdated(changedProperties: PropertyValues<this>): void {
             super.firstUpdated(changedProperties);
             const slot = this._defaultSlot;
-            slot.addEventListener('slotchange', this.handleSlotchange.bind(this));
-            slot.addEventListener('mousedown', this.startSelection.bind(this));
-            slot.addEventListener('mouseup', this.endSelection.bind(this));
-            slot.addEventListener('mousemove', this.ignoreSelection.bind(this));
-            slot.addEventListener('touchstart', this.startSelection.bind(this), {passive: true});
-            slot.addEventListener('touchmove', this.ignoreSelection.bind(this), {passive: true});
-            slot.addEventListener('touchend', this.endSelection.bind(this));
-            slot.addEventListener('mouseover', this.handleMouseOver.bind(this));
-            slot.addEventListener('mouseout', this.handleMouseOut.bind(this));
+            slot.addEventListener('slotchange', this.handleSelectionSlotchange.bind(this));
+            slot.addEventListener('mousedown', this.handleSelectionStart.bind(this));
+            slot.addEventListener('mouseup', this.handleSelectionEnd.bind(this));
+            slot.addEventListener('mousemove', this.handleIgnoreSelection.bind(this));
+            slot.addEventListener('touchstart', this.handleSelectionStart.bind(this), { passive: true });
+            slot.addEventListener('touchmove', this.handleIgnoreSelection.bind(this), { passive: true });
+            slot.addEventListener('touchend', this.handleSelectionEnd.bind(this));
+            slot.addEventListener('mouseover', this.handleSelectionMouseOver.bind(this));
+            slot.addEventListener('mouseout', this.handleSelectionMouseOut.bind(this));
         }
 
         override disconnectedCallback() {
             super.disconnectedCallback();
             const slot = this._defaultSlot;
-            slot.removeEventListener('slotchange', this.handleSlotchange.bind(this));
-            slot.removeEventListener('mousedown', this.startSelection.bind(this));
-            slot.removeEventListener('mouseup', this.endSelection.bind(this));
-            slot.removeEventListener('mousemove', this.ignoreSelection.bind(this));
-            slot.removeEventListener('touchstart', this.startSelection.bind(this));
-            slot.removeEventListener('touchmove', this.ignoreSelection.bind(this));
-            slot.removeEventListener('touchend', this.endSelection.bind(this));
-            slot.removeEventListener('mouseover', this.handleMouseOver.bind(this));
-            slot.removeEventListener('mouseout', this.handleMouseOut.bind(this));
+            slot.removeEventListener('slotchange', this.handleSelectionSlotchange.bind(this));
+            slot.removeEventListener('mousedown', this.handleSelectionStart.bind(this));
+            slot.removeEventListener('mouseup', this.handleSelectionEnd.bind(this));
+            slot.removeEventListener('mousemove', this.handleIgnoreSelection.bind(this));
+            slot.removeEventListener('touchstart', this.handleSelectionStart.bind(this));
+            slot.removeEventListener('touchmove', this.handleIgnoreSelection.bind(this));
+            slot.removeEventListener('touchend', this.handleSelectionEnd.bind(this));
+            slot.removeEventListener('mouseover', this.handleSelectionMouseOver.bind(this));
+            slot.removeEventListener('mouseout', this.handleSelectionMouseOut.bind(this));
         }
 
-        private startSelection(e: MouseEvent|TouchEvent) {
+        private handleSelectionStart(e: MouseEvent|TouchEvent) {
             if (!(e.target instanceof _selectedElementType)) {
                 return;
             }
@@ -114,7 +114,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             this.ignored = false;
         }
     
-        private endSelection(e: MouseEvent|TouchEvent) {
+        private handleSelectionEnd(e: MouseEvent|TouchEvent) {
             if (e instanceof TouchEvent) {
                 e.cancelable && e.preventDefault();
             }
@@ -131,7 +131,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             }
         }
 
-        private ignoreSelection() {
+        private handleIgnoreSelection() {
             if (this.pressTimer !== null) {
                 clearTimeout(this.pressTimer);
                 this.ignored = true;
@@ -146,7 +146,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         }
 
         // GET RID OF IT WHEN :host-context() supported
-        private handleMouseOver(e: MouseEvent) {
+        private handleSelectionMouseOver(e: MouseEvent) {
             if (!(e.target instanceof _selectedElementType)) {
                 return;
             }
@@ -154,7 +154,7 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             selectableElement.multiselect = this._selectedSlotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
         }
 
-        private handleMouseOut(e: MouseEvent) {
+        private handleSelectionMouseOut(e: MouseEvent) {
             if (!(e.target instanceof _selectedElementType)) {
                 return;
             }
