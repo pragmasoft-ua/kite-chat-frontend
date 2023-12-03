@@ -13,18 +13,12 @@ const CUSTOM_EVENT_INIT = {
   cancelable: true,
 };
 
-type ContextMenuPosition = {
-  x: number;
-  y: number;
-}
-
 export type ContextMenuAction = {
   label?: string;
   value: string;
 }
 
 export type ContextMenuClick = {
-  target?: HTMLElement;
   action: ContextMenuAction;
 }
 
@@ -33,24 +27,9 @@ export class KiteContextMenuElement extends
   VisibilityMixin(
     LitElement, {show: 'kite-context-menu.show', hide: 'kite-context-menu.hide'}
   ) {
-  override _visibilityCallback() {
-    super._visibilityCallback();
-    if (this.open) {
-      this.showPopover();
-    } else {
-      this.hidePopover();
-    }
-  }
-
-  private _targetElement?: HTMLElement; 
 
   @state()
   private _actions: ContextMenuAction[] = []; 
-
-  constructor() {
-    super();
-    this.popover = "manual";
-  }
 
   override render() {
     return html`<ul @click=${this.handleClick}>${this._actions.map(({label, value}) => (
@@ -64,7 +43,6 @@ export class KiteContextMenuElement extends
     }
 
     const detail = {
-      target: this._targetElement,
       action: {
         label: e.target.innerText,
         value: e.target.id,
@@ -77,17 +55,8 @@ export class KiteContextMenuElement extends
     this.hide();
   }
 
-  setPosition(pos: ContextMenuPosition) {
-    this.style.left = `${pos.x}px`;
-    this.style.top = `${pos.y}px`;
-  }
-
-  init(event: MouseEvent, actions: ContextMenuAction[]) {
-    const {x, y} = event;
-    this._targetElement = event.target as HTMLElement;
+  setActions(actions: ContextMenuAction[]) {
     this._actions = actions;
-    this.setPosition({x, y});
-    this.show();
   }
 
   private handleOuterClick(e: MouseEvent) {
@@ -98,12 +67,12 @@ export class KiteContextMenuElement extends
 
   override connectedCallback(): void {
     super.connectedCallback();
-    document.addEventListener('click', this.handleOuterClick.bind(this));
+    document.addEventListener('mousedown', this.handleOuterClick.bind(this));
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    document.removeEventListener('click', this.handleOuterClick.bind(this));
+    document.removeEventListener('mousedown', this.handleOuterClick.bind(this));
   }
 
   static override styles = componentStyles;

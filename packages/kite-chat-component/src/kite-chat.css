@@ -67,30 +67,54 @@ main > *::-webkit-scrollbar-thumb {
 }
 
 .kite-dialog {
+  --gap: var(--kite-gap);
   width: var(--kite-dialog-width);
   height: var(--kite-dialog-height);
   right: auto;
   bottom: auto;
 }
 
+kite-context-menu {
+  --gap: 2px;
+  --element-width: var(--kite-context-menu-width);
+  --element-height: var(--kite-context-menu-height);
+}
+
+:host(:not([theme="dark"])) kite-context-menu {
+  background-color: theme('colors.neutral.300');
+  border: 1px solid white;
+}
+
+:host([theme="dark"]) kite-context-menu {
+  background-color: theme('colors.neutral.800');
+  border: 1px solid black;
+}
+
+@media(prefers-color-scheme: dark) {
+  :host(:not([theme="light"])) kite-context-menu {
+    background-color: theme('colors.neutral.800');
+    border: 1px solid black;
+  }
+}
+
 .fallback-1 {
-  left: calc(var(--custom-anchor-right) - var(--kite-dialog-width));
-  top: calc(var(--custom-anchor-top) - var(--kite-dialog-height) - var(--kite-gap));
+  left: calc(var(--anchor-right) - var(--element-width));
+  top: calc(var(--anchor-top) - var(--element-height) - var(--gap));
 }
 
 .fallback-2 {
-  left: calc(var(--custom-anchor-right) - var(--kite-dialog-width));
-  top: calc(var(--custom-anchor-bottom) + var(--kite-gap));
+  left: calc(var(--anchor-right) - var(--element-width));
+  top: calc(var(--anchor-bottom) + var(--gap));
 }
 
 .fallback-3 {
-  left: var(--custom-anchor-left);
-  top: calc(var(--custom-anchor-top) - var(--kite-dialog-height) - var(--kite-gap));
+  left: var(--anchor-left);
+  top: calc(var(--anchor-top) - var(--element-height) - var(--gap));
 }
 
 .fallback-4 {
-  left: var(--custom-anchor-left);
-  top: calc(var(--custom-anchor-bottom) + var(--kite-gap));
+  left: var(--anchor-left);
+  top: calc(var(--anchor-bottom) + var(--gap));
 }
 
 span.edit-message {
@@ -120,6 +144,7 @@ span.edit-message_file::after {
   }
 
   .kite-dialog[popover] {
+    --gap: var(--kite-gap);
     anchor-default: --toggle;
     position-fallback: --flip;
   }
@@ -136,6 +161,17 @@ span.edit-message_file::after {
       anchor-default: initial;
       position-fallback: initial;
     }
+  }
+}
+
+@supports(anchor-name: --pointer-anchor) {
+  kite-pointer-anchor {
+    anchor-name: --pointer-anchor;
+  }
+
+  kite-context-menu {
+    anchor-default: --pointer-anchor;
+    position-fallback: --flip;
   }
 }
 

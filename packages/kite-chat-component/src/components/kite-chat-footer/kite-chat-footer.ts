@@ -40,6 +40,7 @@ export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
  * KiteChat component footer
  *
  * @fires {CustomEvent} kite-chat-footer.change
+ * @fires {CustomEvent} kite-chat-footer.cancel
  */
 @customElement('kite-chat-footer')
 export class KiteChatFooterElement extends LitElement {
@@ -197,6 +198,7 @@ export class KiteChatFooterElement extends LitElement {
       this.textarea.blur();
     }
     this.editMessage = null;
+    this.dispatchEvent(new CustomEvent('kite-chat-footer.cancel'));
   }
 
   override render() {

@@ -37,6 +37,7 @@ import {
   KiteContextMenuElement,
   ContextMenuClick,
   ContextMenuAction,
+  KitePointerAnchorElement,
 } from './components';
 import {KiteMsgElement} from './kite-msg';
 
@@ -46,26 +47,26 @@ const componentStyles = css`
   ${unsafeCSS(kiteChatStyles)}
   @position-fallback --flip {
       @try {
-        bottom: calc(anchor(top) + var(--kite-gap));
+        bottom: calc(anchor(top) + var(--gap));
         top: auto;
         left: auto;
         right: anchor(right);
       }
       @try {
         bottom: auto;
-        top: calc(anchor(bottom) + var(--kite-gap));
+        top: calc(anchor(bottom) + var(--gap));
         left: auto;
         right: anchor(right);
       }
       @try {
-        bottom: calc(anchor(top) + var(--kite-gap));
+        bottom: calc(anchor(top) + var(--gap));
         top: auto;
         left: anchor(left);
         right: auto;
       }
       @try {
         bottom: auto;
-        top: calc(anchor(bottom) + var(--kite-gap));
+        top: calc(anchor(bottom) + var(--gap));
         left: anchor(left);
         right: auto;
       }
@@ -140,6 +141,9 @@ export class KiteChatElement extends
   @query('#kite-dialog')
   private dialog!: HTMLElement;
 
+  @query('kite-pointer-anchor')
+  private pointerAnchor!: KitePointerAnchorElement;
+
   @query('kite-context-menu')
   private contextMenu!: KiteContextMenuElement;
 
@@ -161,19 +165,27 @@ export class KiteChatElement extends
 
   protected anchorController!: AnchorController;
 
+  protected pointerAnchorController!: AnchorController;
+
   protected draggableController = new DraggableController(this, "#kite-toggle", this._toggleOpen.bind(this));
 
   constructor() {
     super();
 
+    const flipFallbackClasses = ['fallback-1', 'fallback-2', 'fallback-3', 'fallback-4'];
+
     if (!CSS.supports('anchor-name', '--toggle')) {
         // The anchor-name property is not supported
-        this.anchorController = new AnchorController(this, 
-          '--custom-anchor',
-          ['fallback-1', 'fallback-2', 'fallback-3', 'fallback-4'],
-          '.kite-toggle', '.kite-dialog'
+        this.anchorController = new AnchorController(this,
+          flipFallbackClasses, '.kite-toggle', '.kite-dialog'
         );
     }
+    if (!CSS.supports('anchor-name', '--toggle')) {
+      // The anchor-name property is not supported
+      this.anchorController = new AnchorController(this,
+        flipFallbackClasses, 'kite-pointer-anchor', 'kite-context-menu'
+      );
+  }
   }
 
   override render() {
@@ -193,9 +205,7 @@ export class KiteChatElement extends
             this.unselectAll();
           }}
           @kite-chat-header.edit=${() => {
-            if(this.selectedElements[0]) {
-              this._edit(this.selectedElements[0]);
-            }
+            this._edit(this.selectedElements[0]);
           }}
           @kite-chat-header.delete=${() => {
             this.selectedElements.forEach((msgElement) => {
@@ -228,9 +238,12 @@ export class KiteChatElement extends
         </main>
         <kite-chat-footer
           @kite-chat-footer.change=${this._handleSend}
+          @kite-chat-footer.cancel=${() => this._edit(null)}
           .editMessage=${this.editMessage}
         >
         </kite-chat-footer>
+        <kite-pointer-anchor>
+        </kite-pointer-anchor>
         <kite-context-menu @kite-context-menu.click=${this._handleMenuClick}>
         </kite-context-menu>
       </dialog>
@@ -262,7 +275,7 @@ export class KiteChatElement extends
     `;
   }
 
-  private _edit(msgElement: KiteMsgElement) {
+  private _edit(msgElement: KiteMsgElement|null) {
     this.editMessage = msgElement;
     this.unselectAll();
   }
@@ -360,11 +373,13 @@ export class KiteChatElement extends
       ...(this.getFile(event.target) ? [MsgActionType.DOWNLOAD] : []),
       ...(event.target.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
     ]);
-    this.contextMenu.init(event, actions);
+    this.pointerAnchor.init(event);
+    this.contextMenu.setActions(actions);
+    this.contextMenu.show();
   }
 
   private _handleMenuClick(event: CustomEvent<ContextMenuClick>) {
-    const msgElement = event.detail.target as KiteMsgElement;
+    const msgElement = this.pointerAnchor.targetElement as KiteMsgElement;
     const action = event.detail.action;
 
     switch(action.value) {
