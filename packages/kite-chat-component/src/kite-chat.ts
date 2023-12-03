@@ -33,7 +33,10 @@ import {
 import {
   KiteChatFooterElement, 
   KiteChatFooterChange,
-  KiteChatHeaderElement
+  KiteChatHeaderElement,
+  KiteContextMenuElement,
+  ContextMenuClick,
+  ContextMenuAction,
 } from './components';
 import {KiteMsgElement} from './kite-msg';
 
@@ -75,6 +78,27 @@ const CUSTOM_EVENT_INIT = {
   cancelable: true,
 };
 
+enum MsgActionType {
+  SELECT = 'select',
+  DELETE = 'delete',
+  UNSELECT = 'unselect',
+  EDIT = 'edit',
+}
+
+const MESSAGE_ACTION_LABEL = {
+  [MsgActionType.SELECT]: 'Select message',
+  [MsgActionType.DELETE]: 'Delete message',
+  [MsgActionType.UNSELECT]: 'Unselect message',
+  [MsgActionType.EDIT]: 'Edit message',
+}
+
+function getMessageActions(actions: MsgActionType[]): ContextMenuAction[] {
+  return actions.map((action) => ({
+    label: MESSAGE_ACTION_LABEL[action],
+    value: action,
+  }));
+}
+
 /**
  * KiteChat is an embeddable livechat component
  *
@@ -112,14 +136,16 @@ export class KiteChatElement extends
   @query('#kite-dialog')
   private dialog!: HTMLElement;
 
+  @query('kite-context-menu')
+  private contextMenu!: KiteContextMenuElement;
+
   @queryAssignedElements({selector: '[status]'})
   private sentMessageElements!: NodeListOf<KiteMsgElement>;
 
-  private get editable() {
-    return this.selectedElements.length === 1 
-      && [...this.sentMessageElements].find((msgElement) => (
-        this.selectedElements[0].isEqualNode(msgElement)
-      ));
+  private isSent(currentMsg: KiteMsgElement): boolean {
+    return !![...this.sentMessageElements].find((msgElement) => (
+      currentMsg.isEqualNode(msgElement)
+    ));
   }
 
   @state()
@@ -159,7 +185,7 @@ export class KiteChatElement extends
           @kite-chat-header.edit=${this._edit}
           @kite-chat-header.delete=${this._delete}
           @kite-chat-header.close=${this._toggleOpen}
-          .editable=${!!this.editable}
+          .editable=${this.selectedElements.length === 1 && this.isSent(this.selectedElements[0])}
           .selectedElementsCount=${this.selectedElements.length}
           .heading=${this.heading}
         >
@@ -172,7 +198,11 @@ export class KiteChatElement extends
           >
             <slot name="notification"></slot>
           </aside>
-          <div class="flex flex-1 flex-col-reverse snap-y overflow-y-auto p-2">
+          <div 
+            @contextmenu=${this._contextMenu} 
+            @scroll=${() => this.contextMenu.hide()}
+            class="flex flex-1 flex-col-reverse snap-y overflow-y-auto p-2 relative"
+          >
             <div class="flex min-h-min flex-col flex-wrap items-start">
               <slot></slot>
             </div>
@@ -183,6 +213,8 @@ export class KiteChatElement extends
           .editMessage=${this.editMessage}
         >
         </kite-chat-footer>
+        <kite-context-menu @kite-context-menu.click=${this._handleMenuClick}>
+        </kite-context-menu>
       </dialog>
     `;
   }
@@ -305,6 +337,45 @@ export class KiteChatElement extends
     return !e.defaultPrevented;
   }
 
+  private _contextMenu(event: PointerEvent) {
+    event.preventDefault();
+    if(!(event.target instanceof KiteMsgElement)) {
+      return;
+    }
+    const actions = getMessageActions([
+      MsgActionType.DELETE,
+      ...(this.isSent(event.target) ? [MsgActionType.EDIT] : []),
+      ...(event.target.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
+    ]);
+    this.contextMenu.init(event, actions);
+  }
+
+  private _handleMenuClick(event: CustomEvent<ContextMenuClick>) {
+    const msgElement = event.detail.target as KiteMsgElement;
+    const action = event.detail.action;
+
+    switch(action.value) {
+      case MsgActionType.SELECT:
+        this.select(msgElement);
+        break;
+      case MsgActionType.UNSELECT:
+        this.unselect(msgElement);
+        break;
+      case MsgActionType.DELETE:
+        if (this._dispatchMsg({
+          type: MsgOperation.delete, 
+          detail: {messageId: msgElement.messageId}
+        })) {
+          this.removeMsg(msgElement.messageId);
+        }
+        break;
+      case MsgActionType.EDIT:
+        this.editMessage = msgElement;
+        this.unselectAll();
+        break;
+    }
+  }
+
   appendMsg(msg: KiteMsg) {
     const {messageId = randomStringId(), timestamp = new Date(), status, edited} = msg;
     const msgElement = document.createElement('kite-msg');
@@ -337,4 +408,4 @@ export class KiteChatElement extends
   static override styles = [...[super.styles?? []], sharedStyles, componentStyles];
 }
 
-export {KiteChatFooterElement, KiteChatHeaderElement};
+export {KiteChatFooterElement, KiteChatHeaderElement, KiteContextMenuElement};

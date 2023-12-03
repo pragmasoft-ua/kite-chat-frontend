@@ -10,6 +10,8 @@ type Constructor<T> = new (...args: any[]) => T;
 
 export declare class SelectionContainerInterface<T extends SelectableElement> {
     readonly selectedElements: Array<T>;
+    select(el: T): void;
+    unselect(el: T): void;
     unselectAll(): void;
 }
 
@@ -21,6 +23,7 @@ export type SelectableElement = HTMLElement & {
 }
 
 const SELECTION_THRESHOLD = 500;
+const PRIMARY_BUTTON = 0;
 
 export const SelectionContainerMixin = <T extends Constructor<LitElement>, U extends SelectableElement>(
     superClass: T,
@@ -101,6 +104,9 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         }
 
         private handleSelectionStart(e: MouseEvent|TouchEvent) {
+            if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) {
+                return;
+            }
             if (!(e.target instanceof _selectedElementType)) {
                 return;
             }
@@ -115,6 +121,9 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         }
     
         private handleSelectionEnd(e: MouseEvent|TouchEvent) {
+            if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) {
+                return;
+            }
             if (e instanceof TouchEvent) {
                 e.cancelable && e.preventDefault();
             }
@@ -136,6 +145,22 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
                 clearTimeout(this.pressTimer);
                 this.ignored = true;
             }
+        }
+
+        unselect(el: HTMLElement) {
+            if (!(el instanceof _selectedElementType)) {
+                return;
+            }
+            el.unselect();
+            this.onSelected(el);
+        }
+
+        select(el: HTMLElement) {
+            if (!(el instanceof _selectedElementType)) {
+                return;
+            }
+            el.select();
+            this.onSelected(el);
         }
 
         unselectAll() {

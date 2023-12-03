@@ -115,24 +115,24 @@ span.edit-message_file::after {
 }
 
 @supports(anchor-name: --toggle) {
-  [popovertarget] {
+  .kite-toggle[popovertarget] {
     anchor-name: --toggle;
   }
 
-  [popover] {
+  .kite-dialog[popover] {
     anchor-default: --toggle;
     position-fallback: --flip;
   }
 
   @media (max-width: 22rem) {
-    [popover] {
+    .kite-dialog[popover] {
       anchor-default: initial;
       position-fallback: initial;
     }
   }
 
   @media (max-height: 35rem) {
-    [popover] {
+    .kite-dialog[popover] {
       anchor-default: initial;
       position-fallback: initial;
     }
