@@ -83,6 +83,7 @@ enum MsgActionType {
   DELETE = 'delete',
   UNSELECT = 'unselect',
   EDIT = 'edit',
+  DOWNLOAD = 'download',
 }
 
 const MESSAGE_ACTION_LABEL = {
@@ -90,6 +91,7 @@ const MESSAGE_ACTION_LABEL = {
   [MsgActionType.DELETE]: 'Delete message',
   [MsgActionType.UNSELECT]: 'Unselect message',
   [MsgActionType.EDIT]: 'Edit message',
+  [MsgActionType.DOWNLOAD]: 'Download file',
 }
 
 function getMessageActions(actions: MsgActionType[]): ContextMenuAction[] {
@@ -106,6 +108,7 @@ function getMessageActions(actions: MsgActionType[]): ContextMenuAction[] {
  * @fires {CustomEvent} kite-chat.hide - Chat window closes
  * @fires {CustomEvent} kite-chat.send - Outgoing message is sent
  * @fires {CustomEvent} kite-chat.delete - Chat message is deleted
+ * @fires {CustomEvent} kite-chat.select - Chat message is selected
  * @attr {Boolean} open - displays chat window if true or only toggle button if false or missing
  * @attr {"light" | "dark"} theme - defines kite chat theme, using prefers-color-scheme by default
  * @attr {string} heading - Chat dialog heading
@@ -121,7 +124,8 @@ export class KiteChatElement extends
         VisibilityMixin(
           SelectionContainerMixin(
               LitElement, 
-              KiteMsgElement
+              KiteMsgElement,
+              {select: 'kite-chat.select'}
             ), 
           {show: 'kite-chat.show', hide: 'kite-chat.hide'}
         )
@@ -146,6 +150,10 @@ export class KiteChatElement extends
     return !![...this.sentMessageElements].find((msgElement) => (
       currentMsg.isEqualNode(msgElement)
     ));
+  }
+
+  private getFile(currentMsg: KiteMsgElement) {
+    return currentMsg.querySelector('kite-file');
   }
 
   @state()
@@ -181,9 +189,19 @@ export class KiteChatElement extends
         })} selection:bg-primary-color outline-none fixed p-0 z-40 flex origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
       >
         <kite-chat-header
-          @kite-chat-header.cancel=${this._cancel}
-          @kite-chat-header.edit=${this._edit}
-          @kite-chat-header.delete=${this._delete}
+          @kite-chat-header.cancel=${() => {
+            this.unselectAll();
+          }}
+          @kite-chat-header.edit=${() => {
+            if(this.selectedElements[0]) {
+              this._edit(this.selectedElements[0]);
+            }
+          }}
+          @kite-chat-header.delete=${() => {
+            this.selectedElements.forEach((msgElement) => {
+              this._delete(msgElement);
+            });
+          }}
           @kite-chat-header.close=${this._toggleOpen}
           .editable=${this.selectedElements.length === 1 && this.isSent(this.selectedElements[0])}
           .selectedElementsCount=${this.selectedElements.length}
@@ -244,23 +262,17 @@ export class KiteChatElement extends
     `;
   }
 
-  private _edit() {
-    this.editMessage = this.selectedElements[0] ?? null;
+  private _edit(msgElement: KiteMsgElement) {
+    this.editMessage = msgElement;
     this.unselectAll();
   }
 
-  private _cancel() {
-    this.unselectAll();
-  }
-
-  private _delete() {
-    this.selectedElements.forEach((msgElement) => {
-      const {messageId} = msgElement;
-      const message: KiteMsgDelete = {messageId};
-      if (this._dispatchMsg({type: MsgOperation.delete, detail: message})) {
-        this.removeMsg(messageId);
-      }
-    });
+  private _delete(msgElement: KiteMsgElement) {
+    const {messageId} = msgElement;
+    const message: KiteMsgDelete = {messageId};
+    if (this._dispatchMsg({type: MsgOperation.delete, detail: message})) {
+      this.removeMsg(messageId);
+    }
   }
 
   override _visibilityCallback(): void {
@@ -345,6 +357,7 @@ export class KiteChatElement extends
     const actions = getMessageActions([
       MsgActionType.DELETE,
       ...(this.isSent(event.target) ? [MsgActionType.EDIT] : []),
+      ...(this.getFile(event.target) ? [MsgActionType.DOWNLOAD] : []),
       ...(event.target.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
     ]);
     this.contextMenu.init(event, actions);
@@ -362,16 +375,13 @@ export class KiteChatElement extends
         this.unselect(msgElement);
         break;
       case MsgActionType.DELETE:
-        if (this._dispatchMsg({
-          type: MsgOperation.delete, 
-          detail: {messageId: msgElement.messageId}
-        })) {
-          this.removeMsg(msgElement.messageId);
-        }
+        this._delete(msgElement);
         break;
       case MsgActionType.EDIT:
-        this.editMessage = msgElement;
-        this.unselectAll();
+        this._edit(msgElement);
+        break;
+      case MsgActionType.DOWNLOAD:
+        this.getFile(msgElement)?.download();
         break;
     }
   }

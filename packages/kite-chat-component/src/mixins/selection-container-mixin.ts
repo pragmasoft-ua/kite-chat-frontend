@@ -22,12 +22,29 @@ export type SelectableElement = HTMLElement & {
     unselect(): void;
 }
 
+export type Select = {
+    target: SelectableElement;
+    isSelected: boolean;
+    allSelected: SelectableElement[];
+}
+
+type EventNames = {
+    select: string;
+}
+
 const SELECTION_THRESHOLD = 500;
 const PRIMARY_BUTTON = 0;
 
+const CUSTOM_EVENT_INIT = {
+    bubbles: true,
+    composed: true,
+    cancelable: true,
+};
+
 export const SelectionContainerMixin = <T extends Constructor<LitElement>, U extends SelectableElement>(
     superClass: T,
-    _selectedElementType: Constructor<U>
+    _selectedElementType: Constructor<U>,
+    eventNames: EventNames,
 ) => {
     class SelectionContainerElement extends superClass {
         static styles = [
@@ -55,6 +72,19 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         private ignored = false; 
 
         private onSelected(selectedElement: SelectableElement) {
+            const detail : Select = {
+                target: selectedElement,
+                isSelected: selectedElement.selected,
+                allSelected: this.selectedElements,
+            };
+            const e = new CustomEvent(eventNames.select, {
+                ...CUSTOM_EVENT_INIT,
+                detail,
+            });
+            this.dispatchEvent(e);
+            if (e.defaultPrevented) {
+                return;
+            }
             if(selectedElement && selectedElement.selected) {
                 this.selectedElements = [...this.selectedElements, selectedElement as U];
             } else {

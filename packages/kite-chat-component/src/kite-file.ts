@@ -6,7 +6,7 @@
  */
 
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement, property, query} from 'lit/decorators.js';
 import prettyBytes from 'pretty-bytes';
 
 import kiteFileStyles from './kite-file.css?inline';
@@ -63,6 +63,13 @@ export class KiteFileElement extends LitElement {
     },
   })
   file?: File;
+
+  @query('a')
+  private downloadAnchor!: HTMLAnchorElement;
+
+  download() {
+    this.downloadAnchor.click();
+  }
 
   override render() {
     if (!this.file) return;
