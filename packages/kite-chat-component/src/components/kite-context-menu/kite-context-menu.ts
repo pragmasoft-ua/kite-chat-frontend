@@ -67,12 +67,12 @@ export class KiteContextMenuElement extends
 
   override connectedCallback(): void {
     super.connectedCallback();
-    document.addEventListener('mousedown', this.handleOuterClick.bind(this));
+    this.parentElement?.addEventListener('mousedown', this.handleOuterClick.bind(this));
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
-    document.removeEventListener('mousedown', this.handleOuterClick.bind(this));
+    this.parentElement?.removeEventListener('mousedown', this.handleOuterClick.bind(this));
   }
 
   static override styles = componentStyles;
