@@ -68,8 +68,10 @@ main > *::-webkit-scrollbar-thumb {
 
 .kite-dialog {
   --gap: var(--kite-gap);
-  width: var(--kite-dialog-width);
-  height: var(--kite-dialog-height);
+  width: var(--kite-dialog-width)!important;
+  height: var(--kite-dialog-height)!important;
+  --element-width: var(--kite-dialog-width)!important;
+  --element-height: var(--kite-dialog-height)!important;
   right: auto;
   bottom: auto;
 }
@@ -78,8 +80,6 @@ kite-context-menu {
   width: 10rem;
 
   --gap: 2px;
-  --element-width: var(--kite-context-menu-width);
-  --element-height: var(--kite-context-menu-height);
 }
 
 :host(:not([theme="dark"])) kite-context-menu {
