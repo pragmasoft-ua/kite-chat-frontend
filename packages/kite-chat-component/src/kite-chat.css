@@ -75,6 +75,8 @@ main > *::-webkit-scrollbar-thumb {
 }
 
 kite-context-menu {
+  width: 10rem;
+
   --gap: 2px;
   --element-width: var(--kite-context-menu-width);
   --element-height: var(--kite-context-menu-height);
