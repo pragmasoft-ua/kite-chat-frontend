@@ -52,7 +52,8 @@
     "format": "prettier \"**/*.{cjs,html,js,json,md,ts}\" --ignore-path ./.eslintignore --write",
     "analyze": "wca analyze \"src/index.ts\" --format json --outFile custom-elements.json",
     "test": "web-test-runner",
-    "test:watch": "web-test-runner --watch"
+    "test:watch": "web-test-runner --watch",
+    "bundle-visualizer": "vite-bundle-visualizer"
   },
   "dependencies": {
     "@oddbird/popover-polyfill": "^0.3.1",
