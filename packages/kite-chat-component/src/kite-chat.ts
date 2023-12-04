@@ -22,6 +22,7 @@ import {
 } from './kite-payload';
 import {
   SelectionContainerMixin,
+  Select as KiteMsgSelect,
   VisibilityMixin,
   NotificationContainerMixin,
   TimelineContainerMixin,
@@ -433,4 +434,14 @@ export class KiteChatElement extends
   static override styles = [...[super.styles?? []], sharedStyles, componentStyles];
 }
 
-export {KiteChatFooterElement, KiteChatHeaderElement, KiteContextMenuElement};
+export {
+  KiteChatFooterElement, 
+  KiteChatHeaderElement, 
+  KiteContextMenuElement,
+};
+
+export type {
+  KiteMsgSend,
+  KiteMsgDelete,
+  KiteMsgSelect,
+};
