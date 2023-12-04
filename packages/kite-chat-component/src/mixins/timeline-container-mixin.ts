@@ -39,6 +39,24 @@ export const TimelineContainerMixin = <T extends Constructor<LitElement>>(
         @query(`slot:not([name])`)
         private _defaultSlot!: HTMLSlotElement;
 
+        private removeDivider() {
+            const dividers = this._defaultSlotElements.filter((el) => el instanceof KiteDateDivider) as KiteDateDivider[];
+        
+            for (const divider of dividers) {
+                const index = this._defaultSlotElements.indexOf(divider);
+                const nextElement = this._defaultSlotElements[index + 1] as TimestampElement | undefined;
+        
+                if (nextElement) {
+                    const nextElementDate = nextElement.timestamp ? formatDate(new Date(nextElement.timestamp)) : null;
+                    if (nextElementDate !== divider.date) {
+                        this.removeChild(divider);
+                    }
+                } else {
+                    this.removeChild(divider);
+                }
+            }
+        }
+
         private appendDivider() {
             const lastDivider = this._defaultSlotElements.findLastIndex((el) => el instanceof KiteDateDivider);
             const toUpdate = [...this._defaultSlotElements].splice(lastDivider + 1) as Array<TimestampElement>;
@@ -58,6 +76,7 @@ export const TimelineContainerMixin = <T extends Constructor<LitElement>>(
         }
 
         private handleTimelineSlotchange() {
+            this.removeDivider();
             this.appendDivider();
         }
 
