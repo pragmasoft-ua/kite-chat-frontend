@@ -59,7 +59,7 @@ export class KiteContextMenuElement extends
     this._actions = actions;
   }
 
-  private handleOuterClick(e: MouseEvent) {
+  private handleOuterClick(e: MouseEvent|TouchEvent) {
     if(!((e.target as HTMLElement).isSameNode(this)) && this.open) {
       this.hide();
     }
@@ -68,11 +68,13 @@ export class KiteContextMenuElement extends
   override connectedCallback(): void {
     super.connectedCallback();
     this.parentElement?.addEventListener('mousedown', this.handleOuterClick.bind(this));
+    this.parentElement?.addEventListener('touchstart', this.handleOuterClick.bind(this), { passive: true });
   }
 
   override disconnectedCallback(): void {
     super.disconnectedCallback();
     this.parentElement?.removeEventListener('mousedown', this.handleOuterClick.bind(this));
+    this.parentElement?.removeEventListener('touchstart', this.handleOuterClick.bind(this));
   }
 
   static override styles = componentStyles;

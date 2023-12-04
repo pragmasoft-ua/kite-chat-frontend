@@ -116,6 +116,10 @@ span {
   display: block;
 }
 
+.message-container.multiselect {
+  user-select: none;
+}
+
 /* :host(:hover) .message-container::after */
 :host([selected]) .message-container::after {
   display: block;
