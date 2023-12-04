@@ -1,4 +1,4 @@
-import {formatShortDate} from '@romanenko.pavlo/simple-timestamp';
+import {formatShortDate} from '@romanenko-dev/simple-timestamp/utils';
 
 const TIMEZONE = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
