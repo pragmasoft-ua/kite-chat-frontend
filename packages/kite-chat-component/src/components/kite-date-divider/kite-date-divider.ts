@@ -10,17 +10,24 @@ const componentStyles = css`
 
 @customElement('kite-date-divider')
 export class KiteDateDivider extends LitElement {
-  @property({ reflect: true, type: String }) date?: string;
-
-  constructor(date: string) {
-    super();
-    if(!date) {
-      this.date = formatDate(new Date());
-    }
-  }
+  /**
+   * Timestamp as an ISO formatted string; optional, defaults to current time
+   */
+  @property({
+    reflect: true,
+    converter: {
+      toAttribute(value: Date) {
+        return value.toISOString();
+      },
+      fromAttribute(value) {
+        return value ? new Date(value) : null;
+      },
+    },
+  })
+  timestamp = new Date();
 
   override render() {
-    return html`${this.date}`;
+    return html`${formatDate(this.timestamp)}`;
   }
 
   static override styles = componentStyles;

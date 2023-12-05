@@ -174,3 +174,7 @@ kite-context-menu {
     @apply h-[98dvh] w-[98vw] max-w-[30rem] right-[1vmin] left-[1vmin] top-[1vmin] bottom-[1vmin];
   }
 }
+
+::slotted(kite-date-divider) {
+  @apply my-2;
+}

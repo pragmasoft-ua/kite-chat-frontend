@@ -1,7 +1,6 @@
 import {LitElement, PropertyValues} from 'lit';
 import {queryAssignedElements, query} from 'lit/decorators.js';
 import {KiteDateDivider} from '../components';
-import {formatDate} from '../utils';
 
 /**
  * Type definition of a constructor.
@@ -47,8 +46,9 @@ export const TimelineContainerMixin = <T extends Constructor<LitElement>>(
                 const nextElement = this._defaultSlotElements[index + 1] as TimestampElement | undefined;
         
                 if (nextElement) {
-                    const nextElementDate = nextElement.timestamp ? formatDate(new Date(nextElement.timestamp)) : null;
-                    if (nextElementDate !== divider.date) {
+                    const nextElementDate = new Date(nextElement.timestamp).getDate();
+                    const dividerElementDate = new Date(divider.timestamp).getDate();
+                    if (nextElementDate !== dividerElementDate) {
                         this.removeChild(divider);
                     }
                 } else {
@@ -60,15 +60,15 @@ export const TimelineContainerMixin = <T extends Constructor<LitElement>>(
         private appendDivider() {
             const lastDivider = this._defaultSlotElements.findLastIndex((el) => el instanceof KiteDateDivider);
             const toUpdate = [...this._defaultSlotElements].splice(lastDivider + 1) as Array<TimestampElement>;
-            let currentDate: string | null = (this._defaultSlotElements[lastDivider] as KiteDateDivider|undefined)?.date ?? null;
+            const currentElement = this._defaultSlotElements[lastDivider] as KiteDateDivider|undefined;
+            let currentDate = currentElement ? new Date(currentElement.timestamp) : new Date();
             for(const el of toUpdate) {
-                const date = el.timestamp ? new Date(el.timestamp) : new Date();
-                const formatted = formatDate(date);
-        
-                if (currentDate !== formatted) {
-                    currentDate = formatted;
+                const date = new Date(el.timestamp);
+                
+                if (currentDate.getDate() !== date.getDate()) {
+                    currentDate = date;
                     const divider = document.createElement('kite-date-divider') as KiteDateDivider;
-                    divider.date = currentDate ?? '';
+                    divider.timestamp = currentDate;
                     this.insertBefore(divider, el);
                     return;
                 }
