@@ -365,16 +365,17 @@ export class KiteChatElement extends
 
   private _contextMenu(event: PointerEvent) {
     event.preventDefault();
-    if(!(event.target instanceof KiteMsgElement)) {
+    const msgElement = (event.target as HTMLElement).closest(KiteMsgElement.TAG) as KiteMsgElement | null;
+    if(!msgElement) {
       return;
     }
     const actions = getMessageActions([
       MsgActionType.DELETE,
-      ...(this.isSent(event.target) ? [MsgActionType.EDIT] : []),
-      ...(this.getFile(event.target) ? [MsgActionType.DOWNLOAD] : []),
-      ...(event.target.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
+      ...(this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
+      ...(this.getFile(msgElement) ? [MsgActionType.DOWNLOAD] : []),
+      ...(msgElement.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
     ]);
-    this.pointerAnchor.init(event);
+    this.pointerAnchor.init(event, msgElement);
     this.contextMenu.setActions(actions);
     this.contextMenu.show();
   }

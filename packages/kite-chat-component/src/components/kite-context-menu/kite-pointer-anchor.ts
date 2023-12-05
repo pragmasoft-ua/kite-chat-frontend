@@ -28,9 +28,9 @@ export class KitePointerAnchorElement extends LitElement {
     this.style.top = `${pos.y}px`;
   }
 
-  init(event: MouseEvent) {
+  init(event: MouseEvent, targetElement?: HTMLElement) {
     const {x, y} = event;
-    this.targetElement = event.target as HTMLElement;
+    this.targetElement = targetElement ? targetElement : event.target as HTMLElement;
     const parentRect = this.parentElement?.getBoundingClientRect();
     if (parentRect) {
       const relativeX = x - parentRect.left;
