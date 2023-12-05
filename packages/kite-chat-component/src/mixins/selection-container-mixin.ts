@@ -1,6 +1,6 @@
 import {LitElement, PropertyValues} from 'lit';
 import {state, queryAssignedElements, query} from 'lit/decorators.js';
-import { vibrate } from '../utils';
+import {vibrate, VibrationPattern} from '../utils';
 
 /**
  * Type definition of a constructor.
@@ -75,32 +75,31 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         private pressTimer: number | null = null;
         private ignored = false; 
 
-        private onSelected(selectedElement: SelectableElement) {
+        private _updateSelected(selectedElement: SelectableElement) {
+            if(selectedElement.selected) {
+                this.selectedElements = [...this.selectedElements, selectedElement as U];
+            } else {
+                this.selectedElements = [...this.selectedElements.filter(el => !selectedElement.isEqualNode(el))];
+            }
+        }
+
+        private _isMultiselect(selectableElement: SelectableElement) {
+            return this._selectedSlotElements.length > (selectableElement.selected ? 1 : 0);
+        }
+
+        private handleSelected(selectedElement: SelectableElement) {
             const detail : Select = {
                 target: selectedElement,
                 isSelected: selectedElement.selected,
                 allSelected: this.selectedElements,
             };
-            const e = new CustomEvent(eventNames.select, {
-                ...CUSTOM_EVENT_INIT,
-                detail,
-            });
+            const e = new CustomEvent(eventNames.select, {...CUSTOM_EVENT_INIT, detail});
             this.dispatchEvent(e);
-            if (e.defaultPrevented) {
-                return;
-            }
-            if(selectedElement && selectedElement.selected) {
-                this.selectedElements = [...this.selectedElements, selectedElement as U];
-            } else {
-                this.selectedElements = [...this.selectedElements.filter(el => !el.isEqualNode(selectedElement))];
-            }
+            if (!e.defaultPrevented) this._updateSelected(selectedElement);
         }
 
         private getSelectable(target: HTMLElement|EventTarget|null): U | null {
-            if(!target) {
-                return null;
-            }
-            return (target as HTMLElement).closest(_selectedElementType.TAG) as U | null;
+            return target ? (target as HTMLElement).closest(_selectedElementType.TAG) as U | null : null;
         }
 
         private handleSelectionSlotchange() {
@@ -145,61 +144,50 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         }
 
         private handleSelectionStart(e: MouseEvent|TouchEvent) {
-            if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) {
-                return;
-            }
+            if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) return;
             const selectableElement = this.getSelectable(e.target);
-            if (!selectableElement) {return;}
+            if (!selectableElement) return;
             this.pressTimer = setTimeout(() => {
                 selectableElement.selected = !selectableElement.selected;
-                vibrate('LONG_PRESS');
-                this.onSelected(selectableElement);
+                vibrate(VibrationPattern.LONG_PRESS);
+                this.handleSelected(selectableElement);
                 this.pressTimer = null;
             }, SELECTION_THRESHOLD);
             this.ignored = false;
         }
     
         private handleSelectionEnd(e: MouseEvent|TouchEvent) {
-            if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) {
-                return;
-            }
-            if (e instanceof TouchEvent) {
-                e.cancelable && e.preventDefault();
-            }
+            if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) return;
+            if (e instanceof TouchEvent && e.cancelable) e.preventDefault();
             const selectableElement = this.getSelectable(e.target);
-            if (!selectableElement) {return;}
-            if (!this.ignored && this.pressTimer !== null) {
+            if (selectableElement && !this.ignored && this.pressTimer !== null) {
                 clearTimeout(this.pressTimer);
-                const isMultiselect = this._selectedSlotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
-                selectableElement.selected = isMultiselect ? !selectableElement.selected : false;
-                vibrate('SHORT_PRESS');
-                this.onSelected(selectableElement);
+                vibrate(VibrationPattern.SHORT_PRESS);
+                selectableElement.selected = this._isMultiselect(selectableElement) ? !selectableElement.selected : false;
+                this.handleSelected(selectableElement);
             }
         }
 
         private handleIgnoreSelection() {
-            if (this.pressTimer !== null) {
-                clearTimeout(this.pressTimer);
-                this.ignored = true;
-            }
+            if (!this.pressTimer) return;
+            clearTimeout(this.pressTimer);
+            this.ignored = true;
         }
 
         unselect(el: HTMLElement) {
-            if (!(el instanceof _selectedElementType)) {return;}
+            if (!(el instanceof _selectedElementType)) return;
             el.unselect();
-            this.onSelected(el);
+            this.handleSelected(el);
         }
 
         select(el: HTMLElement) {
-            if (!(el instanceof _selectedElementType)) {return;}
+            if (!(el instanceof _selectedElementType)) return;
             el.select();
-            this.onSelected(el);
+            this.handleSelected(el);
         }
 
         unselectAll() {
-            [...this.selectedElements].forEach((element) => {
-                element.unselect();
-            });
+            this.selectedElements.forEach((element) => element.unselect());
             this.selectedElements = [];
         }
 
@@ -207,13 +195,12 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         private handleSelectionMouseOver(e: MouseEvent) {
             const selectableElement = this.getSelectable(e.target);
             if (!selectableElement) {return;}
-            selectableElement.multiselect = this._selectedSlotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
+            selectableElement.multiselect = this._isMultiselect(selectableElement);
         }
 
         private handleSelectionMouseOut(e: MouseEvent) {
             const selectableElement = this.getSelectable(e.target);
-            if (!selectableElement) {return;}
-            selectableElement.multiselect = false;
+            if (selectableElement) selectableElement.multiselect = false;
         }
     }
 
