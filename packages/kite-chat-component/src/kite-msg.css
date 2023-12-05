@@ -46,7 +46,7 @@ span {
   @apply no-underline relative !float-right tracking-tight select-none text-neutral-500;
 }
 
-:host([edited]) .time::before {
+:host([edited]) time::before {
   @apply content-['(edited)'] relative right-1 opacity-60 text-sm float-left tracking-normal;
 }
 
