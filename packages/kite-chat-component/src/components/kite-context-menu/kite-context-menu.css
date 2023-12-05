@@ -1,34 +1,9 @@
 @config "../../../tailwind.config.lit.cjs";
 
 :host {
-    position: absolute;
-    z-index: 200;
-    background-color: inherit;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-    margin: 0;
-    padding: 0;
-    outline: 0;
-    border-radius: 4px;
-    overflow: hidden;
+    @apply absolute z-40 bg-white shadow-md m-0 p-0 outline-none rounded-md overflow-hidden;
 }
 
 :host(:not([open])) {
-    display: none;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-}
-
-li {
-    padding: 8px 12px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-}
-
-li:hover {
-    background-color: #e0e0e0;
+    @apply hidden;
 }

@@ -10,11 +10,11 @@ textarea::-webkit-scrollbar {
 }
 
 textarea::-webkit-scrollbar-track {
-  background: transparent;
+  @apply bg-transparent;
 }
 
 textarea::-webkit-scrollbar-thumb {
-  background-color: theme('colors.neutral.500');
+  @apply bg-neutral-500;
 }
 
 :host {
@@ -22,19 +22,12 @@ textarea::-webkit-scrollbar-thumb {
 }
 
 span.edit-message {
-  position: relative;
-  padding-top: 1.5rem;
-  font-size: 0.9rem;
-  @apply flex-1 my-auto line-clamp-1;
+  @apply relative pt-6 text-base flex-1 my-auto line-clamp-1;
 }
 
 span.edit-message::after {
   content: 'Edit message';
-  opacity: 60%;
-  font-size: 0.875rem;
-  position: absolute;
-  top: 0;
-  left: 0;
+  @apply opacity-60 text-sm absolute top-0 left-0 cursor-pointer;
 }
 
 span.edit-message_file::after {

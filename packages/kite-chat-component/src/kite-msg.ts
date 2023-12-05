@@ -10,6 +10,7 @@ import {customElement, property, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 
 import kiteMsgStyles from './kite-msg.css?inline';
+import {sharedStyles} from './shared-styles';
 import {randomStringId} from './random-string-id';
 import {MsgStatus} from './kite-payload';
 
@@ -122,5 +123,5 @@ export class KiteMsgElement extends LitElement {
       ? html`<time>${hhmmLocalizedFormat.format(this.timestamp)}</time>`
       : null;
   }
-  static override styles = componentStyles;
+  static override styles = [sharedStyles, componentStyles];
 }

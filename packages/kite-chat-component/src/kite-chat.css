@@ -7,8 +7,7 @@ main > * {
 
 textarea::-webkit-scrollbar,
 main > *::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
+  @apply w-[3px] h-[3px];
 }
 
 textarea::-webkit-scrollbar-track,
@@ -18,7 +17,7 @@ main > *::-webkit-scrollbar-track {
 
 textarea::-webkit-scrollbar-thumb,
 main > *::-webkit-scrollbar-thumb {
-  background-color: theme('colors.neutral.500');
+  @apply bg-neutral-500;
 }
 
 .kite-dialog > main {
@@ -76,26 +75,17 @@ main > *::-webkit-scrollbar-thumb {
   bottom: auto;
 }
 
-kite-context-menu {
-  width: 10rem;
-
-  --gap: 2px;
-}
-
 :host(:not([theme="dark"])) kite-context-menu {
-  background-color: theme('colors.neutral.300');
-  border: 1px solid white;
+  @apply bg-neutral-300 border border-white;
 }
 
 :host([theme="dark"]) kite-context-menu {
-  background-color: theme('colors.neutral.800');
-  border: 1px solid black;
+  @apply bg-neutral-800 border border-black;
 }
 
 @media(prefers-color-scheme: dark) {
   :host(:not([theme="light"])) kite-context-menu {
-    background-color: theme('colors.neutral.800');
-    border: 1px solid black;
+    @apply bg-neutral-800 border border-black;
   }
 }
 
@@ -120,24 +110,20 @@ kite-context-menu {
 }
 
 span.edit-message {
-  position: relative;
-  padding-top: 1.5rem;
-  font-size: 0.9rem;
-  @apply flex-1 my-auto line-clamp-1;
+  @apply relative flex-1 my-auto line-clamp-1 pt-6 text-base;
 }
 
 span.edit-message::after {
-  content: 'Edit message';
-  opacity: 60%;
-  font-size: 0.875rem;
-  position: absolute;
-  top: 0;
-  left: 0;
+  @apply content-['Replace\sfile'] opacity-60 text-sm absolute top-0 left-0;
 }
 
 span.edit-message_file::after {
-  content: 'Replace file';
-  @apply cursor-pointer;
+  @apply content-['Replace\sfile'] cursor-pointer;
+}
+
+kite-context-menu {
+  width: 10rem;
+  --gap: 2px;
 }
 
 @supports(anchor-name: --toggle) {
@@ -146,7 +132,6 @@ span.edit-message_file::after {
   }
 
   .kite-dialog[popover] {
-    --gap: var(--kite-gap);
     anchor-default: --toggle;
     position-fallback: --flip;
   }
@@ -179,20 +164,12 @@ span.edit-message_file::after {
 
 @media (max-width: 22rem) {
   .kite-dialog {
-    width: 98vw;
-    right: 1vw;
-    left: 1vw;
+    @apply w-[98vw] right-[1vw] left-[1vw];
   }
 }
 
 @media (max-height: 35rem) {
   .kite-dialog {
-    height: 98dvh;
-    width: 98vw;
-    max-width: 30rem;
-    right: 1vmin;
-    left: 1vmin;
-    top: 1vmin;
-    bottom: 1vmin;
+    @apply h-[98dvh] w-[98vw] max-w-[30rem] right-[1vmin] left-[1vmin] top-[1vmin] bottom-[1vmin];
   }
 }

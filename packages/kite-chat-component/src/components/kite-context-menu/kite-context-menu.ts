@@ -2,6 +2,7 @@ import {LitElement, html, css, unsafeCSS} from 'lit';
 import {customElement, state} from 'lit/decorators.js';
 import {VisibilityMixin} from '../../mixins';
 import kiteContextmenuStyles from './kite-context-menu.css?inline';
+import {sharedStyles} from '../../shared-styles';
 
 const componentStyles = css`
   ${unsafeCSS(kiteContextmenuStyles)}
@@ -32,9 +33,15 @@ export class KiteContextMenuElement extends
   private _actions: ContextMenuAction[] = []; 
 
   override render() {
-    return html`<ul @click=${this.handleClick}>${this._actions.map(({label, value}) => (
-      html`<li id="${value}">${label ? label : value}</li>`
-    ))}</ul>`;
+    return html`
+      <ul class="list-none p-0 m-0">
+        ${this._actions.map(({ label, value }) => html`
+          <li id="${value}" class="px-2 py-2.5 cursor-pointer flex items-center hover:bg-gray-300" @click=${this.handleClick}>
+            ${label ? label : value}
+          </li>`
+        )}
+      </ul>
+    `;
   }
 
   private handleClick(e: MouseEvent) {
@@ -77,5 +84,5 @@ export class KiteContextMenuElement extends
     this.parentElement?.removeEventListener('touchstart', this.handleOuterClick.bind(this));
   }
 
-  static override styles = componentStyles;
+  static override styles = [sharedStyles, componentStyles];
 }
