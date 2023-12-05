@@ -68,8 +68,8 @@ main > *::-webkit-scrollbar-thumb {
 
 .kite-dialog {
   --gap: var(--kite-gap);
-  width: var(--kite-dialog-width)!important;
-  height: var(--kite-dialog-height)!important;
+  width: var(--kite-dialog-width);
+  height: var(--kite-dialog-height);
   --element-width: var(--kite-dialog-width)!important;
   --element-height: var(--kite-dialog-height)!important;
   right: auto;
