@@ -316,7 +316,10 @@ export class KiteChatElement extends
     } else {
       const {file} = msg;
       const fileElement = msgElement.querySelector('kite-file');
-      fileElement && (fileElement.file = file);
+      if(fileElement) {
+        fileElement.file = file;
+        fileElement.name = file.name;
+      }
     }
     requestAnimationFrame(() => {
       msgElement.scrollIntoView(false);
@@ -416,6 +419,7 @@ export class KiteChatElement extends
       const {file} = msg;
       const fileElement = document.createElement('kite-file');
       fileElement.file = file;
+      fileElement.name = file.name;
       msgElement.appendChild(fileElement);
     }
     this.appendChild(msgElement);

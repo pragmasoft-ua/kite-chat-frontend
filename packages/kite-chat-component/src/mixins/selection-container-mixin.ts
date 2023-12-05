@@ -22,6 +22,10 @@ export type SelectableElement = HTMLElement & {
     unselect(): void;
 }
 
+interface SelectableElementConstructor<T> extends Constructor<T> {
+    TAG: string;
+}
+
 export type Select = {
     target: SelectableElement;
     isSelected: boolean;
@@ -43,7 +47,7 @@ const CUSTOM_EVENT_INIT = {
 
 export const SelectionContainerMixin = <T extends Constructor<LitElement>, U extends SelectableElement>(
     superClass: T,
-    _selectedElementType: Constructor<U>,
+    _selectedElementType: SelectableElementConstructor<U>,
     eventNames: EventNames,
 ) => {
     class SelectionContainerElement extends superClass {
@@ -92,6 +96,13 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             }
         }
 
+        private getSelectable(target: HTMLElement|EventTarget|null): U | null {
+            if(!target) {
+                return null;
+            }
+            return (target as HTMLElement).closest(_selectedElementType.TAG) as U | null;
+        }
+
         private handleSelectionSlotchange() {
             this.selectedElements = this.selectedElements.filter(el => this._selectedSlotElements.includes(el));
         }
@@ -137,10 +148,8 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) {
                 return;
             }
-            if (!(e.target instanceof _selectedElementType)) {
-                return;
-            }
-            const selectableElement = e.target as SelectableElement;
+            const selectableElement = this.getSelectable(e.target);
+            if (!selectableElement) {return;}
             this.pressTimer = setTimeout(() => {
                 selectableElement.selected = !selectableElement.selected;
                 vibrate('LONG_PRESS');
@@ -157,10 +166,8 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             if (e instanceof TouchEvent) {
                 e.cancelable && e.preventDefault();
             }
-            if (!(e.target instanceof _selectedElementType)) {
-                return;
-            }
-            const selectableElement = e.target as SelectableElement;
+            const selectableElement = this.getSelectable(e.target);
+            if (!selectableElement) {return;}
             if (!this.ignored && this.pressTimer !== null) {
                 clearTimeout(this.pressTimer);
                 const isMultiselect = this._selectedSlotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
@@ -178,17 +185,13 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         }
 
         unselect(el: HTMLElement) {
-            if (!(el instanceof _selectedElementType)) {
-                return;
-            }
+            if (!(el instanceof _selectedElementType)) {return;}
             el.unselect();
             this.onSelected(el);
         }
 
         select(el: HTMLElement) {
-            if (!(el instanceof _selectedElementType)) {
-                return;
-            }
+            if (!(el instanceof _selectedElementType)) {return;}
             el.select();
             this.onSelected(el);
         }
@@ -202,18 +205,14 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
 
         // GET RID OF IT WHEN :host-context() supported
         private handleSelectionMouseOver(e: MouseEvent) {
-            if (!(e.target instanceof _selectedElementType)) {
-                return;
-            }
-            const selectableElement = e.target as SelectableElement;
+            const selectableElement = this.getSelectable(e.target);
+            if (!selectableElement) {return;}
             selectableElement.multiselect = this._selectedSlotElements.filter(el => !el.isEqualNode(selectableElement)).length > 0;
         }
 
         private handleSelectionMouseOut(e: MouseEvent) {
-            if (!(e.target instanceof _selectedElementType)) {
-                return;
-            }
-            const selectableElement = e.target as SelectableElement;
+            const selectableElement = this.getSelectable(e.target);
+            if (!selectableElement) {return;}
             selectableElement.multiselect = false;
         }
     }

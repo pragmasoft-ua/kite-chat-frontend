@@ -22,12 +22,12 @@ textarea::-webkit-scrollbar-thumb {
 }
 
 span.edit-message {
-  @apply relative pt-6 text-base flex-1 my-auto line-clamp-1;
+  @apply relative pt-6 text-base flex-1 my-auto line-clamp-1 pointer-events-none select-none;
 }
 
 span.edit-message::after {
   content: 'Edit message';
-  @apply opacity-60 text-sm absolute top-0 left-0 cursor-pointer;
+  @apply opacity-60 text-sm absolute top-0 left-0 cursor-pointer pointer-events-auto;
 }
 
 span.edit-message_file::after {
