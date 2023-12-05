@@ -96,3 +96,5 @@ export const TimelineContainerMixin = <T extends Constructor<LitElement>>(
 
     return TimelineContainerElement as Constructor<TimelineContainerInterface> & T;
 }
+
+export {KiteDateDivider};

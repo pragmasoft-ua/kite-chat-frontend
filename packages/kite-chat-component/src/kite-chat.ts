@@ -199,7 +199,7 @@ export class KiteChatElement extends
         class="kite-dialog ${classMap({
           'scale-y-100': this.open,
           'scale-y-0': !this.open,
-        })} selection:bg-primary-color outline-none fixed p-0 z-40 flex origin-bottom flex-col rounded border shadow-lg transition-transform selection:text-white"
+        })} outline-none border-none fixed p-0 z-40 flex origin-bottom flex-col rounded border shadow-lg transition-transform"
       >
         <kite-chat-header
           @kite-chat-header.cancel=${() => {
@@ -438,6 +438,7 @@ export {
   KiteChatFooterElement, 
   KiteChatHeaderElement, 
   KiteContextMenuElement,
+  KitePointerAnchorElement,
 };
 
 export type {
