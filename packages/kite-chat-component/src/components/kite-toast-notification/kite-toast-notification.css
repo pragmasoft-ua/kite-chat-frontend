@@ -12,6 +12,10 @@ span.message {
     @apply px-2 flex-1;
 }
 
+span:not(.message) {
+    @apply select-none;
+}
+
 :host(:not([open])) span.message {
     @apply overflow-hidden line-clamp-2;
 }
