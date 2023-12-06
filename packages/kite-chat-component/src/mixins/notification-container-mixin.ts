@@ -1,4 +1,4 @@
-import {LitElement, css, unsafeCSS, PropertyValues} from 'lit';
+import {LitElement, css, PropertyValues} from 'lit';
 import {queryAssignedElements, query} from 'lit/decorators.js';
 import {KiteNotification} from '../kite-payload';
 import {KiteNotificationElement, NotificationState} from '../components';
@@ -13,32 +13,24 @@ export declare class NotificationContainerInterface {
     appendNotification(notification: KiteNotification): void;
 }
 
-const NOTIFICATION_SLOT = 'notification';
 const DEFAULT_DURATION = 5000;
 
 export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
     superClass: T,
-    slotName = NOTIFICATION_SLOT,
 ) => {
     class NotificationContainerElement extends superClass {
         static styles = [
             ...[(superClass as unknown as typeof LitElement).styles ?? []],
             css`
-                slot[name=${unsafeCSS(slotName)}]::slotted(*) {
-                    position: absolute;
-                    top: 0;
-                    margin-inline: 0.2rem;
-                    width: calc(100% - 2 * 0.2rem);
-                    
-                    z-index: 1;
+                ::slotted(kite-toast-notification) {
                     transition: all 300ms ease-in-out;
                     transform: translateX(-100%);
                     opacity: 0;
                 }
-                slot[name=${unsafeCSS(slotName)}]::slotted([state="viewed"]) {
+                ::slotted(kite-toast-notification[state="viewed"]) {
                     transform: translateX(100%);
                 }
-                slot[name=${unsafeCSS(slotName)}]::slotted([state="active"]) {
+                ::slotted(kite-toast-notification[state="active"]) {
                     transform: translateX(0%);
                     opacity: 1;
                 }
@@ -53,19 +45,16 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
             super();
         }
 
-        @queryAssignedElements({slot: slotName})
+        @queryAssignedElements({selector: 'kite-toast-notification'})
         private _notificationSlotElements!: Array<KiteNotificationElement>;
 
-        @query(`slot[name="${slotName}"]`)
-        private _notificationSlot!: HTMLSlotElement;
+        @query(`slot`)
+        private _defaultSlot!: HTMLSlotElement;
 
         private updateNotifications() {
-            const current = this._notificationSlotElements
-                .filter(el => el.state = NotificationState.NEW)
-                .toReversed()[0];
-            current && setTimeout(() => {
-                current.state = NotificationState.ACTIVE;
-            }, 0);
+            this._notificationSlotElements
+                .filter(el => el.state === NotificationState.NEW)
+                .forEach(el => setTimeout(() => el.state = NotificationState.ACTIVE, 0));
         }
 
         private handleNotificationSlotchange() {
@@ -81,14 +70,15 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
 
         override firstUpdated(changedProperties: PropertyValues<this>): void {
             super.firstUpdated(changedProperties);
-            const slot = this._notificationSlot;
+            const slot = this._defaultSlot;
+            this.updateNotifications();
             slot.addEventListener('slotchange', this.handleNotificationSlotchange.bind(this));
             slot.addEventListener('transitionend', this.handleNotificationTransitionend.bind(this));
         }
 
         override disconnectedCallback(): void {
             super.disconnectedCallback();
-            const slot = this._notificationSlot;
+            const slot = this._defaultSlot;
             slot.removeEventListener('slotchange', this.handleNotificationSlotchange.bind(this));
             slot.removeEventListener('transitionend', this.handleNotificationTransitionend.bind(this));
         }
@@ -101,8 +91,6 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
             if(duration) {
                 notificationElement.duration = duration === "auto" ? DEFAULT_DURATION : duration;
             }
-
-            notificationElement.slot = slotName;
             this.appendChild(notificationElement);
         }
     }

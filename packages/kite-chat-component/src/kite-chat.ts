@@ -220,21 +220,12 @@ export class KiteChatElement extends
         >
         </kite-chat-header>
         <main
-          class="relative flex flex-1 overflow-hidden flex-col bg-slate-300/50"
-        >
-          <aside 
-            class="notification overflow-x-hidden overflow-y-auto z-40"
-          >
-            <slot name="notification"></slot>
-          </aside>
-          <div 
-            @contextmenu=${this._contextMenu} 
+        @contextmenu=${this._contextMenu} 
             @scroll=${() => this.contextMenu.hide()}
-            class="flex flex-1 flex-col-reverse snap-y overflow-y-auto p-2 relative"
-          >
-            <div class="flex min-h-min flex-col flex-wrap items-start">
-              <slot></slot>
-            </div>
+          class="relative flex flex-1 overflow-hidden flex-col-reverse bg-slate-300/50 snap-y overflow-y-auto p-2"
+        >
+          <div class="flex min-h-min flex-col flex-wrap items-start">
+            <slot></slot>
           </div>
         </main>
         <kite-chat-footer

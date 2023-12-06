@@ -63,6 +63,7 @@ export const TimelineContainerMixin = <T extends Constructor<LitElement>>(
             const currentElement = this._defaultSlotElements[lastDivider] as KiteDateDivider|undefined;
             let currentDate = currentElement ? new Date(currentElement.timestamp) : new Date();
             for(const el of toUpdate) {
+                if(!el.timestamp) continue;
                 const date = new Date(el.timestamp);
                 
                 if (currentDate.getDate() !== date.getDate()) {
