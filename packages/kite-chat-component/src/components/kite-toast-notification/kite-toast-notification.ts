@@ -8,6 +8,7 @@
 import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
 import {customElement, property, query, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
+import {formatNumberWithAbbreviation as formatNumber} from '../../utils';
 
 import kiteToastStyles from './kite-toast-notification.css?inline';
 
@@ -34,6 +35,7 @@ export class KiteNotificationElement extends LitElement {
   @property({ reflect: true, type: Boolean }) open? = false;
   @property({ reflect: true, type: String }) state?: NotificationState = NotificationState.NEW;
   @property({ reflect: true, type: Number }) duration?: number;
+  @property({ reflect: true, type: Number }) collapsedCount: number = 1;
 
   @query('.message')
   private _messageElement!: HTMLElement;
@@ -71,7 +73,11 @@ export class KiteNotificationElement extends LitElement {
 
   override render() {
     return html`
-      <span class="icon"></span>
+      <span class="icon">
+        <span class="collapsed ${classMap({
+            'hidden': this.collapsedCount < 2,
+          })}">${formatNumber(this.collapsedCount)}</span>
+      </span>
       <div class="wrapper ${classMap({
           'overflow': this._overflow,
         })}">

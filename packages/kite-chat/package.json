@@ -32,7 +32,7 @@
     "access": "public"
   },
   "scripts": {
-    "start": "vite --force",
+    "start": "vite --force --host",
     "build": "concurrently \"npm:tsc\" \"npm:build:module\"",
     "tsc": "tsc -b",
     "build:module": "vite build",

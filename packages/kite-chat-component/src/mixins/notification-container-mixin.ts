@@ -52,9 +52,23 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
         private _defaultSlot!: HTMLSlotElement;
 
         private updateNotifications() {
+            let currentElement: KiteNotificationElement|null = null;
+
             this._notificationSlotElements
-                .filter(el => el.state === NotificationState.NEW)
-                .forEach(el => setTimeout(() => el.state = NotificationState.ACTIVE, 0));
+                .filter(el => el.state === NotificationState.NEW || el.state === NotificationState.ACTIVE)
+                .forEach((el) => {
+                    if (el.state === NotificationState.NEW) {
+                        const message = el.message;
+                
+                        if (message === currentElement?.message) {
+                            currentElement && currentElement.collapsedCount++;
+                            el.state = NotificationState.VIEWED;
+                        } else {
+                            currentElement = el;
+                            setTimeout(() => (el.state = NotificationState.ACTIVE), 0);
+                        }
+                    }
+                });
         }
 
         private handleNotificationSlotchange() {
@@ -92,6 +106,9 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
                 notificationElement.duration = duration === "auto" ? DEFAULT_DURATION : duration;
             }
             this.appendChild(notificationElement);
+            requestAnimationFrame(() => {
+                notificationElement.scrollIntoView(false);
+            });
         }
     }
 

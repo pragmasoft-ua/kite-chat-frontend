@@ -52,8 +52,12 @@ span.toggle {
     @apply bg-red-500;
 }
 
+span.collapsed {
+    @apply absolute left-0 bottom-2 text-center w-full;
+}
+
 span.icon {
-    @apply flex flex-1 px-1.5 pb-4 pt-2 max-w-[20px] relative;
+    @apply flex flex-1 flex-col px-1.5 pb-4 pt-2 max-w-[20px] relative;
 }
 
 :host([duration][state="active"]) span.icon::after {
