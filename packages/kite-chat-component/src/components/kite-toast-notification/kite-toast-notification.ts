@@ -15,6 +15,7 @@ import kiteToastStyles from './kite-toast-notification.css?inline';
 import {
   NotificationType
 } from '../../kite-payload';
+import {sharedStyles} from '../../shared-styles';
 
 const componentStyles = css`
   ${unsafeCSS(kiteToastStyles)}
@@ -75,7 +76,7 @@ export class KiteNotificationElement extends LitElement {
     return html`
       <span class="icon">
         <span class="collapsed ${classMap({
-            'hidden': this.collapsedCount < 2,
+            'invisible': this.collapsedCount < 2,
           })}">${formatNumber(this.collapsedCount)}</span>
       </span>
       <div class="wrapper ${classMap({
@@ -88,5 +89,5 @@ export class KiteNotificationElement extends LitElement {
     `;
   }
 
-  static override styles = componentStyles;
+  static override styles = [componentStyles, sharedStyles];
 }
