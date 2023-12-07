@@ -471,6 +471,11 @@ function onWsClose(e: CloseEvent) {
 
 function onWsError(e: Event) {
   console.debug(WORKER_NAME, 'onWsError', e);
+  toActiveTab({
+    type: MsgType.ERROR,
+    reason: 'Connection error',
+    code: -1,
+  });
   // TODO close ws in the case of error?
 }
 
@@ -559,6 +564,11 @@ function onMessageAck(payload: MsgAck) {
 function onErrorResponse(payload: ErrorMsg) {
   // TODO add error message to the messageHistory
   console.error(WORKER_NAME, payload.code, payload.reason);
+  toActiveTab({
+    type: MsgType.ERROR,
+    reason: payload.reason,
+    code: payload.code,
+  });
 }
 
 function onPongResponse() {

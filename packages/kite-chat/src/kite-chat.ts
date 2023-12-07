@@ -130,6 +130,7 @@ export class KiteChat {
     if (!this.kiteWorker) return;
 
     console.debug('disconnect');
+    this.element?.appendNotification({message: 'Disconnected from host', type: NotificationType.WARNING});
 
     if (this.kiteWorker) {
       this.kiteWorker.port.postMessage({
@@ -182,8 +183,12 @@ export class KiteChat {
       for (const msg of messages) {
         this.element.appendMsg(msg);
       }
+      if(messages.length > 0) {
+        this.element?.appendNotification({message: 'Message history restored', type: NotificationType.INFO, duration: "auto"});
+      }
     }).catch((e: Error) => {
       console.error("Failed to get messages from storage:", e.message);
+      this.element?.appendNotification({message: 'Failed to restore messages', type: NotificationType.ERROR});
     });
   }
 
@@ -307,6 +312,7 @@ export class KiteChat {
 
   protected onConnected(payload: Connected) {
     console.debug('connected', payload);
+    this.element?.appendNotification({message: 'Connected to host', type: NotificationType.SUCCESS, duration: "auto"});
   }
 
   protected onMessageAck(ack: MsgAck) {
@@ -327,6 +333,8 @@ export class KiteChat {
   protected onErrorMessage(e: ErrorMsg) {
     // TODO display error as a text message
     console.error(e.code, e.reason);
+    const errorMessage = e.reason || 'Unknown error.';
+    this.element?.appendNotification({message: errorMessage, type: NotificationType.ERROR});
   }
 
   protected onZippedMessage(e: ZippedMsg) {

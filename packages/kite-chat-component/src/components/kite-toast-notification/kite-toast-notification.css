@@ -53,7 +53,7 @@ span.toggle {
 }
 
 span.collapsed {
-    @apply flex-1 absolute left-0 bottom-2 text-center w-full;
+    @apply flex-1 text-center w-full;
 }
 
 span.icon {

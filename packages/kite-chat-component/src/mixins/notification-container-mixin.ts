@@ -57,12 +57,14 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
             this._notificationSlotElements
                 .filter(el => el.state === NotificationState.NEW || el.state === NotificationState.ACTIVE)
                 .forEach((el) => {
-                    if (el.state === NotificationState.NEW) {
+                    if (el.state === NotificationState.ACTIVE) {
+                        currentElement = el;
+                    } else if (el.state === NotificationState.NEW) {
                         const message = el.message;
                 
                         if (message === currentElement?.message) {
                             currentElement && currentElement.collapsedCount++;
-                            el.state = NotificationState.VIEWED;
+                            this.removeChild(el);
                         } else {
                             currentElement = el;
                             setTimeout(() => (el.state = NotificationState.ACTIVE), 0);

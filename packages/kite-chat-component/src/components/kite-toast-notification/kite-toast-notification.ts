@@ -75,13 +75,9 @@ export class KiteNotificationElement extends LitElement {
   override render() {
     return html`
       <span class="icon">
-        <span class="collapsed ${classMap({
-            'invisible': this.collapsedCount < 2,
-          })}">${formatNumber(this.collapsedCount)}</span>
+        <span class="collapsed ${classMap({'invisible': this.collapsedCount < 2})}">${formatNumber(this.collapsedCount)}</span>
       </span>
-      <div class="wrapper ${classMap({
-          'overflow': this._overflow,
-        })}">
+      <div class="wrapper ${classMap({'overflow': this._overflow})}">
         <span class="toggle" @click=${this.toggle}>▶</span>
         <span class="message">${this.message}</span>
         <span class="close" @click=${this.dismiss}>✕</span>

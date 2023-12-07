@@ -6,13 +6,13 @@ export function formatNumberWithAbbreviation(number: number): string {
             result = number.toString();
             break;
         case number < 1000000:
-            result = (number / 1000) + 'k';
+            result = Math.floor(number / 1000) + 'k';
             break;
         case number < 1000000000:
-            result = (number / 1000000) + 'm';
+            result = Math.floor(number / 1000000) + 'm';
             break;
         default:
-            result = (number / 1000000000) + 'b';
+            result = Math.floor(number / 1000000000) + 'b';
             break;
     }
 
