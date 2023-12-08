@@ -1,7 +1,7 @@
 @config "../../../tailwind.config.lit.cjs";
 
 :host {
-    @apply flex w-full bg-gray-500 text-white my-1.5 rounded shadow-md overflow-hidden snap-end scroll-my-1;
+    @apply flex flex-1 mx-2 bg-gray-500 text-white my-1.5 rounded shadow-md overflow-hidden snap-end scroll-my-1;
 }
 
 .wrapper {

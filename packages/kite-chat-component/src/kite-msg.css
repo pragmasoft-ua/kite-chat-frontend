@@ -1,11 +1,11 @@
 @config "../tailwind.config.lit.cjs";
 
 :host {
-  @apply flex flex-col items-start w-full my-1.5;
+  @apply flex flex-col items-start w-full relative px-2;
 }
 
 .message-container {
-  @apply relative max-w-[80%] block whitespace-pre-line break-words rounded px-2 py-1 text-left shadow;
+  @apply relative my-1.5 max-w-[80%] block whitespace-pre-line break-words rounded px-2 py-1 text-left shadow;
   @apply select-text selection:bg-primary-color selection:text-white;
   @apply snap-end scroll-my-1;
 }
@@ -82,21 +82,6 @@ span {
   @apply absolute w-6 h-6 right-[-2rem] top-1/2 translate-y-[-50%];
 }
 
-/* Uncomment when :host-context() supported */
-/* :host-context(.multiselect):host(:not([selected])) .message-container::after */
-:host(:not([selected])) .message-container.multiselect::after {
-  content: url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-circle-check' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0' /><path d='M9 12l2 2l4 -4' /></svg>");
-}
-
-.message-container.multiselect {
-  user-select: none;
-}
-
-/* :host(:hover) .message-container::after */
-:host([selected]) .message-container::after {
-  content: url("data:image/svg+xml, <svg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-circle-check-filled' width='24' height='24' viewBox='0 0 24 24' stroke-width='2' stroke='currentColor' fill='none' stroke-linecap='round' stroke-linejoin='round'><path stroke='none' d='M0 0h24v24H0z' fill='none'/><path d='M17 3.34a10 10 0 1 1 -14.995 8.984l-.005 -.324l.005 -.324a10 10 0 0 1 14.995 -8.336zm-1.293 5.953a1 1 0 0 0 -1.32 -.083l-.094 .083l-3.293 3.292l-1.293 -1.292l-.094 -.083a1 1 0 0 0 -1.403 1.403l.083 .094l2 2l.094 .083a1 1 0 0 0 1.226 0l.094 -.083l4 -4l.083 -.094a1 1 0 0 0 -.083 -1.32z' stroke-width='0' fill='currentColor' /></svg>");
-}
-
-:host([status]) .message-container::after {
-  left: -2rem;
+:host([selected])::before {
+  @apply absolute content-[''] bottom-0 left-0 w-full h-full bg-primary-color opacity-40;
 }

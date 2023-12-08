@@ -1,5 +1,5 @@
 @config "../../../tailwind.config.lit.cjs";
 
 :host {
-    @apply fixed z-50 w-1 h-1 m-0 p-0 outline-none;
+    @apply fixed z-50 w-1 h-1 m-0 p-0 outline-none pointer-events-none;
 }

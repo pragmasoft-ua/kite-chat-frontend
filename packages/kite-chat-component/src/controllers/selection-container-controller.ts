@@ -13,7 +13,6 @@ export type Select = {
 
 export type SelectableElement = HTMLElement & {
     selected: boolean;
-    multiselect: boolean;
     select(): void;
     unselect(): void;
 }
@@ -23,7 +22,6 @@ export type SelectionEventNames = {
 }
 
 const SELECTION_THRESHOLD = 500;
-const PRIMARY_BUTTON = 0;
 
 const CUSTOM_EVENT_INIT = {
     bubbles: true,
@@ -36,8 +34,6 @@ export class SelectionContainerController<U extends SelectableElement> {
     private handleSelectionStartBound: (e: MouseEvent|TouchEvent) => void;
     private handleSelectionEndBound: (e: MouseEvent|TouchEvent) => void;
     private handleIgnoreSelectionBound: () => void;
-    private handleMouseOverBound: (e: MouseEvent) => void;
-    private handleMouseOutBound: (e: MouseEvent) => void;
     private pressTimer: number | null = null;
     private ignored = false; 
 
@@ -62,21 +58,17 @@ export class SelectionContainerController<U extends SelectableElement> {
         this.handleSelectionStartBound = this.handleSelectionStart.bind(this);
         this.handleSelectionEndBound = this.handleSelectionEnd.bind(this);
         this.handleIgnoreSelectionBound = this.handleIgnoreSelection.bind(this);
-        this.handleMouseOverBound = this.handleMouseOver.bind(this);
-        this.handleMouseOutBound = this.handleMouseOut.bind(this);
     }
 
     hostUpdate() {
         if (this.defaultSlot) {
             this.defaultSlot.removeEventListener('slotchange', this.handleSlotchangeBound);
-            this.defaultSlot.removeEventListener('mousedown', this.handleSelectionStartBound);
+            this.defaultSlot.removeEventListener('pointerdown', this.handleSelectionStartBound);
             this.defaultSlot.removeEventListener('mouseup', this.handleSelectionEndBound);
             this.defaultSlot.removeEventListener('mousemove', this.handleIgnoreSelectionBound);
             this.defaultSlot.removeEventListener('touchstart', this.handleSelectionStartBound,);
             this.defaultSlot.removeEventListener('touchmove', this.handleIgnoreSelectionBound,);
             this.defaultSlot.removeEventListener('touchend', this.handleSelectionEndBound);
-            this.defaultSlot.removeEventListener('mouseover', this.handleMouseOverBound);
-            this.defaultSlot.removeEventListener('mouseout', this.handleMouseOutBound);
         }
     }
 
@@ -88,8 +80,6 @@ export class SelectionContainerController<U extends SelectableElement> {
         this.defaultSlot?.addEventListener('touchstart', this.handleSelectionStartBound, { passive: true });
         this.defaultSlot?.addEventListener('touchmove', this.handleIgnoreSelectionBound, { passive: true });
         this.defaultSlot?.addEventListener('touchend', this.handleSelectionEndBound);
-        this.defaultSlot?.addEventListener('mouseover', this.handleMouseOverBound);
-        this.defaultSlot?.addEventListener('mouseout', this.handleMouseOutBound);
     }
 
     private _updateSelected(selectedElement: SelectableElement) {
@@ -124,7 +114,6 @@ export class SelectionContainerController<U extends SelectableElement> {
     }
 
     private handleSelectionStart(e: MouseEvent|TouchEvent) {
-        if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) return;
         const selectableElement = this.getSelectable(e.target);
         if (!selectableElement) return;
         this.pressTimer = setTimeout(() => {
@@ -137,8 +126,6 @@ export class SelectionContainerController<U extends SelectableElement> {
     }
 
     private handleSelectionEnd(e: MouseEvent|TouchEvent) {
-        if(e instanceof MouseEvent && e.button !== PRIMARY_BUTTON) return;
-        if (e instanceof TouchEvent && e.cancelable) e.preventDefault();
         const selectableElement = this.getSelectable(e.target);
         if (selectableElement && !this.ignored && this.pressTimer !== null) {
             clearTimeout(this.pressTimer);
@@ -152,17 +139,5 @@ export class SelectionContainerController<U extends SelectableElement> {
         if (!this.pressTimer) return;
         clearTimeout(this.pressTimer);
         this.ignored = true;
-    }
-
-    // GET RID OF IT WHEN :host-context() supported
-    private handleMouseOver(e: MouseEvent) {
-        const selectableElement = this.getSelectable(e.target);
-        if (!selectableElement) {return;}
-        selectableElement.multiselect = this._isMultiselect(selectableElement);
-    }
-
-    private handleMouseOut(e: MouseEvent) {
-        const selectableElement = this.getSelectable(e.target);
-        if (selectableElement) selectableElement.multiselect = false;
     }
 }
