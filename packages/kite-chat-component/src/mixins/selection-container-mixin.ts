@@ -48,14 +48,14 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         
         unselect(el: HTMLElement) {
             if (!(el instanceof _selectedElementType)) return;
-            //el.unselect();
-            //this.selectionContainerController.handleSelected(el);
+            el.unselect();
+            this.selectionContainerController.handleSelected(el);
         }
 
         select(el: HTMLElement) {
             if (!(el instanceof _selectedElementType)) return;
-            //el.select();
-            //this.selectionContainerController.handleSelected(el);
+            el.select();
+            this.selectionContainerController.handleSelected(el);
         }
 
         unselectAll() {
