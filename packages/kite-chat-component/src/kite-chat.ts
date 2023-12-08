@@ -22,14 +22,14 @@ import {
 } from './kite-payload';
 import {
   SelectionContainerMixin,
-  Select as KiteMsgSelect,
   VisibilityMixin,
   NotificationContainerMixin,
-  TimelineContainerMixin,
 } from './mixins';
 import {
   AnchorController, 
-  DraggableController
+  DraggableController,
+  TimelineContainerController,
+  Select as KiteMsgSelect,
 } from './controllers';
 import {
   KiteChatFooterElement, 
@@ -121,16 +121,14 @@ function getMessageActions(actions: MsgActionType[]): ContextMenuAction[] {
  */
 @customElement('kite-chat')
 export class KiteChatElement extends 
-    TimelineContainerMixin(
-      NotificationContainerMixin(
-        VisibilityMixin(
-          SelectionContainerMixin(
-              LitElement, 
-              KiteMsgElement,
-              {select: 'kite-chat.select'}
-            ), 
-          {show: 'kite-chat.show', hide: 'kite-chat.hide'}
-        )
+    NotificationContainerMixin(
+      VisibilityMixin(
+        SelectionContainerMixin(
+            LitElement, 
+            KiteMsgElement,
+            {select: 'kite-chat.select'}
+          ), 
+        {show: 'kite-chat.show', hide: 'kite-chat.hide'}
       )
     ) {
   @property()
@@ -169,6 +167,8 @@ export class KiteChatElement extends
   protected pointerAnchorController!: AnchorController;
 
   protected draggableController = new DraggableController(this, "#kite-toggle", this._toggleOpen.bind(this));
+
+  protected timelineContainerController = new TimelineContainerController(this);
 
   constructor() {
     super();

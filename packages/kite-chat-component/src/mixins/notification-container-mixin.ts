@@ -1,7 +1,7 @@
-import {LitElement, css, PropertyValues} from 'lit';
-import {queryAssignedElements, query} from 'lit/decorators.js';
+import {LitElement, css} from 'lit';
 import {KiteNotification} from '../kite-payload';
-import {KiteNotificationElement, NotificationState} from '../components';
+import {KiteNotificationElement} from '../components';
+import {NotificationContainerController} from '../controllers';
 
 /**
  * Type definition of a constructor.
@@ -45,59 +45,7 @@ export const NotificationContainerMixin = <T extends Constructor<LitElement>>(
             super();
         }
 
-        @queryAssignedElements({selector: 'kite-toast-notification'})
-        private _notificationSlotElements!: Array<KiteNotificationElement>;
-
-        @query(`slot`)
-        private _defaultSlot!: HTMLSlotElement;
-
-        private updateNotifications() {
-            let currentElement: KiteNotificationElement|null = null;
-
-            this._notificationSlotElements
-                .filter(el => el.state === NotificationState.NEW || el.state === NotificationState.ACTIVE)
-                .forEach((el) => {
-                    if (el.state === NotificationState.ACTIVE) {
-                        currentElement = el;
-                    } else if (el.state === NotificationState.NEW) {
-                        const message = el.message;
-                
-                        if (message === currentElement?.message) {
-                            currentElement && currentElement.collapsedCount++;
-                            this.removeChild(el);
-                        } else {
-                            currentElement = el;
-                            setTimeout(() => (el.state = NotificationState.ACTIVE), 0);
-                        }
-                    }
-                });
-        }
-
-        private handleNotificationSlotchange() {
-            this.updateNotifications();
-        }
-
-        private handleNotificationTransitionend(e: TransitionEvent) {
-            const current = (e.target as KiteNotificationElement);
-            if(current?.state === NotificationState.VIEWED) {
-                current.remove()
-            }
-        }
-
-        override firstUpdated(changedProperties: PropertyValues<this>): void {
-            super.firstUpdated(changedProperties);
-            const slot = this._defaultSlot;
-            this.updateNotifications();
-            slot.addEventListener('slotchange', this.handleNotificationSlotchange.bind(this));
-            slot.addEventListener('transitionend', this.handleNotificationTransitionend.bind(this));
-        }
-
-        override disconnectedCallback(): void {
-            super.disconnectedCallback();
-            const slot = this._defaultSlot;
-            slot.removeEventListener('slotchange', this.handleNotificationSlotchange.bind(this));
-            slot.removeEventListener('transitionend', this.handleNotificationTransitionend.bind(this));
-        }
+        protected notificationContainerController = new NotificationContainerController(this);
 
         appendNotification(notification: KiteNotification) {
             const {message, type, duration} = notification;
