@@ -40,7 +40,7 @@ import {
   ContextMenuAction,
   KitePointerAnchorElement,
 } from './components';
-import {KiteMsgElement} from './kite-msg';
+import {KiteMsgElement, MsgOutsideClick} from './kite-msg';
 
 console.debug('kite-chat loaded');
 
@@ -220,7 +220,7 @@ export class KiteChatElement extends
         >
         </kite-chat-header>
         <main
-          @click=${this._contextMenu}
+          @kite-msg.outsideclick=${this._contextMenu}
           @scroll=${() => this.contextMenu.hide()}
           class="relative flex flex-1 overflow-hidden flex-col-reverse bg-slate-300/50 snap-y overflow-y-auto outline-none border-none"
         >
@@ -357,8 +357,9 @@ export class KiteChatElement extends
     return !e.defaultPrevented;
   }
 
-  private _contextMenu(event: PointerEvent) {
-    if(event.defaultPrevented) return;
+  private _contextMenu(wrapperEvent: CustomEvent<MsgOutsideClick>) {
+    const event = wrapperEvent.detail;
+    if(event.defaultPrevented || this.selectedElements.length > 0) return;
     const msgElement = (event.target as HTMLElement).closest(KiteMsgElement.TAG) as KiteMsgElement | null;
     if(!msgElement) {
       return;

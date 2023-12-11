@@ -30,6 +30,13 @@ const hhmmLocalizedFormat = new Intl.DateTimeFormat(
   }
 );
 
+const CUSTOM_EVENT_INIT = {
+  bubbles: true,
+  composed: true,
+};
+
+export type MsgOutsideClick = PointerEvent;
+
 /**
  * Styled chat message component. Presence of the <pre>status</pre> attribute means outgoing message.
  *  @attr status
@@ -100,10 +107,28 @@ export class KiteMsgElement extends LitElement {
     this.selected = false;
   }
 
+  private handleClick(event: Event) {
+    const path = event.composedPath();
+    const isInsideMessageContainer = path.some((node) => node instanceof HTMLElement && node.classList.contains('message-container'));
+  
+    if (!isInsideMessageContainer) {
+      // Click occurred on the host but not on .message-container
+      this.dispatchEvent(new CustomEvent('kite-msg.outsideclick', {...CUSTOM_EVENT_INIT, detail: event}));
+    }
+  }  
+
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('click', this.handleClick.bind(this));
+  }
+  
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('click', this.handleClick.bind(this));
+  }
+
   override render() {
-    return html` <div class="message-container" @click=${(e: MouseEvent) => {
-      e.stopPropagation();
-    }}><slot></slot>${this._renderStatus()}${this._renderTimestamp()}</div>`;
+    return html` <div class="message-container"><slot></slot>${this._renderStatus()}${this._renderTimestamp()}</div>`;
   }
 
   private _renderStatus() {
