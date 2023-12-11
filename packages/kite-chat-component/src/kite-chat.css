@@ -39,6 +39,7 @@ main::-webkit-scrollbar-thumb {
   --kite-msg-sent-bg: theme('colors.neutral.600');
   --kite-msg-sent-border: theme('colors.stone.600');
   --kite-notification-bg: theme('colors.neutral.600');
+  --date-divider-bg: rgba(0, 0, 0, 0.5);
 }
 
 :host(:not([theme="dark"])) .kite-dialog {
@@ -56,6 +57,7 @@ main::-webkit-scrollbar-thumb {
     --kite-msg-sent-bg: theme('colors.neutral.600');
     --kite-msg-sent-border: theme('colors.stone.600');
     --kite-notification-bg: theme('colors.neutral.600');
+    --date-divider-bg: rgba(0, 0, 0, 0.5);
   }
 
   :host(:not([theme="light"])) .kite-dialog {
