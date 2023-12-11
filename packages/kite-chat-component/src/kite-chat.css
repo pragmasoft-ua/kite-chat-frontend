@@ -183,3 +183,8 @@ kite-context-menu {
 ::slotted(kite-date-divider) {
   @apply my-2;
 }
+
+::slotted(kite-toast-notification) {
+  width: calc(100% - 1rem);
+  @apply mx-2;
+}
