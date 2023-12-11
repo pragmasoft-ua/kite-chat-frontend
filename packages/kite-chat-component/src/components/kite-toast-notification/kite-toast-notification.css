@@ -6,7 +6,7 @@
     --color-error: theme('colors.red.500');
     --color-info: theme('colors.primary-color');
     --color-warning: theme('colors.yellow.500');
-    @apply flex !border !border-solid !border-[var(--color-info)] my-1.5 rounded shadow-md overflow-hidden snap-end scroll-my-1;
+    @apply flex !border !border-solid !border-[var(--color-info)] !my-1.5 rounded shadow-md overflow-hidden snap-end scroll-my-1;
 }
 
 .wrapper {

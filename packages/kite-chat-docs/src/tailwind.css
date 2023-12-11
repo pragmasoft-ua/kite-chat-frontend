@@ -14,7 +14,3 @@
 .site-title > img {
     @apply h-8
 }
-
-kite-msg {
-    margin-block: 0.375rem;
-}

@@ -1,11 +1,11 @@
 @config "../tailwind.config.lit.cjs";
 
 :host {
-  @apply flex flex-col items-start w-full relative px-2 select-none;
+  @apply flex flex-col items-start w-full relative px-2 select-none py-1.5;
 }
 
 .message-container {
-  @apply relative my-1.5 max-w-[80%] block whitespace-pre-line break-words rounded px-2 py-1 text-left shadow;
+  @apply relative max-w-[80%] block whitespace-pre-line break-words rounded px-2 py-1 text-left shadow;
   @apply select-text selection:bg-primary-color selection:text-white;
   @apply snap-end scroll-my-1;
 }
@@ -83,5 +83,5 @@ span {
 }
 
 :host([selected])::before {
-  @apply absolute content-[''] bottom-0 left-0 w-full h-full bg-primary-color opacity-40;
+  @apply absolute !content-[''] bottom-0 left-0 w-full h-full bg-primary-color opacity-40;
 }
