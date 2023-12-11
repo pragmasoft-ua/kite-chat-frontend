@@ -101,7 +101,9 @@ export class KiteMsgElement extends LitElement {
   }
 
   override render() {
-    return html` <div class="message-container"><slot></slot>${this._renderStatus()}${this._renderTimestamp()}</div>`;
+    return html` <div class="message-container" @click=${(e: MouseEvent) => {
+      e.stopPropagation();
+    }}><slot></slot>${this._renderStatus()}${this._renderTimestamp()}</div>`;
   }
 
   private _renderStatus() {
