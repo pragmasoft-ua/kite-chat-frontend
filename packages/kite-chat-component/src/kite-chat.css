@@ -30,6 +30,7 @@ main::-webkit-scrollbar-thumb {
   --kite-msg-border: white;
   --kite-msg-sent-bg: theme('colors.stone.300');
   --kite-msg-sent-border: theme('colors.stone.300');
+  --kite-notification-bg: theme('colors.stone.300');
 }
 
 :host([theme="dark"]) {
@@ -37,6 +38,7 @@ main::-webkit-scrollbar-thumb {
   --kite-msg-border: theme('colors.stone.800');
   --kite-msg-sent-bg: theme('colors.neutral.600');
   --kite-msg-sent-border: theme('colors.stone.600');
+  --kite-notification-bg: theme('colors.neutral.600');
 }
 
 :host(:not([theme="dark"])) .kite-dialog {
@@ -53,6 +55,7 @@ main::-webkit-scrollbar-thumb {
     --kite-msg-border: theme('colors.stone.800');
     --kite-msg-sent-bg: theme('colors.neutral.600');
     --kite-msg-sent-border: theme('colors.stone.600');
+    --kite-notification-bg: theme('colors.neutral.600');
   }
 
   :host(:not([theme="light"])) .kite-dialog {

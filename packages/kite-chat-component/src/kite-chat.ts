@@ -222,7 +222,7 @@ export class KiteChatElement extends
         <main
           @click=${this._contextMenu}
           @scroll=${() => this.contextMenu.hide()}
-          class="relative flex flex-1 overflow-hidden flex-col-reverse bg-slate-300/50 snap-y overflow-y-auto"
+          class="relative flex flex-1 overflow-hidden flex-col-reverse bg-slate-300/50 snap-y overflow-y-auto outline-none border-none"
         >
           <div class="flex min-h-min flex-col flex-wrap items-start">
             <slot></slot>
@@ -358,7 +358,7 @@ export class KiteChatElement extends
   }
 
   private _contextMenu(event: PointerEvent) {
-    if(this.selectedElements.length > 0) return;
+    if(event.defaultPrevented) return;
     const msgElement = (event.target as HTMLElement).closest(KiteMsgElement.TAG) as KiteMsgElement | null;
     if(!msgElement) {
       return;

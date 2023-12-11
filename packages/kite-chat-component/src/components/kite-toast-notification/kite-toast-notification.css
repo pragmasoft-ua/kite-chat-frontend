@@ -1,15 +1,20 @@
 @config "../../../tailwind.config.lit.cjs";
 
 :host {
-    @apply flex flex-1 mx-2 bg-gray-500 text-white my-1.5 rounded shadow-md overflow-hidden snap-end scroll-my-1;
+    background-color: var(--kite-notification-bg, theme('colors.neutral.600'));
+    --color-success: theme('colors.green.700');
+    --color-error: theme('colors.red.500');
+    --color-info: theme('colors.primary-color');
+    --color-warning: theme('colors.yellow.500');
+    @apply flex mx-2 !border !border-solid !border-[var(--color-info)] my-1.5 rounded shadow-md overflow-hidden snap-end scroll-my-1;
 }
 
 .wrapper {
-    @apply flex flex-1 px-2 py-2 bg-white bg-opacity-20;
+    @apply flex flex-1 px-2 py-2 gap-2;
 }
 
 span.message {
-    @apply px-2 flex-1;
+    @apply flex-1;
 }
 
 span:not(.message) {
@@ -17,23 +22,15 @@ span:not(.message) {
 }
 
 :host(:not([open])) span.message {
-    @apply overflow-hidden line-clamp-2;
+    @apply overflow-hidden line-clamp-1;
 }
 
 span.close {
-    @apply text-white cursor-pointer text-white border-none;
+    @apply cursor-pointer border-none;
 }
 
 span.close:hover {
-    @apply text-gray-300;
-}
-
-span.toggle {
-    @apply h-6 w-6 p-0 cursor-pointer leading-none select-none hidden;
-}
-
-.overflow span.toggle {
-    @apply block;
+    @apply opacity-75;
 }
 
 :host([open]) span.toggle {
@@ -41,29 +38,42 @@ span.toggle {
 }
 
 :host([type="success"]) {
-    @apply bg-green-700;
+    @apply !border-[var(--color-success)];
 }
 
 :host([type="warning"]) {
-    @apply bg-yellow-500;
+    @apply !border-[var(--color-warning)];
 }
 
 :host([type="error"]) {
-    @apply bg-red-500;
+    @apply !border-[var(--color-error)];
 }
 
 span.collapsed {
-    @apply flex-1 text-center w-full;
+    @apply text-center w-full h-[20px];
 }
 
 span.icon {
-    @apply flex flex-col px-1.5 pb-4 pt-2 relative;
+    @apply flex flex-col z-[-2] px-1.5 py-1 relative transform bg-[var(--color-info)] opacity-90;
+}
+
+:host([type="success"]) span.icon {
+    @apply bg-[var(--color-success)];
+}
+
+:host([type="warning"]) span.icon {
+    @apply bg-[var(--color-warning)];
+}
+
+:host([type="error"]) span.icon {
+    @apply bg-[var(--color-error)];
 }
 
 :host([duration][state="active"]) span.icon::after {
     animation: progressBar var(--kite-notification-duration, 5000ms) linear forwards;
-    @apply content-[''] w-full h-full z-[-1] bg-opacity-10 bg-black absolute bottom-0 left-0;
+    @apply content-[''] w-full h-full z-[-1] bg-opacity-30 bg-white absolute bottom-0 left-0;
 }
+
 @keyframes progressBar {
     to {
         height: 0%;

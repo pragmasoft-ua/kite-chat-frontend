@@ -6,7 +6,7 @@
  */
 
 import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
-import {customElement, property, query, state} from 'lit/decorators.js';
+import {customElement, property} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {formatNumberWithAbbreviation as formatNumber} from '../../utils';
 
@@ -38,11 +38,6 @@ export class KiteNotificationElement extends LitElement {
   @property({ reflect: true, type: Number }) duration?: number;
   @property({ reflect: true, type: Number }) collapsedCount: number = 1;
 
-  @query('.message')
-  private _messageElement!: HTMLElement;
-  @state()
-  private _overflow = false;
-
   override updated(changedProperties: PropertyValues<this>) {
     if (changedProperties.has('state') && this.state === NotificationState.ACTIVE) {
       if(this.duration) {
@@ -52,16 +47,6 @@ export class KiteNotificationElement extends LitElement {
         }, this.duration);
       }
     }
-    
-    if (changedProperties.has('message') && this._messageElement) {
-      setTimeout(() => {
-        this._overflow = this.isOverflow(this._messageElement);
-      }, 0);
-    }
-  }
-
-  private isOverflow(el: HTMLElement) {
-    return el.scrollHeight > el.clientHeight;
   }
 
   dismiss() {
@@ -72,15 +57,27 @@ export class KiteNotificationElement extends LitElement {
     this.open = !this.open;
   }
 
+  override connectedCallback() {
+    super.connectedCallback();
+    this.addEventListener('click', this.toggle.bind(this));
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback();
+    this.removeEventListener('click', this.toggle.bind(this));
+  }
+
   override render() {
     return html`
       <span class="icon">
-        <span class="collapsed ${classMap({'invisible': this.collapsedCount < 2})}">${formatNumber(this.collapsedCount)}</span>
+        <span class="collapsed ${classMap({'hidden': this.collapsedCount < 2 || !this.open})}">${formatNumber(this.collapsedCount)}</span>
       </span>
-      <div class="wrapper ${classMap({'overflow': this._overflow})}">
-        <span class="toggle" @click=${this.toggle}>▶</span>
-        <span class="message">${this.message}</span>
-        <span class="close" @click=${this.dismiss}>✕</span>
+      <div class="wrapper">
+        <span class="message ${classMap({'break-all': !this.open})}">${this.message}</span>
+        <span class="close" @click=${(e: MouseEvent) => {
+          e.stopPropagation();
+          this.dismiss();
+        }}>✕</span>
       </div>
     `;
   }

@@ -48,9 +48,9 @@ export class NotificationContainerController {
                 if (el.state === NotificationState.ACTIVE) {
                     currentElement = el;
                 } else if (el.state === NotificationState.NEW) {
-                    const message = el.message;
+                    const {message, type} = el;
             
-                    if (message === currentElement?.message) {
+                    if (message === currentElement?.message && type === currentElement?.type) {
                         currentElement && currentElement.collapsedCount++;
                         this.host.removeChild(el);
                     } else {

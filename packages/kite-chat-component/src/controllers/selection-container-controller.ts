@@ -34,8 +34,10 @@ export class SelectionContainerController<U extends SelectableElement> {
     private handleSelectionStartBound: (e: MouseEvent|TouchEvent) => void;
     private handleSelectionEndBound: (e: MouseEvent|TouchEvent) => void;
     private handleIgnoreSelectionBound: () => void;
+    private handleClickBound: (e: Event) => void;
     private pressTimer: number | null = null;
     private ignored = false; 
+    private selected = false; 
 
     constructor(
         private host: ReactiveControllerHost & SelectableContainer<U>,
@@ -58,6 +60,7 @@ export class SelectionContainerController<U extends SelectableElement> {
         this.handleSelectionStartBound = this.handleSelectionStart.bind(this);
         this.handleSelectionEndBound = this.handleSelectionEnd.bind(this);
         this.handleIgnoreSelectionBound = this.handleIgnoreSelection.bind(this);
+        this.handleClickBound = this.handleClick.bind(this);
     }
 
     hostUpdate() {
@@ -69,6 +72,7 @@ export class SelectionContainerController<U extends SelectableElement> {
             this.defaultSlot.removeEventListener('touchstart', this.handleSelectionStartBound,);
             this.defaultSlot.removeEventListener('touchmove', this.handleIgnoreSelectionBound,);
             this.defaultSlot.removeEventListener('touchend', this.handleSelectionEndBound);
+            this.defaultSlot.removeEventListener('click', this.handleClickBound);
         }
     }
 
@@ -80,6 +84,7 @@ export class SelectionContainerController<U extends SelectableElement> {
         this.defaultSlot?.addEventListener('touchstart', this.handleSelectionStartBound, { passive: true });
         this.defaultSlot?.addEventListener('touchmove', this.handleIgnoreSelectionBound, { passive: true });
         this.defaultSlot?.addEventListener('touchend', this.handleSelectionEndBound);
+        this.defaultSlot?.addEventListener('click', this.handleClickBound);
     }
 
     private _updateSelected(selectedElement: SelectableElement) {
@@ -103,6 +108,7 @@ export class SelectionContainerController<U extends SelectableElement> {
         const e = new CustomEvent(this.eventNames.select, {...CUSTOM_EVENT_INIT, detail});
         this.host.dispatchEvent(e);
         if (!e.defaultPrevented) this._updateSelected(selectedElement);
+        this.selected = true;
     }
 
     private getSelectable(target: HTMLElement|EventTarget|null): U | null {
@@ -130,8 +136,11 @@ export class SelectionContainerController<U extends SelectableElement> {
         if (selectableElement && !this.ignored && this.pressTimer !== null) {
             clearTimeout(this.pressTimer);
             vibrate(VibrationPattern.SHORT_PRESS);
-            selectableElement.selected = this._isMultiselect(selectableElement) ? !selectableElement.selected : false;
-            this.handleSelected(selectableElement);
+            const select = this._isMultiselect(selectableElement) ? !selectableElement.selected : false;
+            if(selectableElement.selected !== select) {
+                selectableElement.selected = select;
+                this.handleSelected(selectableElement);
+            }
         }
     }
 
@@ -139,5 +148,12 @@ export class SelectionContainerController<U extends SelectableElement> {
         if (!this.pressTimer) return;
         clearTimeout(this.pressTimer);
         this.ignored = true;
+    }
+
+    private handleClick(e: Event) {
+        if(this.selected) {
+            e.preventDefault();
+        }
+        this.selected = false;
     }
 }
