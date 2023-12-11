@@ -66,7 +66,7 @@ export class SelectionContainerController<U extends SelectableElement> {
     hostUpdate() {
         if (this.defaultSlot) {
             this.defaultSlot.removeEventListener('slotchange', this.handleSlotchangeBound);
-            this.defaultSlot.removeEventListener('pointerdown', this.handleSelectionStartBound);
+            this.defaultSlot.removeEventListener('mousedown', this.handleSelectionStartBound);
             this.defaultSlot.removeEventListener('mouseup', this.handleSelectionEndBound);
             this.defaultSlot.removeEventListener('mousemove', this.handleIgnoreSelectionBound);
             this.defaultSlot.removeEventListener('touchstart', this.handleSelectionStartBound,);
@@ -132,6 +132,7 @@ export class SelectionContainerController<U extends SelectableElement> {
     }
 
     private handleSelectionEnd(e: MouseEvent|TouchEvent) {
+        if (window.TouchEvent && e instanceof TouchEvent) return;
         const selectableElement = this.getSelectable(e.target);
         if (selectableElement && !this.ignored && this.pressTimer !== null) {
             clearTimeout(this.pressTimer);
