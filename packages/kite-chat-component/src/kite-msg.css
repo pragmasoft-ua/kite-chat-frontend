@@ -47,7 +47,7 @@ span.status {
 }
 
 span.info-container {
-  @apply float-right select-none bottom-[-0.375rem] mt-1;
+  @apply float-right select-none bottom-[-0.375rem] mt-1 text-[inherit];
   white-space: nowrap;
 }
 
