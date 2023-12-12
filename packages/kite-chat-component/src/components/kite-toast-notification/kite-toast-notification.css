@@ -21,8 +21,12 @@ span:not(.message) {
     @apply select-none;
 }
 
+span {
+    @apply leading-[1.25em];
+}
+
 :host(:not([open])) span.message {
-    @apply overflow-hidden line-clamp-1;
+    @apply line-clamp-1;
 }
 
 span.close {
@@ -50,11 +54,11 @@ span.close:hover {
 }
 
 span.collapsed {
-    @apply text-center w-full h-[20px];
+    @apply text-center w-full h-[1.25em];
 }
 
 span.icon {
-    @apply flex flex-col px-1.5 py-1 transform bg-[var(--color-info)] opacity-90 text-secondary-color;
+    @apply flex flex-col px-1.5 py-2 transform bg-[var(--color-info)] opacity-90 text-secondary-color;
 }
 
 :host([type="success"]) span.icon {
@@ -81,5 +85,5 @@ span.icon {
 }
 
 span.icon svg {
-    @apply w-[20px] h-[20px];
+    @apply w-[1.25em] h-[1.25em];
 }
