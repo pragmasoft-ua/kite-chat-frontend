@@ -20,6 +20,7 @@ export declare class SelectionContainerInterface<T extends SelectableElement> {
     readonly selectedElements: Array<T>;
     select(el: T): void;
     unselect(el: T): void;
+    selectAll(): void;
     unselectAll(): void;
 }
 
@@ -56,6 +57,11 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
             if (!(el instanceof _selectedElementType)) return;
             el.select();
             this.selectionContainerController.handleSelected(el);
+        }
+
+        selectAll() {
+            this.selectedElements = [...this.selectionContainerController.selectableSlotElements];
+            this.selectedElements.forEach((element) => element.select());
         }
 
         unselectAll() {

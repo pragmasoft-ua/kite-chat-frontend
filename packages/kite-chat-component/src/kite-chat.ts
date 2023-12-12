@@ -86,6 +86,7 @@ enum MsgActionType {
   UNSELECT = 'unselect',
   EDIT = 'edit',
   DOWNLOAD = 'download',
+  SELECT_ALL = 'select-all',
 }
 
 const MESSAGE_ACTION_LABEL = {
@@ -94,6 +95,7 @@ const MESSAGE_ACTION_LABEL = {
   [MsgActionType.UNSELECT]: 'Unselect message',
   [MsgActionType.EDIT]: 'Edit message',
   [MsgActionType.DOWNLOAD]: 'Download file',
+  [MsgActionType.SELECT_ALL]: 'Select all messages',
 }
 
 function getMessageActions(actions: MsgActionType[]): ContextMenuAction[] {
@@ -369,6 +371,7 @@ export class KiteChatElement extends
       ...(this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
       ...(this.getFile(msgElement) ? [MsgActionType.DOWNLOAD] : []),
       ...(msgElement.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
+      MsgActionType.SELECT_ALL,
     ]);
     this.pointerAnchor.init(event, msgElement);
     this.contextMenu.setActions(actions);
@@ -394,6 +397,9 @@ export class KiteChatElement extends
         break;
       case MsgActionType.DOWNLOAD:
         this.getFile(msgElement)?.download();
+        break;
+      case MsgActionType.SELECT_ALL:
+        this.selectAll();
         break;
     }
   }

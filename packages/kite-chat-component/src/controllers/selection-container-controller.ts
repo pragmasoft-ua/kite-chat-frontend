@@ -35,7 +35,7 @@ export class SelectionContainerController<U extends SelectableElement> {
     private handleSelectionEndBound: (e: MouseEvent|TouchEvent) => void;
     private handleIgnoreSelectionBound: () => void;
     private pressTimer: number | null = null;
-    private ignored = false; 
+    private ignored = false;
 
     constructor(
         private host: ReactiveControllerHost & SelectableContainer<U>,
@@ -49,8 +49,16 @@ export class SelectionContainerController<U extends SelectableElement> {
         return this.host.shadowRoot?.querySelector('slot') as HTMLSlotElement|null;
     }
 
+    get selectableSlotElements(): Array<U> {
+        return this.defaultSlot?.assignedElements().filter((node) => node.matches(this.selectedElementTag)) as Array<U>;
+    }
+
     get selectedSlotElements(): Array<U> {
-        return this.defaultSlot?.assignedElements().filter((node) => node.matches('[selected]')) as Array<U>;
+        return this.selectableSlotElements?.filter((node) => node.selected) as Array<U>;
+    }
+
+    private get isTouchscreen() {
+        return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
     }
 
     hostConnected() {
@@ -63,31 +71,50 @@ export class SelectionContainerController<U extends SelectableElement> {
     hostUpdate() {
         if (this.defaultSlot) {
             this.defaultSlot.removeEventListener('slotchange', this.handleSlotchangeBound);
-            this.defaultSlot.removeEventListener('mousedown', this.handleSelectionStartBound);
-            this.defaultSlot.removeEventListener('mouseup', this.handleSelectionEndBound);
-            this.defaultSlot.removeEventListener('mousemove', this.handleIgnoreSelectionBound);
-            this.defaultSlot.removeEventListener('touchstart', this.handleSelectionStartBound,);
-            this.defaultSlot.removeEventListener('touchmove', this.handleIgnoreSelectionBound,);
-            this.defaultSlot.removeEventListener('touchend', this.handleSelectionEndBound);
+            if(this.isTouchscreen) {
+                this.defaultSlot.removeEventListener('touchstart', this.handleSelectionStartBound);
+                this.defaultSlot.removeEventListener('touchmove', this.handleIgnoreSelectionBound);
+                this.defaultSlot.removeEventListener('touchend', this.handleSelectionEndBound);
+            } else {
+                this.defaultSlot.removeEventListener('mousedown', this.handleSelectionStartBound);
+                this.defaultSlot.removeEventListener('mouseup', this.handleSelectionEndBound);
+                this.defaultSlot.removeEventListener('mousemove', this.handleIgnoreSelectionBound);
+            }
         }
     }
 
     hostUpdated() {
         this.defaultSlot?.addEventListener('slotchange', this.handleSlotchangeBound);
-        this.defaultSlot?.addEventListener('mousedown', this.handleSelectionStartBound);
-        this.defaultSlot?.addEventListener('mouseup', this.handleSelectionEndBound);
-        this.defaultSlot?.addEventListener('mousemove', this.handleIgnoreSelectionBound);
-        this.defaultSlot?.addEventListener('touchstart', this.handleSelectionStartBound, { passive: true });
-        this.defaultSlot?.addEventListener('touchmove', this.handleIgnoreSelectionBound, { passive: true });
-        this.defaultSlot?.addEventListener('touchend', this.handleSelectionEndBound);
+        if(this.isTouchscreen) {
+            this.defaultSlot?.addEventListener('touchstart', this.handleSelectionStartBound, { passive: true });
+            this.defaultSlot?.addEventListener('touchmove', this.handleIgnoreSelectionBound, { passive: true });
+            this.defaultSlot?.addEventListener('touchend', this.handleSelectionEndBound);
+        } else {
+            this.defaultSlot?.addEventListener('mousedown', this.handleSelectionStartBound);
+            this.defaultSlot?.addEventListener('mouseup', this.handleSelectionEndBound);
+            this.defaultSlot?.addEventListener('mousemove', this.handleIgnoreSelectionBound);
+        }
     }
 
     private _updateSelected(selectedElement: SelectableElement) {
         if(selectedElement.selected) {
-            this.host.selectedElements = [...this.host.selectedElements, selectedElement as U];
+            if(this.host.selectedElements.length === 1) {
+                const range = this.getRange(this.host.selectedElements[0], selectedElement);
+                range.forEach(el => el.select());
+                this.host.selectedElements = [...range];
+            } else {
+                this.host.selectedElements = [...this.host.selectedElements, selectedElement as U];
+            }
         } else {
             this.host.selectedElements = [...this.host.selectedElements.filter(el => !selectedElement.isEqualNode(el))];
         }
+    }
+
+    private getRange(startEl: SelectableElement, endEl: SelectableElement) {
+        const startIndex = this.selectableSlotElements.indexOf(startEl as U);
+        const endIndex = this.selectableSlotElements.indexOf(endEl as U);
+        const [min, max] = [startIndex, endIndex].sort((a, b) => a - b);
+        return this.selectableSlotElements.slice(min, max + 1);
     }
 
     private _isMultiselect(selectableElement: SelectableElement) {
@@ -126,7 +153,6 @@ export class SelectionContainerController<U extends SelectableElement> {
     }
 
     private handleSelectionEnd(e: MouseEvent|TouchEvent) {
-        if (window.TouchEvent && e instanceof TouchEvent) return;
         const selectableElement = this.getSelectable(e.target);
         if (selectableElement && !this.ignored && this.pressTimer !== null) {
             clearTimeout(this.pressTimer);
