@@ -128,12 +128,12 @@ export class KiteMsgElement extends LitElement {
   }
 
   override render() {
-    return html` <div class="message-container"><slot></slot>${this._renderStatus()}${this._renderTimestamp()}</div>`;
+    return html` <div class="message-container"><slot></slot><span class="info-container">${this._renderStatus()}${this._renderTimestamp()}</span></div>`;
   }
 
   private _renderStatus() {
     return this.status
-      ? html`<span class="${MsgStatus[this.status]}"></span>`
+      ? html`<span class="status ${MsgStatus[this.status]}"></span>`
       : null;
   }
 

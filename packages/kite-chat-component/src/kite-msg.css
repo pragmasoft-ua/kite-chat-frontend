@@ -39,20 +39,20 @@
 }
 
 time {
-  @apply opacity-60 text-sm relative m-1 !float-right bottom-[-0.375rem] select-none;
+  @apply opacity-60 text-sm mx-1;
 }
 
-span {
-  @apply no-underline relative !float-right [letter-spacing:-0.3em] select-none text-neutral-500;
+span.status {
+  @apply no-underline float-right [letter-spacing:-0.3em] text-neutral-500;
+}
+
+span.info-container {
+  @apply float-right select-none bottom-[-0.375rem] mt-1;
+  white-space: nowrap;
 }
 
 :host([edited]) time::before {
-  @apply content-['(edited)'] relative right-1 opacity-60 text-sm float-left tracking-normal;
-}
-
-span::after {
-  position: relative;
-  bottom: -0.5rem;
+  @apply content-['(edited)'] relative opacity-60 text-sm float-left tracking-normal;
 }
 
 span.read::after,
