@@ -14,3 +14,7 @@
 .site-title > img {
     @apply h-8
 }
+
+main kite-toast-notification {
+    --kite-notification-bg: var(--sl-color-gray-7);
+}

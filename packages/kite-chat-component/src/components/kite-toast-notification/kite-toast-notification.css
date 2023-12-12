@@ -2,10 +2,10 @@
 
 :host {
     background-color: var(--kite-notification-bg, theme('colors.neutral.600'));
-    --color-success: theme('colors.green.700');
-    --color-error: theme('colors.red.500');
-    --color-info: theme('colors.primary-color');
-    --color-warning: theme('colors.yellow.500');
+    --color-success: var(--kite-notification-success, theme('colors.green.700'));
+    --color-error: var(--kite-notification-error, theme('colors.red.500'));
+    --color-info: var(--kite-notification-info, theme('colors.primary-color'));
+    --color-warning: var(--kite-notification-warning, theme('colors.yellow.500'));
     @apply flex !border !border-solid !border-[var(--color-info)] !my-1.5 rounded shadow-md overflow-hidden snap-end scroll-my-1;
 }
 
@@ -54,7 +54,7 @@ span.collapsed {
 }
 
 span.icon {
-    @apply flex flex-col z-[-2] px-1.5 py-1 relative transform bg-[var(--color-info)] opacity-90 text-secondary-color;
+    @apply flex flex-col px-1.5 py-1 transform bg-[var(--color-info)] opacity-90 text-secondary-color;
 }
 
 :host([type="success"]) span.icon {
@@ -71,7 +71,7 @@ span.icon {
 
 :host([duration][state="active"]) span.icon::after {
     animation: progressBar var(--kite-notification-duration, 5000ms) linear forwards;
-    @apply content-[''] w-full h-full z-[-1] bg-opacity-30 bg-white absolute bottom-0 left-0;
+    @apply content-[''] w-full h-full bg-opacity-30 bg-white absolute bottom-0 left-0;
 }
 
 @keyframes progressBar {

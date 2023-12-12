@@ -27,6 +27,18 @@ export enum NotificationState {
   VIEWED = "viewed",
 }
 
+/**
+ * @attr {Boolean} open - displays full message if true or only first line if false or missing
+ * @attr {number} duration - setting notification active state duration in ms, ignored if missing
+ * @attr {"new" | "active" | "viewed"} state - defines notification state, using prefers-color-scheme by default
+ * @attr {number} collapsedCount - displays collapsed messages count if bigger than one
+ * @attr {"info" | "warning" | "error" | "success"} type - setting the notification style
+ * @cssvar --kite-notification-bg - notification message background color
+ * @cssvar --kite-notification-success - success accent color, styles notification border and icon background
+ * @cssvar --kite-notification-error - error accent color, styles notification border and icon background
+ * @cssvar --kite-notification-warning - warning accent color, styles notification border and icon background
+ * @cssvar --kite-notification-info - info accent color, styles notification border and icon background
+ */
 @customElement(KiteNotificationElement.TAG)
 export class KiteNotificationElement extends LitElement {
   static TAG = 'kite-toast-notification';

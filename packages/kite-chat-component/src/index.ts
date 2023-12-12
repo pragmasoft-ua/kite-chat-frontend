@@ -6,7 +6,7 @@ import type {
 } from './kite-chat';
 import {KiteFileElement} from './kite-file';
 import type {KiteMsgElement} from './kite-msg';
-import type {KiteNotificationElement} from './components/kite-toast-notification';
+import type {KiteNotificationElement} from './components';
 import "@oddbird/popover-polyfill";
 
 declare global {
@@ -33,6 +33,7 @@ declare global {
   }
 }
 
+export * from './components/kite-toast-notification';
 export * from './kite-chat';
 export * from './kite-msg';
 export * from './kite-file';

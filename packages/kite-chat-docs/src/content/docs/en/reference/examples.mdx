@@ -1,0 +1,64 @@
+---
+title: Elements Examples
+description: An example of Kite Chat elements.
+---
+
+### Kite Toast Notification
+
+##### Warning
+<kite-toast-notification message="You are using the demo version!" type="warning"></kite-toast-notification>
+```html
+<kite-toast-notification message="You are using the demo version!" type="warning"></kite-toast-notification>
+```
+
+##### Error
+<kite-toast-notification message="Oops! An error occurred while processing your request. It seems there was an issue with the server connection. Please try again later." type="error"></kite-toast-notification>
+```html
+<kite-toast-notification message="Oops! An error occurred while processing your request. It seems there was an issue with the server connection. Please try again later." type="error"></kite-toast-notification>
+```
+
+##### Success
+<kite-toast-notification message="Connected to host." type="success"></kite-toast-notification>
+```html
+<kite-toast-notification message="Connected to host." type="success"></kite-toast-notification>
+```
+
+##### Info
+<kite-toast-notification message="Your messages have been restored." type="info"></kite-toast-notification>
+```html
+<kite-toast-notification message="Your messages have been restored." type="info"></kite-toast-notification>
+```
+
+### Kite Notification Container
+
+##### Collapsed
+<kite-notification-container>
+    <kite-toast-notification message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification message="An unexpected error occurred. Please try again later." type="error"></kite-toast-notification>
+    <kite-toast-notification message="An unexpected error occurred. Please try again later." type="error"></kite-toast-notification>
+</kite-notification-container>
+```html
+<kite-notification-container>
+    <kite-toast-notification message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification message="An unexpected error occurred. Please try again later." type="error"></kite-toast-notification>
+    <kite-toast-notification message="An unexpected error occurred. Please try again later." type="error"></kite-toast-notification>
+</kite-notification-container>
+```
+
+##### Auto-dismiss
+<kite-notification-container>
+    <kite-toast-notification duration="5000" message="Connected to host." type="success"></kite-toast-notification>
+    <kite-toast-notification duration="6000" message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification duration="7000" message="An unexpected error occurred. Please try again later." type="error"></kite-toast-notification>
+</kite-notification-container>
+```html
+<kite-notification-container>
+    <kite-toast-notification duration="5000" message="Connected to host." type="success"></kite-toast-notification>
+    <kite-toast-notification duration="6000" message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification duration="7000" message="An unexpected error occurred. Please try again later." type="error"></kite-toast-notification>
+</kite-notification-container>
+```
