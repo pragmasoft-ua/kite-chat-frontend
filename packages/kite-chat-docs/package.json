@@ -6,8 +6,8 @@
   "version": "2023.10.7",
   "browserslist": "> 0.5%, last 2 versions, not dead",
   "scripts": {
-    "dev": "astro dev",
-    "dev:test": "NODE_ENV=test astro dev",
+    "dev": "npm run copy:elements && astro dev",
+    "dev:test": "npm run copy:module && npm run copy:elements && NODE_ENV=test astro dev",
     "lint": "npm run lint:eslint",
     "lint:eslint": "eslint \"src/**/*.ts\"",
     "build": "rimraf dist && npm run copy:elements && NODE_ENV=production astro build",
