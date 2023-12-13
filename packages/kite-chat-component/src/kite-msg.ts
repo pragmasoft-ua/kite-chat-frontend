@@ -111,7 +111,7 @@ export class KiteMsgElement extends LitElement {
     const path = event.composedPath();
     const isInsideMessageContainer = path.some((node) => node instanceof HTMLElement && node.classList.contains('message-container'));
   
-    if (!isInsideMessageContainer) {
+    if (!isInsideMessageContainer && !event.defaultPrevented) {
       // Click occurred on the host but not on .message-container
       this.dispatchEvent(new CustomEvent('kite-msg.outsideclick', {...CUSTOM_EVENT_INIT, detail: event}));
     }
