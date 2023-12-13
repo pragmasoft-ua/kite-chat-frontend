@@ -16,6 +16,18 @@ Before using the Kite Chat component add the following snippet inside the <Tag n
 
 This script tag will make the kite-chat component available for use in your application.
 
+:::caution[Flash of Unstyled Content]
+To prevent FOUC while component module is loading also include this snippet inside the <Tag name="head"/> section:
+
+```html
+<style>
+    :not(:defined) {
+        display: none;
+    }
+</style>
+```
+:::
+
 ### Usage
 
 To create Kite Chat wiget add the following to the <Tag name="body"/> section:
