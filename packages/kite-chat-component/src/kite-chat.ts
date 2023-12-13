@@ -292,6 +292,10 @@ export class KiteChatElement extends
     }
   }
 
+  override _selectionCallback() {
+    this.contextMenu.hide();
+  }
+
   editMsg(messageId: string, msg: KiteMsg) {
     const msgElement = this.querySelector(
       `${KiteMsgElement.TAG}[messageId="${messageId}"]`

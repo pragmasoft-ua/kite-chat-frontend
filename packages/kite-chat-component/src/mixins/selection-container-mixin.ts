@@ -22,6 +22,7 @@ export declare class SelectionContainerInterface<T extends SelectableElement> {
     unselect(el: T): void;
     selectAll(): void;
     unselectAll(): void;
+    _selectionCallback(): void
 }
 
 export const SelectionContainerMixin = <T extends Constructor<LitElement>, U extends SelectableElement>(
@@ -45,7 +46,9 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         @state()
         selectedElements: Array<U> = [];
 
-        protected selectionContainerController = new SelectionContainerController<U>(this, _selectedElementType.TAG, eventNames);
+        protected selectionContainerController = new SelectionContainerController<U>(
+            this, _selectedElementType.TAG, eventNames, this._selectionCallback.bind(this)
+        );
         
         unselect(el: HTMLElement) {
             if (!(el instanceof _selectedElementType)) return;
@@ -67,6 +70,10 @@ export const SelectionContainerMixin = <T extends Constructor<LitElement>, U ext
         unselectAll() {
             this.selectedElements.forEach((element) => element.unselect());
             this.selectedElements = [];
+        }
+
+        _selectionCallback() {
+            return;
         }
     }
     return SelectionContainerElement as Constructor<SelectionContainerInterface<U>> & T;

@@ -43,6 +43,7 @@ export class SelectionContainerController<U extends SelectableElement> {
         private host: ReactiveControllerHost & SelectableContainer<U>,
         private selectedElementTag: string,
         private eventNames: SelectionEventNames,
+        private selectionCallback?: () => void
     ) {
         this.host.addController(this);
     }
@@ -137,6 +138,7 @@ export class SelectionContainerController<U extends SelectableElement> {
         if (!e.defaultPrevented) {
             this._updateSelected(selectedElement);
             this.selectionFlag = true;
+            this.selectionCallback && this.selectionCallback();
         }
     }
 
