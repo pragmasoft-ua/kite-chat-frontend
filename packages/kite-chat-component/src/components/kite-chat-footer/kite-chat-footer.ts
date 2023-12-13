@@ -7,6 +7,7 @@
 import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
 import {customElement, query, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
+import {ifDefined} from 'lit/directives/if-defined.js';
 import {sharedStyles} from '../../shared-styles';
 
 import footerStyles from './kite-chat-footer.css?inline';
@@ -56,6 +57,10 @@ export class KiteChatFooterElement extends LitElement {
   @state()
   editMessage: KiteMsgElement|null = null;
 
+  private get editMessageFile() {
+    return this.editMessage?.querySelector('kite-file');
+  }
+
   override updated(changedProperties: PropertyValues<this>): void {
     super.updated(changedProperties);
 
@@ -64,6 +69,8 @@ export class KiteChatFooterElement extends LitElement {
       if(!this.editMessage.querySelector('kite-file')) {
         this.textarea.value = this.editMessage.innerText;
         this.textarea.focus();
+      } else {
+        this.fileInput.click();
       }
     }
   }
@@ -116,6 +123,8 @@ export class KiteChatFooterElement extends LitElement {
 }
 
   private _renderFileInput() {
+    const isActive = !this.editMessage || !!this.editMessageFile;
+    const mimeType = this.editMessageFile?.file?.type;
     return html`
         <label>
             <input
@@ -124,6 +133,8 @@ export class KiteChatFooterElement extends LitElement {
                 aria-hidden="true"
                 multiple
                 @change=${this._onFileInput}
+                .disabled=${!isActive}
+                accept=${ifDefined(mimeType)}
             />
             <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -131,7 +142,13 @@ export class KiteChatFooterElement extends LitElement {
                 viewBox="0 0 24 24"
                 stroke-width="1.5"
                 stroke="currentColor"
-                class="h-6 w-6 cursor-pointer opacity-50 hover:opacity-100"
+                class="h-6 w-6 ${classMap({
+                  'opacity-50': isActive,
+                  'cursor-pointer': isActive,
+                  'hover:opacity-100': isActive,
+                  'opacity-30': !isActive,
+                  'pointer-events-none': !isActive,
+                })}"
             >
                 <title>Attach file</title>
                 <path
@@ -145,6 +162,7 @@ export class KiteChatFooterElement extends LitElement {
   }
 
   private _renderTextInput() {
+    const isActive = !this.editMessageFile;
     return html`
       <textarea
         required
@@ -156,6 +174,7 @@ export class KiteChatFooterElement extends LitElement {
         class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
         @input=${this._handleEnabled}
         @keyup=${this._handleKeyUp}
+        .disabled=${!isActive}
       ></textarea>
     `;
   }
@@ -164,15 +183,14 @@ export class KiteChatFooterElement extends LitElement {
     if(!this.editMessage) {
       return null;
     }
-    const file = this.editMessage.querySelector('kite-file');
     return html`
       <div class="flex items-center gap-1 rounded-b p-2">
-        ${!file
+        ${!this.editMessageFile
           ? html`<span class="edit-message">${this.editMessage.textContent}</span>`
           : html`<span 
             class="edit-message edit-message_file" 
             @click="${() => this.fileInput.click()}"
-          >${file.name}</span>`
+          >${this.editMessageFile.name}</span>`
         }
         <span
           data-cancel
