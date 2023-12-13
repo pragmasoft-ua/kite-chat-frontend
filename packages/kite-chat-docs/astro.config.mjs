@@ -92,11 +92,12 @@ export default defineConfig({
         directory: 'reference'
       }
     }],
-    defaultLocale: 'en',
+    defaultLocale: 'root', // optional
     locales: {
       // English docs
-      en: {
+      root: {
         label: 'English',
+        lang: 'en', // lang is required for root locales
       },
       // Ukranian docs
       ua: {
