@@ -26,7 +26,8 @@ import {
   KiteMsgDelete,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
-import KiteWorkerURL from './kite-worker?url';
+import KiteDedicatedWorker from './kite-worker?worker&inline';
+import KiteSharedWorker from './kite-worker?sharedworker&inline';
 import {assert} from './assert';
 import {
   KiteDB, 
@@ -98,8 +99,8 @@ export class KiteChat {
     const onWorkerMessageBound = this.onWorkerMessage.bind(this);
 
     const kiteWorker = window.SharedWorker 
-      ? new SharedWorker(KiteWorkerURL, {type: 'module'}) 
-      : new Worker(KiteWorkerURL, {type: 'module'});
+      ? new KiteSharedWorker() 
+      : new KiteDedicatedWorker();
 
     const endpoint = new URL(this.opts.endpoint);
 
