@@ -26,7 +26,7 @@ import {
   KiteMsgDelete,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
-import KiteWorker from './kite-worker?sharedworker&inline';
+import KiteWorkerURL from './kite-worker?url';
 import {assert} from './assert';
 import {
   KiteDB, 
@@ -57,7 +57,7 @@ const KITE_USER_ID_STORE_KEY = 'KITE_USER_ID';
 
 export class KiteChat {
   protected readonly opts: KiteChatOptions;
-  protected kiteWorker: SharedWorker | null;
+  protected kiteWorker: Worker | SharedWorker | null;
   readonly element: KiteChatElement | null;
   private db: KiteDB | null;
 
@@ -83,7 +83,7 @@ export class KiteChat {
 
     addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        this.kiteWorker?.port.postMessage({
+        this.postMessage({
           type: MsgType.ACTIVE_TAB,
         });
         this.restore();
@@ -97,7 +97,9 @@ export class KiteChat {
 
     const onWorkerMessageBound = this.onWorkerMessage.bind(this);
 
-    const kiteWorker = new KiteWorker();
+    const kiteWorker = window.SharedWorker 
+      ? new SharedWorker(KiteWorkerURL, {type: 'module'}) 
+      : new Worker(KiteWorkerURL, {type: 'module'});
 
     const endpoint = new URL(this.opts.endpoint);
 
@@ -110,35 +112,59 @@ export class KiteChat {
       'enpoint url should have c=<channel name> required query parameter'
     );
 
-    kiteWorker.port.onmessage = onWorkerMessageBound;
-    kiteWorker.port.onmessageerror = this.onDeliveryError.bind(this);
-    kiteWorker.addEventListener('error', this.onWorkerError.bind(this));
-    kiteWorker.port.start();
-    const join: JoinChannel = {
-      type: MsgType.JOIN,
-      endpoint: this.opts.endpoint, // DOMException: URL object could not be cloned
-      memberId: this.opts.userId as string,
-      memberName: this.opts.userName,
-      eagerlyConnect: this.opts.eagerlyConnect,
-    };
-    kiteWorker.port.postMessage(join);
+    if (kiteWorker instanceof Worker) {
+      kiteWorker.onmessage = onWorkerMessageBound;
+      kiteWorker.onmessageerror = this.onDeliveryError.bind(this);
+      kiteWorker.addEventListener('error', this.onWorkerError.bind(this));
+      const join: JoinChannel = {
+        type: MsgType.JOIN,
+        endpoint: this.opts.endpoint, // DOMException: URL object could not be cloned
+        memberId: this.opts.userId as string,
+        memberName: this.opts.userName,
+        eagerlyConnect: this.opts.eagerlyConnect,
+      };
+      kiteWorker.postMessage(join);
+    } else {
+      kiteWorker.port.onmessage = onWorkerMessageBound;
+      kiteWorker.port.onmessageerror = this.onDeliveryError.bind(this);
+      kiteWorker.addEventListener('error', this.onWorkerError.bind(this));
+      kiteWorker.port.start();
+      const join: JoinChannel = {
+        type: MsgType.JOIN,
+        endpoint: this.opts.endpoint, // DOMException: URL object could not be cloned
+        memberId: this.opts.userId as string,
+        memberName: this.opts.userName,
+        eagerlyConnect: this.opts.eagerlyConnect,
+      };
+      kiteWorker.port.postMessage(join);
+    }
 
     this.kiteWorker = kiteWorker;
   }
 
-  public disconnect() {
-    if (!this.kiteWorker) return;
+  private postMessage(msg: KiteMsg) {
+    if (!this.kiteWorker) {
+      throw new Error('Not connected');
+    }
+    this.kiteWorker instanceof Worker 
+      ? this.kiteWorker.postMessage(msg) 
+      : this.kiteWorker.port.postMessage(msg);
+  }
 
+  private close() {
+    if(!this.kiteWorker) return;
+    !(this.kiteWorker instanceof Worker) && this.kiteWorker.port.close();
+    this.kiteWorker = null;
+  }
+
+  public disconnect() {
     console.debug('disconnect');
     this.element?.appendNotification({message: 'Disconnected from host', type: NotificationType.WARNING});
 
-    if (this.kiteWorker) {
-      this.kiteWorker.port.postMessage({
-        type: MsgType.DISCONNECTED,
-      });
-    }
-    this.kiteWorker.port.close();
-    this.kiteWorker = null;
+    this.postMessage({
+      type: MsgType.DISCONNECTED,
+    });
+    this.close();
   }
 
   private save(msg: ContentMsg) {
@@ -217,13 +243,10 @@ export class KiteChat {
     } else {
       throw new Error('Unexpected payload type ' + JSON.stringify(detail));
     }
-    if (!this.kiteWorker) {
-      throw new Error('Not connected');
-    }
     if(!outgoing.edited) {
       console.debug('outgoing', outgoing);
       this.db && addMessage(outgoing, this.db);
-      this.kiteWorker.port.postMessage(outgoing);
+      this.postMessage(outgoing);
     } else {
       this.db && modifyMessage(outgoing.messageId, outgoing, this.db);
       //TODO backend message editing

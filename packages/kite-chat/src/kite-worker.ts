@@ -3,7 +3,7 @@
 
 const WS_CLOSE_REASON_NORMAL = 1000;
 
-declare const self: SharedWorkerGlobalScope;
+declare const self: SharedWorkerGlobalScope | DedicatedWorkerGlobalScope;
 
 import {MessagePort} from 'worker_threads';
 import {assert} from './assert';
@@ -93,9 +93,15 @@ const tabPorts = new Set<KiteMessagePort>();
 
 let pingerTimer: ReturnType<typeof setInterval> | null = null;
 
+const isDedicatedWorker = () => (typeof DedicatedWorkerGlobalScope !== 'undefined' && self instanceof DedicatedWorkerGlobalScope);
+
 const toActiveTab = (msg: KiteMsg) => {
-  const activePort = Array.from(tabPorts).find((port) => port.active);
-  activePort?.postMessage(msg);
+  if (isDedicatedWorker()) {
+    postMessage(msg);
+  } else {
+    const activePort = Array.from(tabPorts).find((port) => port.active);
+    activePort?.postMessage(msg);
+  }
 }
 
 const messageById = (messageId: string) =>
@@ -113,8 +119,19 @@ let connectedTimestampMs = 0;
 let reconnectionAttempts = 0;
 let lastPongTimeMs = 0;
 
-// Event handler called when a tab tries to connect to this worker.
-self.onconnect = onTabConnected;
+if (isDedicatedWorker()) {
+  onmessage = onTabMessage;
+  onmessageerror = console.error;
+  console.debug(WORKER_NAME, 'tab connected', tabPorts.size);
+  postMessage({
+    type: MsgType.CONNECTED,
+  });
+}
+if (!isDedicatedWorker() && self instanceof SharedWorkerGlobalScope) {
+  // Event handler called when a tab tries to connect to this worker.
+  self.onconnect = onTabConnected;
+}
+
 self.onoffline = onOffline;
 self.ononline = onOnline;
 
