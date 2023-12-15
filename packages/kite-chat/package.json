@@ -33,10 +33,10 @@
   },
   "scripts": {
     "start": "vite --force --host",
-    "build": "concurrently \"npm:tsc\" \"npm:build:module\"",
+    "build": "concurrently \"pnpm:tsc\" \"pnpm:build:module\"",
     "tsc": "tsc -b",
     "build:module": "vite build",
-    "lint": "npm run lint:eslint",
+    "lint": "pnpm run lint:eslint",
     "lint:eslint": "eslint \"src/**/*.ts\"",
     "clean": "rimraf dist types tsconfig.tsbuildinfo",
     "test": "jest --passWithNoTests",

@@ -26,24 +26,28 @@ jobs:
       - name: Checkout current branch using git
         uses: actions/checkout@v3
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm ci
 
       - name: Lint code
-        run: npm run lint
+        run: pnpm run lint
 
       - name: Install browser binaries
         run: npx playwright install --with-deps
 
       - name: Run tests
-        run: npm test
+        run: pnpm test
 
   build_main_docs:
     needs: lint_and_test
@@ -57,13 +61,17 @@ jobs:
         with:
           ref: main
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Restore build files
         if: github.event.ref != 'refs/heads/main'
         id: cache-main-dist
         uses: actions/cache/restore@v3
         with:
           path: ./packages/kite-chat-docs/dist
-          key: ${{ runner.os }}-dist-main-${{ hashFiles('./package-lock.json') }}
+          key: ${{ runner.os }}-dist-main-${{ hashFiles('./pnpm-lock.yaml') }}
 
       - name: List Cached Files
         if: steps.cache-main-dist.outputs.cache-hit == 'true'
@@ -74,16 +82,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Install dependencies
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        run: npm install && npm install --save-dev @pagefind/linux-x64 -w @pragmasoft-ukraine/kite-chat-component
+        run: pnpm install && pnpm add -F=@pragmasoft-ukraine/kite-chat-component -D @pagefind/linux-x64
 
       - name: Build Docs
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        run: npm run build -w @pragmasoft-ukraine/kite-chat-docs
+        run: pnpm -F=@pragmasoft-ukraine/kite-chat-docs run build
 
       - name: Save build files
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
@@ -91,7 +99,7 @@ jobs:
         id: cache
         with:
           path: ./packages/kite-chat-docs/dist
-          key: ${{ runner.os }}-dist-main-${{ hashFiles('./package-lock.json') }}
+          key: ${{ runner.os }}-dist-main-${{ hashFiles('./pnpm-lock.yaml') }}
 
       - name: Upload Main Docs Artifact
         uses: actions/upload-artifact@v3
@@ -111,6 +119,10 @@ jobs:
         with:
           ref: test
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Restore main build files
         uses: actions/download-artifact@v3
         with:
@@ -123,7 +135,7 @@ jobs:
         uses: actions/cache/restore@v3
         with:
           path: ./packages/kite-chat-docs/dist/test
-          key: ${{ runner.os }}-dist-test-${{ hashFiles('./package-lock.json') }}
+          key: ${{ runner.os }}-dist-test-${{ hashFiles('./pnpm-lock.yaml') }}
 
       - name: List Cached Files
         if: steps.cache-test-dist.outputs.cache-hit == 'true'
@@ -134,28 +146,28 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
       
       - name: Install dependencies
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        run: npm install && npm install --save-dev @pagefind/linux-x64 -w @pragmasoft-ukraine/kite-chat-component
+        run: pnpm install && pnpm add -F=@pragmasoft-ukraine/kite-chat-component @pagefind/linux-x64
 
       - name: Build Kite Chat component
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        run: npm run build -w @pragmasoft-ukraine/kite-chat-component
+        run: pnpm -F=@pragmasoft-ukraine/kite-chat-component run build
 
       - name: Build Kite Chat
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        run: npm run build -w @pragmasoft-ukraine/kite-chat
+        run: pnpm -F=@pragmasoft-ukraine/kite-chat run build
 
       - name: Analyze Component
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        run: npm run analyze
+        run: pnpm run analyze
 
       - name: Build Docs for Test
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        run: npm run build:test -w @pragmasoft-ukraine/kite-chat-docs
+        run: pnpm -F=@pragmasoft-ukraine/kite-docs run build:test
 
       - name: Save build files
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
@@ -163,7 +175,7 @@ jobs:
         id: save-test-dist
         with:
           path: ./packages/kite-chat-docs/dist/test
-          key: ${{ runner.os }}-dist-test-${{ hashFiles('./package-lock.json') }}
+          key: ${{ runner.os }}-dist-test-${{ hashFiles('./pnpm-lock.yaml') }}
 
       - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v2
@@ -183,22 +195,26 @@ jobs:
         with:
           ref: main
 
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: 'https://registry.pnpmjs.org'
 
       - name: Install dependencies
-        run: npm ci
+        run: pnpm ci
 
       - name: Check version - Kite Chat Component
         run: |
           current_version=$(cat ./packages/kite-chat-component/package.json | jq -r '.version')
-          npm_version=$(npm view @pragmasoft-ukraine/kite-chat-component version)
+          pnpm_version=$(pnpm show @pragmasoft-ukraine/kite-chat-component version)
           echo "current_version=$current_version"
-          echo "npm_version=$npm_version"
-          if [ "$current_version" == "$npm_version" ]; then
+          echo "pnpm_version=$pnpm_version"
+          if [ "$current_version" == "$pnpm_version" ]; then
             echo "equal=true" >> "$GITHUB_OUTPUT"
           else
             echo "equal=false" >> "$GITHUB_OUTPUT"
@@ -208,10 +224,10 @@ jobs:
       - name: Check version - Kite Chat
         run: |
           current_version=$(cat ./packages/kite-chat/package.json | jq -r '.version')
-          npm_version=$(npm view @pragmasoft-ukraine/kite-chat version)
+          pnpm_version=$(pnpm show @pragmasoft-ukraine/kite-chat version)
           echo "current_version=$current_version"
-          echo "npm_version=$npm_version"
-          if [ "$current_version" == "$npm_version" ]; then
+          echo "pnpm_version=$pnpm_version"
+          if [ "$current_version" == "$pnpm_version" ]; then
             echo "equal=true" >> "$GITHUB_OUTPUT"
           else
             echo "equal=false" >> "$GITHUB_OUTPUT"
@@ -220,26 +236,26 @@ jobs:
 
       - name: Build Kite Chat component
         if: steps.check-version-component.outputs.equal != 'true'
-        run: npm run build -w @pragmasoft-ukraine/kite-chat-component
+        run: pnpm -F=@pragmasoft-ukraine/kite-chat-component run build
 
       - name: Build Kite Chat
         if: steps.check-version.outputs.equal != 'true'
-        run: npm run build -w @pragmasoft-ukraine/kite-chat
+        run: pnpm -F=@pragmasoft-ukraine/kite-chat run build
 
       - name: Analyze Component
         if: steps.check-version-component.outputs.equal != 'true'
-        run: npm run analyze
+        run: pnpm run analyze
 
-      - name: Publish to npm - Kite Chat Component
+      - name: Publish to pnpm - Kite Chat Component
         if: steps.check-version-component.outputs.equal != 'true'
-        run: npm publish --access public -w @pragmasoft-ukraine/kite-chat-component
+        run: pnpm -F=@pragmasoft-ukraine/kite-chat-component publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
-      - name: Publish to npm - Kite Chat
+      - name: Publish to pnpm - Kite Chat
         if: steps.check-version.outputs.equal != 'true'
-        run: npm publish --access public -w @pragmasoft-ukraine/kite-chat
+        run: pnpm -F=@pragmasoft-ukraine/kite-chat publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
