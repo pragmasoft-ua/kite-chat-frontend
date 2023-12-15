@@ -76,7 +76,7 @@ export class KiteFileElement extends LitElement {
     const href = URL.createObjectURL(this.file);
     const name = this.file.name || this.name;
     if (this.file.type.startsWith('image')) {
-      const preview = html`<img src="${href}" alt="${name}" />`;
+      const preview = html`<img src="${href}" alt="${name}" title=${name} />`;
       return html`<a href="${href}" download="${name}">${preview}</a>`;
     } else {
       const preview = html`<svg
@@ -88,7 +88,7 @@ export class KiteFileElement extends LitElement {
         width="2em"
         height="2em"
       >
-        <title>File</title>
+        <title>${name}</title>
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
