@@ -163,7 +163,7 @@ jobs:
 
       - name: Build Docs for Test
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
-        run: pnpm -F=@pragmasoft-ukraine/kite-docs run build:test
+        run: pnpm -F=@pragmasoft-ukraine/kite-chat-docs run build:test
 
       - name: Save build files
         if: steps.cache-test-dist.outputs.cache-hit != 'true'
