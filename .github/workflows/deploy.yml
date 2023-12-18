@@ -61,17 +61,13 @@ jobs:
         with:
           ref: main
 
-      - uses: pnpm/action-setup@v2
-        with:
-          version: 8
-
       - name: Restore build files
         if: github.event.ref != 'refs/heads/main'
         id: cache-main-dist
         uses: actions/cache/restore@v3
         with:
           path: ./packages/kite-chat-docs/dist
-          key: ${{ runner.os }}-dist-main-${{ hashFiles('./pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-dist-main-${{ hashFiles('./package-lock.json') }}
 
       - name: List Cached Files
         if: steps.cache-main-dist.outputs.cache-hit == 'true'
@@ -82,16 +78,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'pnpm'
-          cache-dependency-path: pnpm-lock.yaml
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
 
       - name: Install dependencies
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        run: pnpm install && pnpm add -F=@pragmasoft-ukraine/kite-chat-component -D @pagefind/linux-x64
+        run: npm install && npm install --save-dev @pagefind/linux-x64 -w @pragmasoft-ukraine/kite-chat-component
 
       - name: Build Docs
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
-        run: pnpm -F=@pragmasoft-ukraine/kite-chat-docs run build
+        run: npm run build -w @pragmasoft-ukraine/kite-chat-docs
 
       - name: Save build files
         if: steps.cache-main-dist.outputs.cache-hit != 'true'
@@ -99,7 +95,7 @@ jobs:
         id: cache
         with:
           path: ./packages/kite-chat-docs/dist
-          key: ${{ runner.os }}-dist-main-${{ hashFiles('./pnpm-lock.yaml') }}
+          key: ${{ runner.os }}-dist-main-${{ hashFiles('./package-lock.json') }}
 
       - name: Upload Main Docs Artifact
         uses: actions/upload-artifact@v3
