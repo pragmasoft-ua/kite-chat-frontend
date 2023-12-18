@@ -23,7 +23,7 @@ filed in that repo.
 Install dependencies:
 
 ```bash
-npm i
+pnpm i
 ```
 
 This project uses npm [workspaces](https://docs.npmjs.com/cli/using-npm/workspaces) and typescript [project references](https://www.typescriptlang.org/docs/handbook/project-references.html).
@@ -35,13 +35,13 @@ You need to run `npm run compile` before you start working on the project in you
 To build the packages and docs run:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 To build only the component, run:
 
 ```bash
-npm run build -w @pragmasoft-ukraine/kite-chat-component
+pnpm -F=@pragmasoft-ukraine/kite-chat-component run build
 ```
 
 [More info about component build](packages/kite-chat-component/README.md#build)
@@ -49,7 +49,7 @@ npm run build -w @pragmasoft-ukraine/kite-chat-component
 To build only the chat client, run:
 
 ```bash
-npm run build -w @pragmasoft-ukraine/kite-chat
+pnpm -F=@pragmasoft-ukraine/kite-chat run build
 ```
 
 [More info about protocol driver build](packages/kite-chat/README.md#build)
@@ -57,7 +57,7 @@ npm run build -w @pragmasoft-ukraine/kite-chat
 To build only the documentation site, run:
 
 ```bash
-npm run build -w @pragmasoft-ukraine/kite-chat-docs
+pnpm -F=@pragmasoft-ukraine/kite-chat-docs run build
 ```
 
 [More info about docs build](packages/kite-chat-docs/README.md#build)
@@ -67,13 +67,13 @@ npm run build -w @pragmasoft-ukraine/kite-chat-docs
 Tests can be run with the `test` script, which will run test command in packages if it exist:
 
 ```bash
-npm test
+pnpm test
 ```
 
 To test only the component, run:
 
 ```bash
-npm run test -w @pragmasoft-ukraine/kite-chat-component
+pnpm -F=@pragmasoft-ukraine/kite-chat-component run test
 ```
 
 [More info about component testing](packages/kite-chat-component/README.md#test)
@@ -81,7 +81,7 @@ npm run test -w @pragmasoft-ukraine/kite-chat-component
 To test only the chat client, run:
 
 ```bash
-npm run test -w @pragmasoft-ukraine/kite-chat
+pnpm -F=@pragmasoft-ukraine/kite-chat run test
 ```
 
 [More info about driver testing](packages/kite-chat/README.md#test)
@@ -91,7 +91,7 @@ npm run test -w @pragmasoft-ukraine/kite-chat
 The default start command will run docs locally:
 
 ```bash
-npm run start
+pnpm run start
 ```
 
 [More info about docs dev server](packages/kite-chat-docs/README.md#dev-server)
@@ -99,7 +99,7 @@ npm run start
 To run the component dev server:
 
 ```bash
-npm run start -w @pragmasoft-ukraine/kite-chat-component
+pnpm -F=@pragmasoft-ukraine/kite-chat-component run start
 ```
 
 [More info about component dev server](packages/kite-chat-component/README.md#dev-server)
@@ -107,7 +107,7 @@ npm run start -w @pragmasoft-ukraine/kite-chat-component
 To run the chat client dev server:
 
 ```bash
-npm run start -w @pragmasoft-ukraine/kite-chat
+pnpm -F=@pragmasoft-ukraine/kite-chat run start
 ```
 
 [More info about driver dev server](packages/kite-chat/README.md#dev-server)
@@ -135,7 +135,7 @@ The rules are mostly the recommended rules from each project, but some have been
 To lint the project run:
 
 ```bash
-npm run lint
+pnpm run lint
 ```
 
 ## Formatting

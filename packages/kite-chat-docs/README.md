@@ -13,7 +13,7 @@ Components are built using Astro with TypeScript.
 Install dependencies:
 
 ```bash
-npm i
+pnpm i
 ```
 
 ## Build
@@ -24,13 +24,13 @@ This project uses [starlight](https://starlight.astro.build/getting-started/) in
 To generate the docs run:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 It builds docs in production enviroment by default. To build test version run:
 
 ```bash
-npm run build:test
+pnpm run build:test
 ```
 
 The docs is generated from /src/content/docs directory.
@@ -38,7 +38,7 @@ The docs is generated from /src/content/docs directory.
 To preview generated site run:
 
 ```bash
-npm run preview
+pnpm run preview
 ```
 
 ## Dev Server
@@ -49,13 +49,13 @@ The astro dev command will start the local development server so that you can se
 To run the dev server and open the project in a new browser tab:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
 It runs docs in development enviroment by default. To run test version run:
 
 ```bash
-npm run dev:test
+pnpm run dev:test
 ```
 
 ## Linting
@@ -67,7 +67,7 @@ The rules are mostly the recommended rules from each project, but some have been
 To lint the project run:
 
 ```bash
-npm run lint
+pnpm run lint
 ```
 
 ## Formatting

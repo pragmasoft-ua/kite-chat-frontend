@@ -17,7 +17,7 @@ Web component is built using LitElement with TypeScript and Tailwind CSS.
 Install dependencies:
 
 ```bash
-npm i
+pnpm i
 ```
 
 ## Build
@@ -29,7 +29,7 @@ Chat component uses [Vite](https://vitejs.dev/guide/) to bundle package. It bund
 To build the JavaScript version of your component:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 Both the TypeScript compiler and lit-analyzer are configured to be very strict. You may want to change `tsconfig.json` to make them less strict.
@@ -44,13 +44,13 @@ more information.
 Tests can be run with the `test` script, which will run your tests against Lit's development mode (with more verbose errors) as well as against Lit's production mode:
 
 ```bash
-npm test
+pnpm test
 ```
 
 For local testing during development, the `test:watch` command will run your tests in Lit's development mode (with verbose errors) on every change to your source files:
 
 ```bash
-npm test:watch
+pnpm test:watch
 ```
 
 ## Dev Server
@@ -60,7 +60,7 @@ Chat component uses [Vite](https://vitejs.dev/guide/) as a build tool. It`s dev 
 To run the dev server and open the project in a new browser tab:
 
 ```bash
-npm run start
+pnpm run start
 ```
 
 There is a development HTML file located at `/index.html` that you can view at http://localhost:5173/index.html. Note that this command will serve your code using Lit's development mode (with more verbose errors).
@@ -88,7 +88,7 @@ The rules are mostly the recommended rules from each project, but some have been
 To lint the project run:
 
 ```bash
-npm run lint
+pnpm run lint
 ```
 
 ## Formatting
@@ -102,7 +102,7 @@ Prettier has not been configured to run when committing files, but this can be a
 Package is published automatically by gh actions from main branch. To upgrade version run:
 
 ```bash
-npm version patch
+pnpm version patch
 ```
 
 ## Script to include component from CDN

@@ -13,7 +13,7 @@ This project includes 🪁K1te chat client to communicate with the [🪁K1te cha
 Install dependencies:
 
 ```bash
-npm i
+pnpm i
 ```
 
 ## Build
@@ -24,7 +24,7 @@ It uses [Vite](https://vitejs.dev/guide/) to bundle package. It bundles code wit
 To build the JavaScript version of your driver:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 The TypeScript compiler is configured to be very strict. You may want to change `tsconfig.json` to make it less strict.
@@ -39,13 +39,13 @@ more information.
 Tests can be run with the `test` script:
 
 ```bash
-npm test
+pnpm test
 ```
 
 For local testing during development, the `test:watch` command will run your tests on every change to your source files:
 
 ```bash
-npm test:watch
+pnpm test:watch
 ```
 
 ## Dev Server
@@ -55,7 +55,7 @@ This sample uses [Vite](https://vitejs.dev/guide/) as build tool. It`s dev serve
 To run the dev server and open the project in a new browser tab:
 
 ```bash
-npm run start
+pnpm run start
 ```
 
 There is a development HTML file located at `/index.html` that you can view at http://localhost:5173/index.html. Note that this command will serve your code using Lit's development mode (with more verbose errors).
@@ -69,7 +69,7 @@ The rules are mostly the recommended rules from each project, but some have been
 To lint the project run:
 
 ```bash
-npm run lint
+pnpm run lint
 ```
 
 ## Formatting
@@ -103,7 +103,7 @@ Unfortunately it does not work in Firefox, only works in Chrome. Had to get rid 
 Package is published automatically by gh actions from main branch. To upgrade version run:
 
 ```bash
-npm version patch
+pnpm version patch
 ```
 
 ## More information
