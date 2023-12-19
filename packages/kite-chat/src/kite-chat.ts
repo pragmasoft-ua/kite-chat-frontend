@@ -61,6 +61,10 @@ export class KiteChat {
   protected kiteWorker: Worker | SharedWorker | null;
   readonly element: KiteChatElement | null;
   private db: KiteDB | null;
+  public defaultNotificationTitle: string = '';
+  public defaultNotificationOptions: NotificationOptions = {
+    body: "You have a new message!",
+  }
 
   constructor(opts: KiteChatOptions) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
@@ -74,6 +78,9 @@ export class KiteChat {
     this.element = this.findOrCreateElement(
       this.opts.createIfMissing as boolean
     );
+
+    this.defaultNotificationTitle = this.element?.heading || '';
+    this.defaultNotificationOptions.icon = this.getFaviconURL();
 
     openDatabase().then((db: KiteDB) => {
       this.db = db;
@@ -91,6 +98,8 @@ export class KiteChat {
       }
     });
     this.connect();
+
+    Notification.requestPermission();
   }
 
   public connect() {
@@ -331,7 +340,26 @@ export class KiteChat {
       } else {
         this.db && this.update(incoming.messageId, incoming);
       }
-    })
+    });
+
+    this.msgNotification(incoming);
+  }
+
+  protected msgNotification(msg: ContentMsg) {
+    // Use the Notification API to show a system notification
+    if (Notification.permission === 'granted') {
+      const notificationOptions: NotificationOptions = {
+        image: isPlaintextMsg(msg) ? undefined : URL.createObjectURL((msg as FileMsg).file),
+        ...this.defaultNotificationOptions
+      };
+  
+      new Notification(this.defaultNotificationTitle, notificationOptions);
+    }
+  }
+
+  protected getFaviconURL(): string | undefined {
+    const faviconElement = document.querySelector("link[rel='icon']") || document.querySelector("link[rel='shortcut icon']");
+    return faviconElement ? (faviconElement as HTMLLinkElement).href : undefined;
   }
 
   protected onConnected(payload: Connected) {
