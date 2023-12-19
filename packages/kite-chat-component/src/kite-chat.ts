@@ -30,6 +30,7 @@ import {
   DraggableController,
   TimelineContainerController,
   Select as KiteMsgSelect,
+  ClipboardController,
 } from './controllers';
 import {
   KiteChatFooterElement, 
@@ -85,6 +86,7 @@ enum MsgActionType {
   DELETE = 'delete',
   UNSELECT = 'unselect',
   EDIT = 'edit',
+  COPY = 'copy',
   DOWNLOAD = 'download',
   SELECT_ALL = 'select-all',
 }
@@ -94,6 +96,7 @@ const MESSAGE_ACTION_LABEL = {
   [MsgActionType.DELETE]: 'Delete message',
   [MsgActionType.UNSELECT]: 'Unselect message',
   [MsgActionType.EDIT]: 'Edit message',
+  [MsgActionType.COPY]: 'Copy to clipboard',
   [MsgActionType.DOWNLOAD]: 'Download file',
   [MsgActionType.SELECT_ALL]: 'Select all messages',
 }
@@ -171,6 +174,8 @@ export class KiteChatElement extends
   protected draggableController = new DraggableController(this, "#kite-toggle", this._toggleOpen.bind(this));
 
   protected timelineContainerController = new TimelineContainerController(this);
+
+  protected clipboardController = new ClipboardController(this);
 
   constructor() {
     super();
@@ -372,6 +377,7 @@ export class KiteChatElement extends
     }
     const actions = getMessageActions([
       MsgActionType.DELETE,
+      MsgActionType.COPY,
       ...(this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
       ...(this.getFile(msgElement) ? [MsgActionType.DOWNLOAD] : []),
       ...(msgElement.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
@@ -405,6 +411,10 @@ export class KiteChatElement extends
       case MsgActionType.SELECT_ALL:
         this.selectAll();
         break;
+      case MsgActionType.COPY:
+        this.clipboardController.copyToClipboard(
+          msgElement.querySelector('kite-file')?.file || msgElement.textContent || ''
+        );
     }
   }
 

@@ -15,6 +15,10 @@ import footerStyles from './kite-chat-footer.css?inline';
 import {KiteMsgElement} from '../../kite-msg';
 import {randomStringId} from '../../random-string-id';
 
+import {
+  ClipboardController,
+} from '../../controllers';
+
 const CUSTOM_EVENT_INIT = {
   bubbles: true,
   composed: false,
@@ -56,6 +60,8 @@ export class KiteChatFooterElement extends LitElement {
 
   @state()
   editMessage: KiteMsgElement|null = null;
+
+  protected clipboardController = new ClipboardController(this);
 
   private get editMessageFile() {
     return this.editMessage?.querySelector('kite-file');
@@ -174,6 +180,7 @@ export class KiteChatFooterElement extends LitElement {
         class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
         @input=${this._handleEnabled}
         @keyup=${this._handleKeyUp}
+        @paste=${this._handlePaste}
         .disabled=${!isActive}
       ></textarea>
     `;
@@ -205,6 +212,25 @@ export class KiteChatFooterElement extends LitElement {
         >
       </div>
     `;
+  }
+
+  private _handlePaste(e: ClipboardEvent) {
+    e.preventDefault();
+    this.clipboardController.pasteFromClipboard((data) => {
+      if(data instanceof File) {
+        const batchId = randomStringId();
+        this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
+        ...CUSTOM_EVENT_INIT,
+        detail: {
+          file: data,
+          batchId,
+          totalFiles: 1,
+        }
+      }))
+      } else if (data) {
+        this.textarea.value = data;
+      }
+    })
   }
 
   private _cancelEdit() {
