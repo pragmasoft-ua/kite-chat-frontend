@@ -20,17 +20,12 @@ export class ClipboardController {
         let blob: Blob;
         let blobUrl: string;
         
-        switch (true) {
-            case typeof data === 'string':
-                navigator.clipboard.writeText(data);
-                break;
-            case data instanceof File:
-                blob = new Blob([data], { type: data.type });
-                blobUrl = URL.createObjectURL(blob);
-                navigator.clipboard.writeText(blobUrl);
-                break;
-            default:
-                return;
+        if(data instanceof File) {
+            blob = new Blob([data], { type: data.type });
+            blobUrl = URL.createObjectURL(blob);
+            navigator.clipboard.writeText(blobUrl);
+        } else {
+            navigator.clipboard.writeText(data);
         }
     }
 
