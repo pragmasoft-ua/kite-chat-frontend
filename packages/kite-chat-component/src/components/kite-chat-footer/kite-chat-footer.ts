@@ -214,23 +214,30 @@ export class KiteChatFooterElement extends LitElement {
     `;
   }
 
-  private _handlePaste(e: ClipboardEvent) {
+  private async _handlePaste(e: ClipboardEvent) {
     e.preventDefault();
-    this.clipboardController.pasteFromClipboard((data) => {
-      if(data instanceof File) {
-        const batchId = randomStringId();
-        this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
+    const clipboardData = await this.clipboardController.pasteFromClipboard(e);
+    console.log("clipboardData", clipboardData)
+    if(!clipboardData) return;
+    if(clipboardData instanceof File) {
+      const batchId = randomStringId();
+      this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
         ...CUSTOM_EVENT_INIT,
         detail: {
-          file: data,
+          file: clipboardData,
           batchId,
           totalFiles: 1,
         }
-      }))
-      } else if (data) {
-        this.textarea.value = data;
-      }
-    })
+      }));
+    } else {
+      const cursorPosition = this.textarea.selectionStart || 0;
+      const currentText = this.textarea.value;
+      const newText =
+        currentText.substring(0, cursorPosition) +
+        clipboardData +
+        currentText.substring(cursorPosition);
+      this.textarea.value = newText;
+    }
   }
 
   private _cancelEdit() {

@@ -1,5 +1,9 @@
 import { ReactiveControllerHost } from 'lit';
 
+enum SupportedFileTypes {
+    IMAGE_PNG = 'image/png',
+}
+
 export class ClipboardController {
     private host: ReactiveControllerHost & HTMLElement;
 
@@ -16,29 +20,40 @@ export class ClipboardController {
         return;
     }
 
-    copyToClipboard(data: string | File) {
-        let blob: Blob;
-        let blobUrl: string;
-        
+    get isFilesSupported() {
+        //Not supported in firefox
+        return !!navigator.clipboard.write;
+    }
+
+    isSupportedFile(file: File) {
+        return this.isFilesSupported 
+            && Object.values(SupportedFileTypes).includes(file.type as SupportedFileTypes);
+    }
+
+    async copyToClipboard(data: string | File) {        
         if(data instanceof File) {
-            blob = new Blob([data], { type: data.type });
-            blobUrl = URL.createObjectURL(blob);
-            navigator.clipboard.writeText(blobUrl);
+            if(!this.isSupportedFile(data)) return;
+            const clipboardItem = new ClipboardItem({
+                [data.type]: new Blob([data], {type: data.type})
+            });
+            await navigator.clipboard.write([clipboardItem]);
         } else {
             navigator.clipboard.writeText(data);
         }
     }
 
-    pasteFromClipboard(callback: (data: string | File | null) => void) {
-        navigator.clipboard.readText().then(async (text) => {
-            if (text.startsWith('blob:')) {
-                const response = await fetch(text);
-                const blob = await response.blob();
-                const file = new File([blob], 'pastedFile', { type: blob.type });
-                callback(file);
-            } else {
-                callback(text);
+    async pasteFromClipboard(e: ClipboardEvent) {
+        if(!e.clipboardData) return null;
+        for(const item of e.clipboardData.items) {
+            if (item.kind === "file") {
+                return item.getAsFile();
             }
-        });
+        }
+        for(const item of e.clipboardData.items) {
+            return await new Promise<string>((resolve) => {
+                item.getAsString((str) => resolve(str));
+            });
+        }
+        return null;
     }
 }

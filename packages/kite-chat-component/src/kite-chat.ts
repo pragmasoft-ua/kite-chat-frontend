@@ -375,9 +375,10 @@ export class KiteChatElement extends
     if(!msgElement) {
       return;
     }
+    const file = msgElement.querySelector('kite-file')?.file;
     const actions = getMessageActions([
       MsgActionType.DELETE,
-      MsgActionType.COPY,
+      ...(!file || this.clipboardController.isSupportedFile(file) ? [MsgActionType.COPY] : []),
       ...(this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
       ...(this.getFile(msgElement) ? [MsgActionType.DOWNLOAD] : []),
       ...(msgElement.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
