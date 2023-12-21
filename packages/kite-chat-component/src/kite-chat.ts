@@ -40,6 +40,8 @@ import {
   ContextMenuClick,
   ContextMenuAction,
   KitePointerAnchorElement,
+  KiteChatMainElement,
+  KiteChatMainDrop,
 } from './components';
 import {KiteMsgElement, MsgOutsideClick} from './kite-msg';
 
@@ -226,7 +228,8 @@ export class KiteChatElement extends
           .heading=${this.heading}
         >
         </kite-chat-header>
-        <main
+        <kite-chat-main
+          @kite-chat-main.drop=${this._handleSend}
           @kite-msg.outsideclick=${this._contextMenu}
           @scroll=${() => this.contextMenu.hide()}
           class="relative flex flex-1 overflow-hidden flex-col-reverse bg-slate-300/50 snap-y overflow-y-auto outline-none border-none"
@@ -234,7 +237,7 @@ export class KiteChatElement extends
           <div class="flex min-h-min flex-col flex-wrap items-start">
             <slot></slot>
           </div>
-        </main>
+        </kite-chat-main>
         <kite-chat-footer
           @kite-chat-footer.change=${this._handleSend}
           @kite-chat-footer.cancel=${() => this._edit(null)}
@@ -328,7 +331,7 @@ export class KiteChatElement extends
     });
   }
 
-  private _handleSend(e: CustomEvent<KiteChatFooterChange>) {
+  private _handleSend(e: CustomEvent<KiteChatFooterChange|KiteChatMainDrop>) {
     const message: KiteMsg = {
       messageId: this.editMessage ? this.editMessage.messageId : randomStringId(),
       timestamp: new Date(),
@@ -457,6 +460,7 @@ export {
   KiteChatHeaderElement, 
   KiteContextMenuElement,
   KitePointerAnchorElement,
+  KiteChatMainElement,
 };
 
 export type {

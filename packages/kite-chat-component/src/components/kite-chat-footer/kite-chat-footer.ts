@@ -217,7 +217,6 @@ export class KiteChatFooterElement extends LitElement {
   private async _handlePaste(e: ClipboardEvent) {
     e.preventDefault();
     const clipboardData = await this.clipboardController.pasteFromClipboard(e);
-    console.log("clipboardData", clipboardData)
     if(!clipboardData) return;
     if(clipboardData instanceof File) {
       const batchId = randomStringId();
