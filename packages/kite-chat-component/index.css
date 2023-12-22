@@ -8,3 +8,9 @@
 :root {
   --kite-primary-color: theme('colors.sky.600');
 }
+
+@layer base {
+  img {
+    @apply inline-block;
+  }
+}

@@ -81,6 +81,9 @@ export default defineConfig({
       }, {
         label: 'Telegram bot',
         link: '/guides/telegram-bot/'
+      }, {
+        label: 'Troubleshooting',
+        link: '/guides/troubleshooting/'
       }
     ]
     }, {

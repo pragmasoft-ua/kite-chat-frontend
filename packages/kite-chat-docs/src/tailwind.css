@@ -18,3 +18,9 @@
 main kite-toast-notification {
     --kite-notification-bg: var(--sl-color-gray-7);
 }
+
+@layer base {
+    img {
+        @apply inline-block;
+    }
+}

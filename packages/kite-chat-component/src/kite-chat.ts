@@ -31,6 +31,7 @@ import {
   TimelineContainerController,
   Select as KiteMsgSelect,
   ClipboardController,
+  ScreenshotController,
 } from './controllers';
 import {
   KiteChatFooterElement, 
@@ -91,6 +92,16 @@ enum MsgActionType {
   COPY = 'copy',
   DOWNLOAD = 'download',
   SELECT_ALL = 'select-all',
+}
+
+type TextData = {
+  text: string;
+}
+
+type FileData = {
+  file: File;
+  batchId: string;
+  totalFiles: number;
 }
 
 const MESSAGE_ACTION_LABEL = {
@@ -179,6 +190,8 @@ export class KiteChatElement extends
 
   protected clipboardController = new ClipboardController(this);
 
+  protected screenshotController = new ScreenshotController(this);
+
   constructor() {
     super();
 
@@ -223,13 +236,18 @@ export class KiteChatElement extends
             });
           }}
           @kite-chat-header.close=${this._toggleOpen}
+          @kite-chat-header.screenshot=${() => {
+            this.screenshotController.captureScreen((file) => {
+              this._send({file, totalFiles: 1, batchId: randomStringId()});
+            });
+          }}
           .editable=${this.selectedElements.length === 1 && this.isSent(this.selectedElements[0])}
           .selectedElementsCount=${this.selectedElements.length}
           .heading=${this.heading}
         >
         </kite-chat-header>
         <kite-chat-main
-          @kite-chat-main.drop=${this._handleSend}
+          @kite-chat-main.drop=${this._handleChange}
           @kite-msg.outsideclick=${this._contextMenu}
           @scroll=${() => this.contextMenu.hide()}
           class="relative flex flex-1 overflow-hidden flex-col-reverse bg-slate-300/50 snap-y overflow-y-auto outline-none border-none"
@@ -239,7 +257,7 @@ export class KiteChatElement extends
           </div>
         </kite-chat-main>
         <kite-chat-footer
-          @kite-chat-footer.change=${this._handleSend}
+          @kite-chat-footer.change=${this._handleChange}
           @kite-chat-footer.cancel=${() => this._edit(null)}
           .editMessage=${this.editMessage}
         >
@@ -331,13 +349,17 @@ export class KiteChatElement extends
     });
   }
 
-  private _handleSend(e: CustomEvent<KiteChatFooterChange|KiteChatMainDrop>) {
+  private _handleChange(e: CustomEvent<KiteChatFooterChange|KiteChatMainDrop>) {
+    this._send(e.detail);
+  }
+
+  private _send(data: TextData|FileData) {
     const message: KiteMsg = {
       messageId: this.editMessage ? this.editMessage.messageId : randomStringId(),
       timestamp: new Date(),
       status: MsgStatus.unknown,
       edited: !!this.editMessage,
-      ...e.detail,
+      ...data,
     };
     if (this._dispatchMsg({type: MsgOperation.send, detail: message})) {
       if(this.editMessage) {
