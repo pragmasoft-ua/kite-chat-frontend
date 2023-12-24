@@ -95,11 +95,25 @@ export class KiteChat {
           type: MsgType.ACTIVE_TAB,
         });
         this.restore();
+      } else {
+        if (this.kiteWorker instanceof Worker) {
+          this.postMessage({
+            type: MsgType.DISCONNECTED,
+          });
+        }
       }
     });
     this.connect();
 
     Notification.requestPermission();
+  }
+
+  private getPort(worker: SharedWorker|Worker) {
+    if (worker instanceof Worker) {
+      return worker;
+    } else {
+      return worker.port;
+    }
   }
 
   public connect() {
@@ -122,31 +136,24 @@ export class KiteChat {
       'enpoint url should have c=<channel name> required query parameter'
     );
 
-    if (kiteWorker instanceof Worker) {
-      kiteWorker.onmessage = onWorkerMessageBound;
-      kiteWorker.onmessageerror = this.onDeliveryError.bind(this);
-      kiteWorker.addEventListener('error', this.onWorkerError.bind(this));
-      const join: JoinChannel = {
-        type: MsgType.JOIN,
-        endpoint: this.opts.endpoint, // DOMException: URL object could not be cloned
-        memberId: this.opts.userId as string,
-        memberName: this.opts.userName,
-        eagerlyConnect: this.opts.eagerlyConnect,
-      };
-      kiteWorker.postMessage(join);
-    } else {
-      kiteWorker.port.onmessage = onWorkerMessageBound;
-      kiteWorker.port.onmessageerror = this.onDeliveryError.bind(this);
-      kiteWorker.addEventListener('error', this.onWorkerError.bind(this));
-      kiteWorker.port.start();
-      const join: JoinChannel = {
-        type: MsgType.JOIN,
-        endpoint: this.opts.endpoint, // DOMException: URL object could not be cloned
-        memberId: this.opts.userId as string,
-        memberName: this.opts.userName,
-        eagerlyConnect: this.opts.eagerlyConnect,
-      };
-      kiteWorker.port.postMessage(join);
+    const join: JoinChannel = {
+      type: MsgType.JOIN,
+      endpoint: this.opts.endpoint, // DOMException: URL object could not be cloned
+      memberId: this.opts.userId as string,
+      memberName: this.opts.userName,
+      eagerlyConnect: this.opts.eagerlyConnect,
+    };
+
+    kiteWorker.addEventListener('error', (this.onWorkerError as ((e: Event) => void)).bind(this));
+
+    const kiteWorkerPort = this.getPort(kiteWorker);
+
+    kiteWorkerPort.onmessage = onWorkerMessageBound;
+    kiteWorkerPort.onmessageerror = this.onDeliveryError.bind(this);
+    kiteWorkerPort.postMessage(join);
+  
+    if (!(kiteWorkerPort instanceof Worker)) {
+      kiteWorkerPort.start();
     }
 
     this.kiteWorker = kiteWorker;
@@ -156,9 +163,7 @@ export class KiteChat {
     if (!this.kiteWorker) {
       throw new Error('Not connected');
     }
-    this.kiteWorker instanceof Worker 
-      ? this.kiteWorker.postMessage(msg) 
-      : this.kiteWorker.port.postMessage(msg);
+    this.getPort(this.kiteWorker).postMessage(msg);
   }
 
   private close() {
