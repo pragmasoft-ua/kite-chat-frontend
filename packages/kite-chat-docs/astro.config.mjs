@@ -131,11 +131,14 @@ export default defineConfig({
     },
     plugins: [
       replace({
+        values: {
         __BASE_URL__: base,
         __WS_ENDPOINT__: WS_ENDPOINT,
         __BACKEND_PACKAGE_IMPORT__: mode === "test" 
           ? `${base}/kite-chat.js` 
           : "https://unpkg.com/@pragmasoft-ukraine/kite-chat/dist/kite-chat.js"
+        },
+        preventAssignment: true,
       })
     ]
   },
