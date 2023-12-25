@@ -31,16 +31,16 @@
     "README.md",
     "custom-elements.json"
   ],
-  "main": "dist/index.mjs",
+  "main": "dist/index.js",
   "types": "types/index.d.ts",
-  "exports": "./dist/index.mjs",
+  "exports": "./dist/index.js",
   "customElements": "custom-elements.json",
   "sideEffects": [
     "./src/kite-chat.ts",
     "./src/kite-msg.ts"
   ],
   "type": "module",
-  "module": "dist/index.mjs",
+  "module": "dist/index.js",
   "scripts": {
     "start": "vite --host",
     "build": "concurrently \"pnpm:tsc\" \"pnpm:build:*\" \"pnpm:analyze\"",
