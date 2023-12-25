@@ -2,6 +2,7 @@ import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
 import lit from '@astrojs/lit';
 import { loadEnv } from 'vite';
+import replace from '@rollup/plugin-replace';
 
 import tailwind from "@astrojs/tailwind";
 
@@ -122,17 +123,20 @@ export default defineConfig({
       noExternal: ['execa', 'is-stream', 'npm-run-path', /^unist-util/],
     },
     define: {
-      __BASE_URL__: base,
       __BRANCH__: JSON.stringify(mode === "test" ? "test" : "main"),
-      __WS_ENDPOINT__: WS_ENDPOINT,
-      __BACKEND_PACKAGE_IMPORT__: mode === "test" 
-        ? `${base}/kite-chat.js` 
-        : "https://unpkg.com/@pragmasoft-ukraine/kite-chat/dist/kite-chat.js"
-      ,
       //override vite MODE variables
       'import.meta.env.DEV': mode === "development",
       'import.meta.env.PROD': mode !== "development",
       'import.meta.env.MODE': JSON.stringify(mode),
     },
+    plugins: [
+      replace({
+        __BASE_URL__: base,
+        __WS_ENDPOINT__: WS_ENDPOINT,
+        __BACKEND_PACKAGE_IMPORT__: mode === "test" 
+          ? `${base}/kite-chat.js` 
+          : "https://unpkg.com/@pragmasoft-ukraine/kite-chat/dist/kite-chat.js"
+      })
+    ]
   },
 });

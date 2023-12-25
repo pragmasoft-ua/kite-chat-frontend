@@ -39,6 +39,8 @@
     "./src/kite-chat.ts",
     "./src/kite-msg.ts"
   ],
+  "type": "module",
+  "module": "dist/index.mjs",
   "scripts": {
     "start": "vite --host",
     "build": "concurrently \"pnpm:tsc\" \"pnpm:build:*\" \"pnpm:analyze\"",
