@@ -14,7 +14,7 @@
     "build:test": "rimraf dist/test && pnpm run copy:module && pnpm run copy:elements && NODE_ENV=test astro build",
     "preview": "astro preview",
     "copy:elements": "mkdirp ./src/content/customElements && cp ../kite-chat-component/custom-elements.json ./src/content/customElements/kite-chat.json",
-    "copy:module": "mkdirp public && cp ../kite-chat-component/dist/kite-chat-component.mjs ./public/kite-chat-component.js && cp ../kite-chat/dist/kite-chat.js ./public/kite-chat.js",
+    "copy:module": "mkdirp public && cp ../kite-chat-component/dist/kite-chat-component.js ./public/kite-chat-component.js && cp ../kite-chat/dist/kite-chat.js ./public/kite-chat.js",
     "clean": "rimraf dist .astro ./src/content/customElements",
     "clean:test": "rimraf dist/test ./src/content/customElements ./public/kite-chat-component.js ./public/kite-chat.js"
   },
