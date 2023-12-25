@@ -68,7 +68,9 @@ export class KiteFileElement extends LitElement {
   private downloadAnchor!: HTMLAnchorElement;
 
   download() {
-    this.downloadAnchor.click();
+    setTimeout(() => {
+      this.downloadAnchor.click();
+    }, 0);
   }
 
   override render() {
