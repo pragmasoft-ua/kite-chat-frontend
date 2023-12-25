@@ -1,6 +1,6 @@
 # 🪁 K1te chat frontend
 
-![Kite Chat](kite-chat-light.png)
+<img src="kite-chat-light.png" alt="Kite Chat" width="300"/> <img src="kite-chat-dark.png" alt="Second Image" width="300"/>
 
 ![deploy](https://github.com/pragmasoft-ua/kite-chat-frontend/actions/workflows/deploy.yml/badge.svg)
 
