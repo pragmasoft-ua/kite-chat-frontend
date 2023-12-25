@@ -22,7 +22,7 @@ export class ClipboardController {
 
     get isFilesSupported() {
         //Not supported in firefox
-        return !!navigator.clipboard.write;
+        return !!navigator.clipboard && !!navigator.clipboard.write;
     }
 
     isSupportedFile(file: File) {
