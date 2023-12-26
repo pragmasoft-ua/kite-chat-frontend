@@ -1,5 +1,5 @@
 import { ReactiveControllerHost } from 'lit';
-import html2canvas from 'html2canvas';
+import type { default as Html2canvas } from 'html2canvas';
 
 type CapturingOptions = {
     x: number,
@@ -7,6 +7,8 @@ type CapturingOptions = {
     width: number,
     height: number,
 }
+
+const HTML2CANVAS_CDN = "https://unpkg.com/html2canvas/dist/html2canvas.esm.js";
 
 export class ScreenshotController {
     private host: ReactiveControllerHost & HTMLElement;
@@ -35,6 +37,9 @@ export class ScreenshotController {
     }
 
     async capture(elementToCapture: HTMLElement, callback: (file: File) => void, capturingOptions: CapturingOptions): Promise<void> {
+        // Import html2canvas module dynamically
+        const {default: html2canvas}: {default: typeof Html2canvas} = await import(/* @vite-ignore */ HTML2CANVAS_CDN);
+
         const resultingType = 'image/png';
         const options = {
             logging: false,

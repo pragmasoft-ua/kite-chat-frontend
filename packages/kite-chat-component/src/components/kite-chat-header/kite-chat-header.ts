@@ -21,7 +21,7 @@ const componentStyles = css`
   ${unsafeCSS(headerStyles)}
 `;
 
-type HeaderActions = 'cancel' | 'edit' | 'delete' | 'close' | 'screenshot';
+type HeaderActions = 'cancel' | 'edit' | 'delete' | 'close';
 
 /**
  * KiteChat component header
@@ -30,7 +30,6 @@ type HeaderActions = 'cancel' | 'edit' | 'delete' | 'close' | 'screenshot';
  * @fires {CustomEvent} kite-chat-header.edit
  * @fires {CustomEvent} kite-chat-header.delete
  * @fires {CustomEvent} kite-chat-header.close
- * @fires {CustomEvent} kite-chat-header.screenshot
  */
 @customElement('kite-chat-header')
 export class KiteChatHeaderElement extends LitElement {
@@ -51,25 +50,6 @@ export class KiteChatHeaderElement extends LitElement {
     if(this.selectedElementsCount === 0) {
       return html`
         <h3 class="kite-title flex-1">${this.heading}</h3>
-        <span
-          title="Take a screenshot"
-          class="cursor-pointer rounded-full bg-white bg-opacity-0 p-1.5 leading-none hover:bg-opacity-30"
-          @click="${() => this._handleAction('screenshot')}"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-screenshot w-[1.2em] h-[1.2em]" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path d="M7 19a2 2 0 0 1 -2 -2" />
-              <path d="M5 13v-2" />
-              <path d="M5 7a2 2 0 0 1 2 -2" />
-              <path d="M11 5h2" />
-              <path d="M17 5a2 2 0 0 1 2 2" />
-              <path d="M19 11v2" />
-              <path d="M19 17v4" />
-              <path d="M21 19h-4" />
-              <path d="M13 19h-2" />
-            </svg>
-          </span
-        >
         <span
           data-close
           title="Close"

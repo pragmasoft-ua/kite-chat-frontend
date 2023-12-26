@@ -24,6 +24,7 @@ import {
   SelectionContainerMixin,
   VisibilityMixin,
   NotificationContainerMixin,
+  ScreenshotMixin,
 } from './mixins';
 import {
   AnchorController, 
@@ -31,7 +32,6 @@ import {
   TimelineContainerController,
   Select as KiteMsgSelect,
   ClipboardController,
-  ScreenshotController,
 } from './controllers';
 import {
   KiteChatFooterElement, 
@@ -129,6 +129,7 @@ function getMessageActions(actions: MsgActionType[]): ContextMenuAction[] {
  * @fires {CustomEvent} kite-chat.send - Outgoing message is sent
  * @fires {CustomEvent} kite-chat.delete - Chat message is deleted
  * @fires {CustomEvent} kite-chat.select - Chat message is selected
+ * @fires {CustomEvent} kite-chat.screenshot - Tab screenshot
  * @attr {Boolean} open - displays chat window if true or only toggle button if false or missing
  * @attr {"light" | "dark"} theme - defines kite chat theme, using prefers-color-scheme by default
  * @attr {string} heading - Chat dialog heading
@@ -139,6 +140,7 @@ function getMessageActions(actions: MsgActionType[]): ContextMenuAction[] {
  */
 @customElement('kite-chat')
 export class KiteChatElement extends 
+  ScreenshotMixin(
     NotificationContainerMixin(
       VisibilityMixin(
         SelectionContainerMixin(
@@ -148,7 +150,9 @@ export class KiteChatElement extends
           ), 
         {show: 'kite-chat.show', hide: 'kite-chat.hide'}
       )
-    ) {
+    ),
+    {screenshot: 'kite-chat.screenshot'}
+  ) {
   @property()
   heading = '🪁Kite chat';
 
@@ -189,8 +193,6 @@ export class KiteChatElement extends
   protected timelineContainerController = new TimelineContainerController(this);
 
   protected clipboardController = new ClipboardController(this);
-
-  protected screenshotController = new ScreenshotController(this);
 
   constructor() {
     super();
@@ -236,11 +238,6 @@ export class KiteChatElement extends
             });
           }}
           @kite-chat-header.close=${this._toggleOpen}
-          @kite-chat-header.screenshot=${() => {
-            this.screenshotController.captureScreen((file) => {
-              this._send({file, totalFiles: 1, batchId: randomStringId()});
-            });
-          }}
           .editable=${this.selectedElements.length === 1 && this.isSent(this.selectedElements[0])}
           .selectedElementsCount=${this.selectedElements.length}
           .heading=${this.heading}
@@ -417,6 +414,8 @@ export class KiteChatElement extends
   private _handleMenuClick(event: CustomEvent<ContextMenuClick>) {
     const msgElement = this.pointerAnchor.targetElement as KiteMsgElement;
     const action = event.detail.action;
+    const msgFile = msgElement.querySelector('kite-file')?.file;
+    const msgText = msgElement.textContent;
 
     switch(action.value) {
       case MsgActionType.SELECT:
@@ -439,8 +438,9 @@ export class KiteChatElement extends
         break;
       case MsgActionType.COPY:
         this.clipboardController.copyToClipboard(
-          msgElement.querySelector('kite-file')?.file || msgElement.textContent || ''
+          msgFile || msgText || ''
         );
+        break;
     }
   }
 
