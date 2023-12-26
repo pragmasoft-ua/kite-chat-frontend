@@ -6,4 +6,3 @@ export * from './selection-container-controller';
 export * from './clipboard-controller';
 export * from './drag-and-drop-controller';
 export * from './screenshot-controller';
-export * from './web-share-controller';
