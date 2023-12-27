@@ -181,6 +181,10 @@ export class KiteChatElement extends
     return currentMsg.querySelector('kite-file');
   }
 
+  private getMsgContent(msg: KiteMsgElement) {
+    return [this.getFile(msg)?.file, msg.textContent?.trim()].filter(el => !!el) as (string | File)[];
+  }
+
   @state()
   private editMessage: KiteMsgElement|null = null;
 
@@ -236,6 +240,10 @@ export class KiteChatElement extends
             this.selectedElements.forEach((msgElement) => {
               this._delete(msgElement);
             });
+          }}
+          @kite-chat-header.copy=${() => {
+            const data = this.selectedElements.map((el) => this.getMsgContent(el)).flat();
+            this.clipboardController.copyToClipboard(data);
           }}
           @kite-chat-header.close=${this._toggleOpen}
           .editable=${this.selectedElements.length === 1 && this.isSent(this.selectedElements[0])}
@@ -400,7 +408,7 @@ export class KiteChatElement extends
     const file = msgElement.querySelector('kite-file')?.file;
     const actions = getMessageActions([
       MsgActionType.DELETE,
-      ...(!file || this.clipboardController.isSupportedFile(file) ? [MsgActionType.COPY] : []),
+      ...(!file || this.clipboardController.isWriteSupported ? [MsgActionType.COPY] : []),
       ...(this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
       ...(this.getFile(msgElement) ? [MsgActionType.DOWNLOAD] : []),
       ...(msgElement.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
@@ -414,8 +422,6 @@ export class KiteChatElement extends
   private _handleMenuClick(event: CustomEvent<ContextMenuClick>) {
     const msgElement = this.pointerAnchor.targetElement as KiteMsgElement;
     const action = event.detail.action;
-    const msgFile = msgElement.querySelector('kite-file')?.file;
-    const msgText = msgElement.textContent;
 
     switch(action.value) {
       case MsgActionType.SELECT:
@@ -437,9 +443,7 @@ export class KiteChatElement extends
         this.selectAll();
         break;
       case MsgActionType.COPY:
-        this.clipboardController.copyToClipboard(
-          msgFile || msgText || ''
-        );
+        this.clipboardController.copyToClipboard(this.getMsgContent(msgElement));
         break;
     }
   }

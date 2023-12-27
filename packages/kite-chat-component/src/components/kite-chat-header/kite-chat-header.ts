@@ -21,7 +21,7 @@ const componentStyles = css`
   ${unsafeCSS(headerStyles)}
 `;
 
-type HeaderActions = 'cancel' | 'edit' | 'delete' | 'close';
+type HeaderActions = 'cancel' | 'edit' | 'delete' | 'close' | 'copy';
 
 /**
  * KiteChat component header
@@ -30,6 +30,7 @@ type HeaderActions = 'cancel' | 'edit' | 'delete' | 'close';
  * @fires {CustomEvent} kite-chat-header.edit
  * @fires {CustomEvent} kite-chat-header.delete
  * @fires {CustomEvent} kite-chat-header.close
+ * @fires {CustomEvent} kite-chat-header.copy
  */
 @customElement('kite-chat-header')
 export class KiteChatHeaderElement extends LitElement {
@@ -71,6 +72,18 @@ export class KiteChatHeaderElement extends LitElement {
         </svg></span
       >
       <span class="flex-1">${this.selectedElementsCount} selected</span>
+        <span
+          data-copy
+          title="Copy"
+          class="cursor-pointer h-full aspect-square rounded-full bg-white bg-opacity-0 py-1 px-1.5 leading-none hover:bg-opacity-30"
+          @click="${() => this._handleAction('copy')}"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-full w-full icon icon-tabler icon-tabler-copy" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+            <path d="M7 7m0 2.667a2.667 2.667 0 0 1 2.667 -2.667h8.666a2.667 2.667 0 0 1 2.667 2.667v8.666a2.667 2.667 0 0 1 -2.667 2.667h-8.666a2.667 2.667 0 0 1 -2.667 -2.667z" />
+            <path d="M4.012 16.737a2.005 2.005 0 0 1 -1.012 -1.737v-10c0 -1.1 .9 -2 2 -2h10c.75 0 1.158 .385 1.5 1" />
+          </svg>
+        </span>
         ${
           this.editable ? html`
             <span

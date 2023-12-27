@@ -218,24 +218,26 @@ export class KiteChatFooterElement extends LitElement {
     e.preventDefault();
     const clipboardData = await this.clipboardController.pasteFromClipboard(e);
     if(!clipboardData) return;
-    if(clipboardData instanceof File) {
+
+    const cursorPosition = this.textarea.selectionStart || 0;
+    const currentText = this.textarea.value;
+    const newText =
+      currentText.substring(0, cursorPosition) +
+      clipboardData.text +
+      currentText.substring(cursorPosition);
+    this.textarea.value = newText;
+    
+    if(!clipboardData.files) return;
+    for(const file of clipboardData.files) {
       const batchId = randomStringId();
       this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
         ...CUSTOM_EVENT_INIT,
         detail: {
-          file: clipboardData,
+          file,
           batchId,
           totalFiles: 1,
         }
       }));
-    } else {
-      const cursorPosition = this.textarea.selectionStart || 0;
-      const currentText = this.textarea.value;
-      const newText =
-        currentText.substring(0, cursorPosition) +
-        clipboardData +
-        currentText.substring(cursorPosition);
-      this.textarea.value = newText;
     }
   }
 
