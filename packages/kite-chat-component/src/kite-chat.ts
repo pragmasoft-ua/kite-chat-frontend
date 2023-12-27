@@ -249,6 +249,7 @@ export class KiteChatElement extends
           @kite-chat-header.copy=${() => {
             const data = this.selectedElements.map((el) => this._copy(el));
             this.clipboardController.copyToClipboard(data);
+            this.unselectAll();
           }}
           @kite-chat-header.close=${this._toggleOpen}
           .editable=${this.selectedElements.length === 1 && this.isSent(this.selectedElements[0])}
