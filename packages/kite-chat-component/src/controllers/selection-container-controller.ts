@@ -109,10 +109,10 @@ export class SelectionContainerController<U extends SelectableElement> {
                 range.forEach(el => el.select());
                 this.host.selectedElements = [...range];
             } else {
-                this.host.selectedElements = [...this.host.selectedElements, selectedElement as U];
+                this.host.selectedElements = [...this.selectedSlotElements];
             }
         } else {
-            this.host.selectedElements = [...this.host.selectedElements.filter(el => !selectedElement.isEqualNode(el))];
+            this.host.selectedElements = [...this.selectedSlotElements];
         }
     }
 

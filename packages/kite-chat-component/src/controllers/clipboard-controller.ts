@@ -11,6 +11,11 @@ export type ClipboardData = {
     files?: File[];
 }
 
+export type ClipboardContent = {
+    data: ClipboardData;
+    htmlFormatter?: (rawData: ClipboardData) => Promise<string>;
+}
+
 export class ClipboardController {
     private host: ReactiveControllerHost & HTMLElement;
 
@@ -46,7 +51,7 @@ export class ClipboardController {
         return new Blob([blobPart], {type: SupportedTypes.IMAGE_PNG});
     }
 
-    private async getHtmlData(data: (string|File)[]) {
+    private async getHtmlData(data: ClipboardContent[]) {
         return new Blob([await this.constructHtmlContent(data)], {type: SupportedTypes.TEXT_HTML});
     }
 
@@ -77,25 +82,26 @@ export class ClipboardController {
             img.src = objectURL;
         });
     }
-    private getText(data: (string | File)[]) {
-        return data.filter(item => !(item instanceof File)).join('\n');
-    }
 
-    async copyToClipboard(data: (string | File)[]) {
-        const plainText = this.getText(data);
+    async copyToClipboard(content: ClipboardContent[]) {
+        const getFileNames = (files: File[]) => files?.map((file) => file.name || 'file').join(',');
+
+        const data = content.map(item => item.data);
+        const textData = data.map(item => `${item.text} ${item.files && getFileNames(item.files)}`);
+        const fileData = data.map(item => item.files).flat().filter(file => !!file) as File[];
+
+        const plainText = textData.join('\n');
 
         navigator.clipboard.writeText(plainText); 
 
         if(!this.isWriteSupported) return;
 
-        const files = data.filter(item => (item instanceof File)) as File[];   
-
         const clipboardData: Partial<Record<SupportedTypes, string | Blob>> = {
             [SupportedTypes.TEXT_PLAIN]: this.getTextData(plainText),
-            [SupportedTypes.TEXT_HTML]: await this.getHtmlData(data),
+            [SupportedTypes.TEXT_HTML]: await this.getHtmlData(content),
         };
 
-        const images = files.filter(file => this.isImage(file));
+        const images = fileData.filter(file => this.isImage(file));
         if(images.length === 1) {
             const imageFile = await this.getImageData(images[0]);
             imageFile && (clipboardData[SupportedTypes.IMAGE_PNG] = imageFile);
@@ -122,30 +128,64 @@ export class ClipboardController {
             reader.readAsDataURL(file);
         });
     }
-    
-    private async constructHtmlContent(data: (string | File)[]) {
+
+    private async loadImageAsync(img: HTMLImageElement): Promise<void> {
+        return new Promise((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = (error) => reject(error);
+        });
+    }
+
+    async fileToHtml(file: File): Promise<string> {
+        if(file?.type.startsWith('image')) {
+            const img = document.createElement('img');
+            img.src = `data:${file.type};base64,${await this.convertToBase64(file)}`;
+
+            await this.loadImageAsync(img);
+
+            const aspectRatio = img.width / img.height;
+            const desiredWidth = 300;
+            const desiredHeight = Math.round(desiredWidth / aspectRatio);
+            img.width = desiredWidth;
+            img.height = desiredHeight;
+
+            return img.outerHTML;
+        } else {
+            const anchor = document.createElement('a');
+            anchor.href = `data:${file.type};base64,${await this.convertToBase64(file)}`;
+            anchor.download = file.name;
+            anchor.textContent = file.name || 'file';
+            return anchor.outerHTML;
+        }
+    }
+
+    private async defaultHtmlFormatter(data: ClipboardData): Promise<string> {
+        const contentDiv = document.createElement('div');
+
+        if(data.text) {
+            const p = document.createElement('p');
+            p.textContent = data.text;
+            contentDiv.appendChild(p);
+        }
+        if(!data.files) return contentDiv.innerHTML;
+
+        for(const file of data.files) {
+            const p = document.createElement('p');
+            p.innerHTML = await this.fileToHtml(file);
+            contentDiv.appendChild(p);
+        }
+        return contentDiv.innerHTML;
+    }
+
+    private async constructHtmlContent(content: ClipboardContent[]) {
         const contentDiv = document.createElement('div');
     
-        for(const item of data) {
-            if(item instanceof File) {
-                if(item.type.startsWith('image')) {
-                    const img = document.createElement('img');
-                    img.src = `data:${item.type};base64,${await this.convertToBase64(item)}`;
-                    contentDiv.appendChild(img);
-                } else {
-                    const p = document.createElement('p');
-                    const anchor = document.createElement('a');
-                    anchor.href = `data:${item.type};base64,${await this.convertToBase64(item)}`;
-                    anchor.download = item.name;
-                    anchor.textContent = item.name || 'file';
-                    p.appendChild(anchor);
-                    contentDiv.appendChild(p);
-                }
-            } else if(typeof item === 'string') {
-                const p = document.createElement('p');
-                p.textContent = item;
-                contentDiv.appendChild(p);
-            }
+        for(const item of content) {
+            const itemDiv = document.createElement('div');
+            itemDiv.innerHTML = item.htmlFormatter
+                ? await item.htmlFormatter(item.data) 
+                : await this.defaultHtmlFormatter(item.data);
+            contentDiv.appendChild(itemDiv);
         }
 
         return contentDiv.innerHTML;

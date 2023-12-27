@@ -32,6 +32,8 @@ import {
   TimelineContainerController,
   Select as KiteMsgSelect,
   ClipboardController,
+  ClipboardContent,
+  ClipboardData,
 } from './controllers';
 import {
   KiteChatFooterElement, 
@@ -177,12 +179,15 @@ export class KiteChatElement extends
     ));
   }
 
-  private getFile(currentMsg: KiteMsgElement) {
-    return currentMsg.querySelector('kite-file');
+  private getFiles(currentMsg: KiteMsgElement) {
+    return currentMsg.querySelectorAll('kite-file');
   }
 
   private getMsgContent(msg: KiteMsgElement) {
-    return [this.getFile(msg)?.file, msg.textContent?.trim()].filter(el => !!el) as (string | File)[];
+    return {
+      text: msg.textContent?.trim() ?? '',
+      files: Array.from(this.getFiles(msg)).map(el => el.file).filter(file => !!file) as File[],
+    };
   }
 
   @state()
@@ -242,7 +247,7 @@ export class KiteChatElement extends
             });
           }}
           @kite-chat-header.copy=${() => {
-            const data = this.selectedElements.map((el) => this.getMsgContent(el)).flat();
+            const data = this.selectedElements.map((el) => this._copy(el));
             this.clipboardController.copyToClipboard(data);
           }}
           @kite-chat-header.close=${this._toggleOpen}
@@ -298,6 +303,29 @@ export class KiteChatElement extends
         </svg>
       </div>
     `;
+  }
+
+  private _copy(msgElement: KiteMsgElement): ClipboardContent {
+    return {
+      data: this.getMsgContent(msgElement),
+      htmlFormatter: async (data: ClipboardData) => {
+        const contentDiv = document.createElement('div');
+    
+        const p = document.createElement('p');
+        const msgType = msgElement.getAttribute('status') ? 'Sent' : 'Received';
+        p.textContent = `${msgType}: ${data.text}`;
+        contentDiv.appendChild(p);
+
+        if(!data.files) return contentDiv.innerHTML;
+
+        for(const file of data.files) {
+          const p = document.createElement('p');
+          p.innerHTML = await this.clipboardController.fileToHtml(file);
+          contentDiv.appendChild(p);
+        }
+        return contentDiv.innerHTML;
+      },
+    };
   }
 
   private _edit(msgElement: KiteMsgElement|null) {
@@ -410,7 +438,7 @@ export class KiteChatElement extends
       MsgActionType.DELETE,
       ...(!file || this.clipboardController.isWriteSupported ? [MsgActionType.COPY] : []),
       ...(this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
-      ...(this.getFile(msgElement) ? [MsgActionType.DOWNLOAD] : []),
+      ...(this.getFiles(msgElement) ? [MsgActionType.DOWNLOAD] : []),
       ...(msgElement.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
       MsgActionType.SELECT_ALL,
     ]);
@@ -437,13 +465,13 @@ export class KiteChatElement extends
         this._edit(msgElement);
         break;
       case MsgActionType.DOWNLOAD:
-        this.getFile(msgElement)?.download();
+        this.getFiles(msgElement).forEach(fileElement => fileElement.download());
         break;
       case MsgActionType.SELECT_ALL:
         this.selectAll();
         break;
       case MsgActionType.COPY:
-        this.clipboardController.copyToClipboard(this.getMsgContent(msgElement));
+        this.clipboardController.copyToClipboard([{data: this.getMsgContent(msgElement)}]);
         break;
     }
   }
