@@ -223,10 +223,10 @@ export class KiteChatElement extends
     }
     if (!CSS.supports('anchor-name', '--toggle')) {
       // The anchor-name property is not supported
-      this.anchorController = new AnchorController(this,
+      this.pointerAnchorController = new AnchorController(this,
         flipFallbackClasses, 'kite-pointer-anchor', 'kite-context-menu'
       );
-  }
+    }
   }
 
   override render() {
@@ -239,7 +239,7 @@ export class KiteChatElement extends
         class="kite-dialog ${classMap({
           'scale-y-100': this.open,
           'scale-y-0': !this.open,
-        })} outline-none border-none fixed p-0 z-40 flex origin-bottom flex-col rounded border shadow-lg transition-transform overflow-hidden"
+        })} outline-none border-none fixed p-0 z-40 flex origin-bottom flex-col rounded border shadow-lg transition-transform overflow-visible"
       >
         <kite-chat-header
           @kite-chat-header.cancel=${() => {
