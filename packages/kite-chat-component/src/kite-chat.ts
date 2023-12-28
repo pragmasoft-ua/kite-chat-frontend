@@ -34,6 +34,7 @@ import {
   ClipboardController,
   ClipboardContent,
   ClipboardData,
+  WebShareController,
 } from './controllers';
 import {
   KiteChatFooterElement, 
@@ -94,6 +95,7 @@ enum MsgActionType {
   COPY = 'copy',
   DOWNLOAD = 'download',
   SELECT_ALL = 'select-all',
+  SHARE = 'share',
 }
 
 type TextData = {
@@ -112,6 +114,7 @@ const MESSAGE_ACTION_LABEL = {
   [MsgActionType.UNSELECT]: 'Unselect message',
   [MsgActionType.EDIT]: 'Edit message',
   [MsgActionType.COPY]: 'Copy to clipboard',
+  [MsgActionType.SHARE]: 'Share message',
   [MsgActionType.DOWNLOAD]: 'Download file',
   [MsgActionType.SELECT_ALL]: 'Select all messages',
 }
@@ -180,13 +183,15 @@ export class KiteChatElement extends
   }
 
   private getFiles(currentMsg: KiteMsgElement) {
-    return currentMsg.querySelectorAll('kite-file');
+    const elements = currentMsg.querySelectorAll('kite-file');
+    return elements.length !== 0 ? elements : undefined;
   }
 
   private getMsgContent(msg: KiteMsgElement) {
+    const fileElements = this.getFiles(msg);
     return {
       text: msg.textContent?.trim() ?? '',
-      files: Array.from(this.getFiles(msg)).map(el => el.file).filter(file => !!file) as File[],
+      files: fileElements && Array.from(fileElements).map(el => el.file).filter(file => !!file) as File[]|undefined,
     };
   }
 
@@ -202,6 +207,8 @@ export class KiteChatElement extends
   protected timelineContainerController = new TimelineContainerController(this);
 
   protected clipboardController = new ClipboardController(this);
+
+  protected webShareController = new WebShareController(this);
 
   constructor() {
     super();
@@ -434,12 +441,13 @@ export class KiteChatElement extends
     if(!msgElement) {
       return;
     }
-    const file = msgElement.querySelector('kite-file')?.file;
+    const data = this.getMsgContent(msgElement);
     const actions = getMessageActions([
       MsgActionType.DELETE,
-      ...(!file || this.clipboardController.isWriteSupported ? [MsgActionType.COPY] : []),
+      ...(!data.files || this.webShareController.isSupportedFiles(data.files) ? [MsgActionType.SHARE] : []),
+      ...(!data.files || this.clipboardController.isWriteSupported ? [MsgActionType.COPY] : []),
       ...(this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
-      ...(this.getFiles(msgElement) ? [MsgActionType.DOWNLOAD] : []),
+      ...(data.files ? [MsgActionType.DOWNLOAD] : []),
       ...(msgElement.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
       MsgActionType.SELECT_ALL,
     ]);
@@ -466,13 +474,16 @@ export class KiteChatElement extends
         this._edit(msgElement);
         break;
       case MsgActionType.DOWNLOAD:
-        this.getFiles(msgElement).forEach(fileElement => fileElement.download());
+        this.getFiles(msgElement)?.forEach(fileElement => fileElement.download());
         break;
       case MsgActionType.SELECT_ALL:
         this.selectAll();
         break;
       case MsgActionType.COPY:
         this.clipboardController.copyToClipboard([{data: this.getMsgContent(msgElement)}]);
+        break;
+      case MsgActionType.SHARE:
+        this.webShareController.share('Kite Chat', this.getMsgContent(msgElement));
         break;
     }
   }

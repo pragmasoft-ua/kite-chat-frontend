@@ -49,6 +49,8 @@ export class KiteFileElement extends LitElement {
   })
   name = 'File';
 
+  private _file?: File;
+
   /**
    * file, sent from the chat or received by the chat
    */
@@ -62,7 +64,13 @@ export class KiteFileElement extends LitElement {
       },
     },
   })
-  file?: File;
+  set file(value: File) {
+    this._file = value?.name ? value : new File([value], this.name, { type: value.type });
+  }
+
+  get file(): File|undefined {
+    return this._file;
+  }
 
   @query('a')
   private downloadAnchor!: HTMLAnchorElement;
@@ -76,7 +84,7 @@ export class KiteFileElement extends LitElement {
   override render() {
     if (!this.file) return;
     const href = URL.createObjectURL(this.file);
-    const name = this.file.name || this.name;
+    const name = this.file.name;
     if (this.file.type.startsWith('image')) {
       const preview = html`<img src="${href}" alt="${name}" title=${name} />`;
       return html`<a href="${href}" download="${name}">${preview}</a>`;

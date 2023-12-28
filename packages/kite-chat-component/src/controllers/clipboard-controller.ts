@@ -41,6 +41,12 @@ export class ClipboardController {
         return file.type.startsWith('image');
     }
 
+    private defaultTextFormatter(data: ClipboardData) {
+        const fileNames = data.files?.map((file) => file.name || 'file').join(',') ?? '';
+        const separator = data.text && fileNames ? ' ' : '';
+        return `${data.text}${separator}${fileNames}`;
+    }
+
     private getTextData(string: string) {
         return new Blob([string], {type: SupportedTypes.TEXT_PLAIN});
     }
@@ -84,10 +90,8 @@ export class ClipboardController {
     }
 
     async copyToClipboard(content: ClipboardContent[]) {
-        const getFileNames = (files: File[]) => files?.map((file) => file.name || 'file').join(',');
-
         const data = content.map(item => item.data);
-        const textData = data.map(item => `${item.text} ${item.files && getFileNames(item.files)}`);
+        const textData = data.map(item => this.defaultTextFormatter(item));
         const fileData = data.map(item => item.files).flat().filter(file => !!file) as File[];
 
         const plainText = textData.join('\n');
