@@ -488,7 +488,13 @@ export class KiteChatElement extends
     }
   }
 
-  appendMsg(msg: KiteMsg) {
+  /**
+  * Appends a KiteMsg to the chat and optionally scrolls the new message into view.
+  *
+  * @param {KiteMsg} msg - The KiteMsg to append to the chat.
+  * @param {boolean} eagerShow - If true, automatically shows the new message. Defaults to true.
+  */
+  appendMsg(msg: KiteMsg, eagerShow: boolean = true) {
     const {messageId = randomStringId(), timestamp = new Date(), status, edited} = msg;
     const msgElement = document.createElement('kite-msg');
     msgElement.messageId = messageId;
@@ -505,7 +511,7 @@ export class KiteChatElement extends
       msgElement.appendChild(fileElement);
     }
     this.appendChild(msgElement);
-    requestAnimationFrame(() => {
+    eagerShow && requestAnimationFrame(() => {
       msgElement.scrollIntoView(false);
       this.show();
     });

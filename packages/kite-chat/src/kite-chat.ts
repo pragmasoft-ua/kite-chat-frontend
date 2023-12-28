@@ -222,7 +222,7 @@ export class KiteChat {
       console.debug("getMessages", messages);
       if (!this.element) return;
       for (const msg of messages) {
-        this.element.appendMsg(msg);
+        this.element.appendMsg(msg, false);
       }
       if(messages.length > 0) {
         this.element?.appendNotification({message: 'Message history restored', type: NotificationType.INFO, duration: "auto"});
