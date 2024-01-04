@@ -6,7 +6,7 @@
  */
 
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, property, query} from 'lit/decorators.js';
+import {customElement, property, query, state} from 'lit/decorators.js';
 import prettyBytes from 'pretty-bytes';
 
 import kiteFileStyles from './kite-file.css?inline';
@@ -49,6 +49,7 @@ export class KiteFileElement extends LitElement {
   })
   name = 'File';
 
+  @state()
   private _file?: File;
 
   /**
