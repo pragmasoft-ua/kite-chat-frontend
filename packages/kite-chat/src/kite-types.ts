@@ -30,22 +30,21 @@ export enum MsgType {
   UPLOAD = 'UPL',
   CONNECTED = 'TAB+',
   DISCONNECTED = 'TAB-',
-  ONLINE = 'ONLINE',
-  OFFLINE = 'OFFLINE',
   PING = 'PING',
   PONG = 'PONG',
   FAILED = "FAILED",
-  ACTIVE_TAB = "ACT_TAB",
-  ZIPPED = "ZIP"
 }
 
-export type JoinChannel = {
-  type: MsgType.JOIN;
+export type JoinOptions = {
   memberId: string;
   memberName?: string;
   endpoint: string;
   eagerlyConnect?: boolean;
 };
+
+export type JoinChannel = {
+  type: MsgType.JOIN;
+} & JoinOptions;
 
 export type MsgAck = {
   type: MsgType.ACK;
@@ -116,15 +115,6 @@ export type Disconnected = {
   type: MsgType.DISCONNECTED;
 };
 
-export type Online = {
-  type: MsgType.ONLINE;
-};
-
-export type Offline = {
-  type: MsgType.OFFLINE;
-  sessionDurationMs: number;
-};
-
 export type Ping = {
   type: MsgType.PING;
 };
@@ -135,17 +125,6 @@ export type Pong = {
 
 export type OK = {
   type: MsgType.OK;
-};
-
-export type ActiveTab = {
-  type: MsgType.ACTIVE_TAB;
-};
-
-export type ZippedMsg = {
-  type: MsgType.ZIPPED;
-  messageId: string;
-  zippedIds: string[];
-  file: File;
 };
 
 export type ContentMsg = PlaintextMsg | FileMsg;
@@ -179,10 +158,6 @@ export type KiteMsg =
   | BinaryMsg
   | Connected
   | Disconnected
-  | Online
-  | Offline
   | Ping
   | Pong
-  | FailedMsg
-  | ActiveTab
-  | ZippedMsg;
+  | FailedMsg;

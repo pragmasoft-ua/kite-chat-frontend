@@ -1,14 +1,9 @@
 import type {
-  JoinChannel,
-  ErrorMsg,
+  JoinOptions,
   KiteMsg,
   PlaintextMsg,
-  MsgAck,
-  Connected,
   FileMsg,
   ContentMsg,
-  FailedMsg,
-  ZippedMsg,
 } from './kite-types';
 
 import {MsgType} from './kite-types';
@@ -26,8 +21,6 @@ import {
   KiteMsgDelete,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
-import KiteDedicatedWorker from './kite-worker?worker&inline';
-import KiteSharedWorker from './kite-worker?sharedworker&inline';
 import {assert} from './assert';
 import {
   KiteDB, 
@@ -38,6 +31,8 @@ import {
   deleteMessage,
   messageById
 } from './kite-storage';
+import {KiteWebsocket} from './kite-websocket';
+import {CHANNEL_NAME} from './shared-constants';
 
 export type KiteChatOptions = {
   endpoint: string;
@@ -58,13 +53,14 @@ const KITE_USER_ID_STORE_KEY = 'KITE_USER_ID';
 
 export class KiteChat {
   protected readonly opts: KiteChatOptions;
-  protected kiteWorker: Worker | SharedWorker | null;
+  protected kiteWebsocket: KiteWebsocket | null;
+  protected kiteChannel: BroadcastChannel;
   readonly element: KiteChatElement | null;
   private db: KiteDB | null;
   public defaultNotificationTitle: string = '';
   public defaultNotificationOptions: NotificationOptions = {
     body: "You have a new message!",
-  }
+  };
 
   constructor(opts: KiteChatOptions) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
@@ -89,41 +85,25 @@ export class KiteChat {
       console.error("Failed to open indexedDB:", e.message);
     })
 
+    const kiteChannel = new BroadcastChannel(CHANNEL_NAME);
+    kiteChannel.onmessage = this.onChannelMessage.bind(this);
+
     addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        this.postMessage({
-          type: MsgType.ACTIVE_TAB,
-        });
+        kiteChannel.postMessage({type: MsgType.CONNECTED});
+        !this.kiteWebsocket && this.connect();
         this.restore();
-      } else {
-        if (this.kiteWorker instanceof Worker) {
-          this.postMessage({
-            type: MsgType.DISCONNECTED,
-          });
-        }
       }
     });
-    this.connect();
 
+    this.kiteChannel = kiteChannel;
     Notification.requestPermission();
-  }
-
-  private getPort(worker: SharedWorker|Worker) {
-    if (worker instanceof Worker) {
-      return worker;
-    } else {
-      return worker.port;
-    }
   }
 
   public connect() {
     console.debug('connect');
 
-    const onWorkerMessageBound = this.onWorkerMessage.bind(this);
-
-    const kiteWorker = window.SharedWorker 
-      ? new KiteSharedWorker() 
-      : new KiteDedicatedWorker();
+    const kiteWebsocket = new KiteWebsocket();
 
     const endpoint = new URL(this.opts.endpoint);
 
@@ -136,50 +116,39 @@ export class KiteChat {
       'enpoint url should have c=<channel name> required query parameter'
     );
 
-    const join: JoinChannel = {
-      type: MsgType.JOIN,
-      endpoint: this.opts.endpoint, // DOMException: URL object could not be cloned
+    const options: JoinOptions = {
+      endpoint: this.opts.endpoint,
       memberId: this.opts.userId as string,
       memberName: this.opts.userName,
       eagerlyConnect: this.opts.eagerlyConnect,
     };
 
-    kiteWorker.addEventListener('error', (this.onWorkerError as ((e: Event) => void)).bind(this));
+    kiteWebsocket.onContentMessage = this.onContentMessage.bind(this);
+    kiteWebsocket.onMessageAck = this.onMessageAck.bind(this);
+    kiteWebsocket.onFailedMessage = this.onFailedMessage.bind(this);
+    kiteWebsocket.onError = this.onError.bind(this);
+    kiteWebsocket.onZippedMessage = this.onZippedMessage.bind(this);
+    kiteWebsocket.onOnline = () => {console.log('online')};
+    kiteWebsocket.onOffline = () => {console.log('offline')};
+    kiteWebsocket.join(options);
 
-    const kiteWorkerPort = this.getPort(kiteWorker);
-
-    kiteWorkerPort.onmessage = onWorkerMessageBound;
-    kiteWorkerPort.onmessageerror = this.onDeliveryError.bind(this);
-    kiteWorkerPort.postMessage(join);
-  
-    if (!(kiteWorkerPort instanceof Worker)) {
-      kiteWorkerPort.start();
-    }
-
-    this.kiteWorker = kiteWorker;
-  }
-
-  private postMessage(msg: KiteMsg) {
-    if (!this.kiteWorker) {
-      throw new Error('Not connected');
-    }
-    this.getPort(this.kiteWorker).postMessage(msg);
-  }
-
-  private close() {
-    if(!this.kiteWorker) return;
-    !(this.kiteWorker instanceof Worker) && this.kiteWorker.port.close();
-    this.kiteWorker = null;
+    this.kiteWebsocket = kiteWebsocket;
   }
 
   public disconnect() {
     console.debug('disconnect');
     this.element?.appendNotification({message: 'Disconnected from host', type: NotificationType.WARNING});
+    this.kiteWebsocket?.disconnect();
+    this.kiteWebsocket = null;
+  }
 
-    this.postMessage({
-      type: MsgType.DISCONNECTED,
-    });
-    this.close();
+  private onChannelMessage(e: MessageEvent<KiteMsg>) {
+    const data = e.data;
+
+    switch(data.type) {
+      case MsgType.CONNECTED:
+        this.disconnect();
+    }
   }
 
   private save(msg: ContentMsg) {
@@ -198,13 +167,13 @@ export class KiteChat {
   }
 
   private delete(messageId: string) {
-    if(!this.db) {
-      return;
-    }
     const msgElement = document.querySelector(
       `${KiteMsgElement.TAG}[messageId="${messageId}"]`
     ) as KiteFileElement | undefined;
     msgElement?.remove();
+    if(!this.db) {
+      return;
+    }
     deleteMessage(messageId, this.db);
   }
 
@@ -223,9 +192,6 @@ export class KiteChat {
       if (!this.element) return;
       for (const msg of messages) {
         this.element.appendMsg(msg, false);
-      }
-      if(messages.length > 0) {
-        this.element?.appendNotification({message: 'Message history restored', type: NotificationType.INFO, duration: "auto"});
       }
     }).catch((e: Error) => {
       console.error("Failed to get messages from storage:", e.message);
@@ -250,18 +216,19 @@ export class KiteChat {
         ...detail,
         type: MsgType.PLAINTEXT,
       } as PlaintextMsg;
+      this.kiteWebsocket?.sendPlaintextMessage(outgoing);
     } else if (isFileMsg(detail)) {
       outgoing = {
         ...detail,
         type: MsgType.FILE,
       } as FileMsg;
+      this.kiteWebsocket?.sendFileMessage(outgoing);
     } else {
       throw new Error('Unexpected payload type ' + JSON.stringify(detail));
     }
     if(!outgoing.edited) {
       console.debug('outgoing', outgoing);
       this.db && addMessage(outgoing, this.db);
-      this.postMessage(outgoing);
     } else {
       this.db && modifyMessage(outgoing.messageId, outgoing, this.db);
       //TODO backend message editing
@@ -303,37 +270,6 @@ export class KiteChat {
     return element;
   }
 
-  protected onWorkerMessage(e: MessageEvent<KiteMsg>) {
-    const payload = e.data;
-    console.debug('onWorkerMessage', JSON.stringify(payload));
-    if (!payload) throw new Error('no payload in incoming message');
-    switch (payload.type) {
-      case MsgType.CONNECTED:
-        this.onConnected(payload);
-        break;
-      case MsgType.PLAINTEXT:
-      case MsgType.FILE:
-        this.onContentMessage(payload);
-        break;
-      case MsgType.ACK:
-        this.onMessageAck(payload);
-        break;
-      case MsgType.ERROR:
-        this.onErrorMessage(payload);
-        break;
-      case MsgType.FAILED:
-        this.onFailedMessage(payload);
-        break;
-      case MsgType.ZIPPED:
-        this.onZippedMessage(payload);
-        break;
-      case MsgType.ONLINE:
-      case MsgType.OFFLINE:
-        this.log(payload);
-        break;
-    }
-  }
-
   protected onContentMessage(incoming: ContentMsg) {
     console.debug('onContentMessage', incoming.messageId, incoming.timestamp);
     if(!this.db) {
@@ -367,56 +303,51 @@ export class KiteChat {
     return faviconElement ? (faviconElement as HTMLLinkElement).href : undefined;
   }
 
-  protected onConnected(payload: Connected) {
-    console.debug('connected', payload);
-    this.element?.appendNotification({message: 'Connected to host', type: NotificationType.SUCCESS, duration: "auto"});
-  }
-
-  protected onMessageAck(ack: MsgAck) {
-    console.debug('onMessageAck', ack);
+  protected onMessageAck(messageId: string, destiationMessageId: string, timestamp: Date) {
+    console.debug('onMessageAck', messageId, timestamp);
     const msgElement = document.querySelector(
-      `${KiteMsgElement.TAG}[messageId="${ack.messageId}"]`
+      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
     ) as KiteMsgElement | undefined;
     if (msgElement) {
-      msgElement.messageId = ack.destiationMessageId;
+      msgElement.messageId = destiationMessageId;
       msgElement.status = MsgStatus.delivered;
     }
-    this.update(ack.messageId, {
-      messageId: ack.destiationMessageId,
+    this.update(messageId, {
+      messageId: destiationMessageId,
       status: MsgStatus.delivered,
     } as ContentMsg);
   }
 
-  protected onErrorMessage(e: ErrorMsg) {
+  protected onError(reason: string, code: number) {
     // TODO display error as a text message
-    console.error(e.code, e.reason);
-    const errorMessage = e.reason || 'Unknown error.';
+    console.error(code, reason);
+    const errorMessage = reason || 'Unknown error.';
     this.element?.appendNotification({message: errorMessage, type: NotificationType.ERROR});
   }
 
-  protected onZippedMessage(e: ZippedMsg) {
-    console.debug('onZippedMessage', e);
+  protected onZippedMessage(messageId: string, zippedIds: string[], file: File) {
+    console.debug('onZippedMessage', messageId, zippedIds);
     const fileElement = document.querySelector(
-      `${KiteMsgElement.TAG}[messageId="${e.messageId}"] > ${KiteFileElement.TAG}`
+      `${KiteMsgElement.TAG}[messageId="${messageId}"] > ${KiteFileElement.TAG}`
     ) as KiteFileElement | undefined;
-    fileElement && (fileElement.file = e.file);
-    this.update(e.messageId, {
-      file: e.file,
+    fileElement && (fileElement.file = file);
+    this.update(messageId, {
+      file,
     } as ContentMsg);
-    e.zippedIds.forEach(id => this.delete(id));
+    zippedIds.forEach(id => this.delete(id));
   }
 
-  protected onFailedMessage(e: FailedMsg) {
-    console.debug('onFailedMessage', e);
+  protected onFailedMessage(messageId: string, reason: string, description?: string) {
+    console.debug('onFailedMessage', messageId, reason);
     const msgElement = document.querySelector(
-      `${KiteMsgElement.TAG}[messageId="${e.messageId}"]`
+      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
     ) as KiteMsgElement | undefined;
     if (msgElement) {
       msgElement.status = MsgStatus.failed;
     }
-    const errorMessage = e.description || 'Unknown error.';
+    const errorMessage = description || 'Unknown error.';
     this.element?.appendNotification({message: errorMessage, type: NotificationType.ERROR});
-    this.update(e.messageId, {
+    this.update(messageId, {
       status: MsgStatus.failed,
     } as ContentMsg);
   }
@@ -425,13 +356,6 @@ export class KiteChat {
     // TODO retry?
     // TODO mark message with a failed status
     console.error('Cannot deliver message ', msg);
-  }
-
-  protected onWorkerError(e: ErrorEvent) {
-    this.kiteWorker = null;
-    throw new Error(
-      `Worker initialization error '${e.message}': ${e.filename}(${e.lineno}:${e.colno}). ${e.error}`
-    );
   }
 
   /**
