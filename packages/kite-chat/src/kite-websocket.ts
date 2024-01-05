@@ -91,14 +91,18 @@ export class KiteWebsocket {
   private lastPongTimeMs = 0;
 
   constructor() {
-    window.addEventListener("online", this.onClientOnline.bind(this));
-    window.addEventListener("offline", this.onClientOffline.bind(this));
+    window.addEventListener("Online", this.onClientOnline.bind(this));
+    window.addEventListener("Offline", this.onClientOffline.bind(this));
   }
 
   private messageById = (messageId: string) =>
     this.messageCache.findLast((msg) => msg.messageId === messageId);
 
-  public sendPlaintextMessage(msg: PlaintextMsg) {  
+  public sendPlaintextMessage(msg: PlaintextMsg) {
+    const payload: PlaintextMsg = {
+      ...msg,
+      type: MsgType.PLAINTEXT,
+    }
     const result = verifyPlainText(msg.text);
   
     switch (result) {
@@ -108,7 +112,7 @@ export class KiteWebsocket {
         );
         break;
       case PlainTextVerification.SUCCEED:
-        this.queue(msg);
+        this.queue(payload);
         break;
     }
   }
@@ -165,6 +169,11 @@ export class KiteWebsocket {
   }
 
   public sendFileMessage(msg: FileMsg) {
+    const payload: FileMsg = {
+      ...msg,
+      type: MsgType.FILE,
+    }
+
     const maxSize = (type: string) => formatSize(SUPPORTED_FILE_FORMATS[type as keyof typeof SUPPORTED_FILE_FORMATS]);
   
     const result = verifyFile(msg.file);
@@ -186,7 +195,7 @@ export class KiteWebsocket {
         );
         break;
       case FileVerification.SUCCEED:
-        this.uploadFileMessage(msg);
+        this.uploadFileMessage(payload);
         break;
     }
 

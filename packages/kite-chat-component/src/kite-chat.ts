@@ -370,20 +370,19 @@ export class KiteChatElement extends
     if(!msgElement) {
       return;
     }
-    const {messageId: newMessageId = messageId, timestamp = new Date(), status} = msg;
-    msgElement.messageId = newMessageId;
-    msgElement.timestamp = timestamp;
-    msgElement.status = status;
-    msgElement.edited = true;
+    const {messageId: newMessageId = messageId, timestamp = new Date(), status, edited} = msg;
+    msgElement.messageId = newMessageId ?? msgElement.messageId;
+    msgElement.timestamp = timestamp ?? msgElement.timestamp;
+    msgElement.status = status ?? msgElement.status;
+    msgElement.edited = edited ?? msgElement.edited;
     if (isPlaintextMsg(msg)) {
       msgElement.innerText = msg.text;
     } else {
-      const {file} = msg;
       const fileElement = msgElement.querySelector('kite-file');
-      if(fileElement) {
-        fileElement.file = file;
-        fileElement.name = file.name;
+      if(!fileElement) {
+        return;
       }
+      fileElement.file = msg.file ?? fileElement.file;
     }
     requestAnimationFrame(() => {
       msgElement.scrollIntoView(false);
@@ -504,16 +503,14 @@ export class KiteChatElement extends
     if (isPlaintextMsg(msg)) {
       msgElement.innerText = msg.text;
     } else {
-      const {file} = msg;
       const fileElement = document.createElement('kite-file');
-      fileElement.file = file;
-      fileElement.name = file.name;
+      fileElement.file = msg.file;
       msgElement.appendChild(fileElement);
     }
     this.appendChild(msgElement);
-    eagerShow && requestAnimationFrame(() => {
+    eagerShow && this.show();
+    requestAnimationFrame(() => {
       msgElement.scrollIntoView(false);
-      this.show();
     });
   }
 

@@ -1,8 +1,6 @@
 import type {
   JoinOptions,
   KiteMsg,
-  PlaintextMsg,
-  FileMsg,
   ContentMsg,
 } from './kite-types';
 
@@ -57,10 +55,8 @@ export class KiteChat {
   protected kiteChannel: BroadcastChannel;
   readonly element: KiteChatElement | null;
   private db: KiteDB | null;
-  public defaultNotificationTitle: string = '';
-  public defaultNotificationOptions: NotificationOptions = {
-    body: "You have a new message!",
-  };
+  public notificationTitle: string;
+  public notificationOptions: NotificationOptions;
 
   constructor(opts: KiteChatOptions) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
@@ -75,8 +71,10 @@ export class KiteChat {
       this.opts.createIfMissing as boolean
     );
 
-    this.defaultNotificationTitle = this.element?.heading || '';
-    this.defaultNotificationOptions.icon = this.getFaviconURL();
+    this.notificationTitle = this.element?.heading || '';
+    this.notificationOptions = {
+      icon: this.getFaviconURL(),
+    };
 
     openDatabase().then((db: KiteDB) => {
       this.db = db;
@@ -88,6 +86,9 @@ export class KiteChat {
     const kiteChannel = new BroadcastChannel(CHANNEL_NAME);
     kiteChannel.onmessage = this.onChannelMessage.bind(this);
 
+    kiteChannel.postMessage({type: MsgType.CONNECTED});
+    this.connect();
+
     addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         kiteChannel.postMessage({type: MsgType.CONNECTED});
@@ -97,6 +98,13 @@ export class KiteChat {
     });
 
     this.kiteChannel = kiteChannel;
+
+    addEventListener('click', this.handleUserInteraction.bind(this));
+  }
+
+  private handleUserInteraction() {
+    removeEventListener('click', this.handleUserInteraction.bind(this));
+  
     Notification.requestPermission();
   }
 
@@ -128,8 +136,8 @@ export class KiteChat {
     kiteWebsocket.onFailedMessage = this.onFailedMessage.bind(this);
     kiteWebsocket.onError = this.onError.bind(this);
     kiteWebsocket.onZippedMessage = this.onZippedMessage.bind(this);
-    kiteWebsocket.onOnline = () => {console.log('online')};
-    kiteWebsocket.onOffline = () => {console.log('offline')};
+    kiteWebsocket.onOnline = () => {this.log('Online', NotificationType.SUCCESS)};
+    kiteWebsocket.onOffline = () => {this.log('Offline', NotificationType.WARNING)};
     kiteWebsocket.join(options);
 
     this.kiteWebsocket = kiteWebsocket;
@@ -137,7 +145,6 @@ export class KiteChat {
 
   public disconnect() {
     console.debug('disconnect');
-    this.element?.appendNotification({message: 'Disconnected from host', type: NotificationType.WARNING});
     this.kiteWebsocket?.disconnect();
     this.kiteWebsocket = null;
   }
@@ -151,19 +158,21 @@ export class KiteChat {
     }
   }
 
-  private save(msg: ContentMsg) {
-    if(!this.db) {
-      return;
-    }
-    addMessage(msg, this.db);
+  private create(msg: ContentMsg) {
     this.element?.appendMsg(msg);
+
+    if(!this.db) return;
+    addMessage(msg, this.db);
   }
 
   private update(messageId: string, updatedMsg: ContentMsg) {
-    if(!this.db) {
-      return;
-    }
-    modifyMessage(messageId, updatedMsg, this.db);
+    this.element?.editMsg(messageId, updatedMsg);
+
+    if(!this.db) return;
+    messageById(messageId, this.db).then(originalMessage => {
+      if(!this.db || !originalMessage) return;
+      modifyMessage(messageId, {...originalMessage, ...updatedMsg}, this.db);
+    });
   }
 
   private delete(messageId: string) {
@@ -171,16 +180,14 @@ export class KiteChat {
       `${KiteMsgElement.TAG}[messageId="${messageId}"]`
     ) as KiteFileElement | undefined;
     msgElement?.remove();
-    if(!this.db) {
-      return;
-    }
+
+    if(!this.db) return;
+
     deleteMessage(messageId, this.db);
   }
 
   private restore() {
-    if(!this.db) {
-      return;
-    }
+    if(!this.db) return;
     const msgElements = document.querySelectorAll(
       `${KiteMsgElement.TAG}`
     )
@@ -189,9 +196,8 @@ export class KiteChat {
       : undefined;
     getMessages(this.db, lastElement).then((messages: ContentMsg[]) => {
       console.debug("getMessages", messages);
-      if (!this.element) return;
       for (const msg of messages) {
-        this.element.appendMsg(msg, false);
+        this.element?.appendMsg(msg, false);
       }
     }).catch((e: Error) => {
       console.error("Failed to get messages from storage:", e.message);
@@ -208,32 +214,33 @@ export class KiteChat {
     return savedId;
   }
 
-  protected onOutgoingMessage(msg: CustomEvent<KiteChatMsg>) {
-    const {detail} = msg;
-    let outgoing = null;
-    if (isPlaintextMsg(detail)) {
-      outgoing = {
-        ...detail,
-        type: MsgType.PLAINTEXT,
-      } as PlaintextMsg;
+  private send(outgoing: ContentMsg) {
+    if (isPlaintextMsg(outgoing)) {
       this.kiteWebsocket?.sendPlaintextMessage(outgoing);
-    } else if (isFileMsg(detail)) {
-      outgoing = {
-        ...detail,
-        type: MsgType.FILE,
-      } as FileMsg;
+    } else if (isFileMsg(outgoing)) {
       this.kiteWebsocket?.sendFileMessage(outgoing);
     } else {
-      throw new Error('Unexpected payload type ' + JSON.stringify(detail));
+      throw new Error('Unexpected payload type ' + JSON.stringify(outgoing));
+    }
+  }
+
+  protected onOutgoingMessage(msg: CustomEvent<KiteChatMsg>) {
+    const outgoing = msg.detail as ContentMsg;
+    console.debug('outgoing', outgoing);
+
+    if(!this.db) {
+      return;
     }
     if(!outgoing.edited) {
-      console.debug('outgoing', outgoing);
-      this.db && addMessage(outgoing, this.db);
+      addMessage(outgoing, this.db).then(() => {
+        this.send(outgoing);
+      });
     } else {
-      this.db && modifyMessage(outgoing.messageId, outgoing, this.db);
-      //TODO backend message editing
-      //this.kiteWorker.port.postMessage(outgoing);
+      modifyMessage(outgoing.messageId, outgoing, this.db).then(() => {
+        this.send(outgoing);
+      });
     }
+    //TODO backend message editing
   }
 
   protected onDeleteMessage(msg: CustomEvent<KiteMsgDelete>) {
@@ -241,7 +248,6 @@ export class KiteChat {
     console.debug('onDeleteMessage', detail);
     this.delete(detail.messageId);
     //TODO backend message deleting
-    //this.kiteWorker.port.postMessage(outgoing);
   }
 
   protected onElementShow() {
@@ -272,30 +278,29 @@ export class KiteChat {
 
   protected onContentMessage(incoming: ContentMsg) {
     console.debug('onContentMessage', incoming.messageId, incoming.timestamp);
-    if(!this.db) {
-      return;
+
+    if(!incoming.edited) {
+      this.create(incoming);
+    } else {
+      this.update(incoming.messageId, incoming);
     }
-    messageById(incoming.messageId, this.db).then(message => {
-      if(!message) {
-        this.db && this.save(incoming);
-      } else {
-        this.db && this.update(incoming.messageId, incoming);
-      }
-    });
 
     this.msgNotification(incoming);
   }
 
   protected msgNotification(msg: ContentMsg) {
     // Use the Notification API to show a system notification
-    if (Notification.permission === 'granted') {
-      const notificationOptions: NotificationOptions = {
-        image: isPlaintextMsg(msg) ? undefined : URL.createObjectURL((msg as FileMsg).file),
-        ...this.defaultNotificationOptions
-      };
-  
-      new Notification(this.defaultNotificationTitle, notificationOptions);
+    if (Notification.permission === 'granted') {  
+      const notification = new Notification(this.notificationTitle, {
+        ...this.notificationOptions,
+        image: isPlaintextMsg(msg) ? undefined : URL.createObjectURL(msg.file),
+      });
+      notification.onclick = this.onNotificationClick.bind(this);
     }
+  }
+
+  protected onNotificationClick() {
+    this.element?.show();
   }
 
   protected getFaviconURL(): string | undefined {
@@ -305,17 +310,7 @@ export class KiteChat {
 
   protected onMessageAck(messageId: string, destiationMessageId: string, timestamp: Date) {
     console.debug('onMessageAck', messageId, timestamp);
-    const msgElement = document.querySelector(
-      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
-    ) as KiteMsgElement | undefined;
-    if (msgElement) {
-      msgElement.messageId = destiationMessageId;
-      msgElement.status = MsgStatus.delivered;
-    }
-    this.update(messageId, {
-      messageId: destiationMessageId,
-      status: MsgStatus.delivered,
-    } as ContentMsg);
+    this.update(messageId, {messageId: destiationMessageId, status: MsgStatus.delivered} as ContentMsg);
   }
 
   protected onError(reason: string, code: number) {
@@ -327,29 +322,15 @@ export class KiteChat {
 
   protected onZippedMessage(messageId: string, zippedIds: string[], file: File) {
     console.debug('onZippedMessage', messageId, zippedIds);
-    const fileElement = document.querySelector(
-      `${KiteMsgElement.TAG}[messageId="${messageId}"] > ${KiteFileElement.TAG}`
-    ) as KiteFileElement | undefined;
-    fileElement && (fileElement.file = file);
-    this.update(messageId, {
-      file,
-    } as ContentMsg);
+    this.update(messageId, {file} as ContentMsg);
     zippedIds.forEach(id => this.delete(id));
   }
 
   protected onFailedMessage(messageId: string, reason: string, description?: string) {
     console.debug('onFailedMessage', messageId, reason);
-    const msgElement = document.querySelector(
-      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
-    ) as KiteMsgElement | undefined;
-    if (msgElement) {
-      msgElement.status = MsgStatus.failed;
-    }
     const errorMessage = description || 'Unknown error.';
     this.element?.appendNotification({message: errorMessage, type: NotificationType.ERROR});
-    this.update(messageId, {
-      status: MsgStatus.failed,
-    } as ContentMsg);
+    this.update(messageId, {status: MsgStatus.failed} as ContentMsg);
   }
 
   protected onDeliveryError(msg: MessageEvent<unknown>) {
@@ -359,11 +340,9 @@ export class KiteChat {
   }
 
   /**
-   * TODO replace with UI change
-   * @deprecated temporary, replace with UI change
    * @param msg
    */
-  protected log(msg: KiteMsg) {
-    console.log(JSON.stringify(msg));
+  protected log(message: string, type: NotificationType = NotificationType.INFO) {
+    this.element?.appendNotification({message, type, duration: 'auto'});
   }
 }
