@@ -37,8 +37,13 @@ const kiteChatTranslations = Object.fromEntries(
     }
 
     loadModules().then(({ KiteChat }) => {
-        const endpoint = "__WS_ENDPOINT__";
-    
+        const baseEndpoint = "__WS_ENDPOINT__";
+        const defaultChannel = "__DEFAULT_CHANNEL__";
+
+        const channelParam = new URLSearchParams(window.location.search).get('c');
+
+        const endpoint = `${baseEndpoint}?c=${encodeURIComponent(channelParam || defaultChannel)}`;
+
         console.log('endpoint', endpoint);
         
         const kiteChat = new KiteChat({endpoint});

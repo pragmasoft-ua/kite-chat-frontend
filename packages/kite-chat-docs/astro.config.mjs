@@ -14,6 +14,7 @@ const base = mode == 'test' ? '/test' : '';
 // https://main.vitejs.dev/config/#using-environment-variables-in-config
 const {
   WS_ENDPOINT,
+  DEFAULT_CHANNEL,
 } = loadEnv(mode, process.cwd(), '');
 
 // https://astro.build/config
@@ -134,6 +135,7 @@ export default defineConfig({
         values: {
         __BASE_URL__: base,
         __WS_ENDPOINT__: WS_ENDPOINT,
+        __DEFAULT_CHANNEL__: DEFAULT_CHANNEL,
         __BACKEND_PACKAGE_IMPORT__: mode === "test" 
           ? `${base}/kite-chat.js` 
           : "https://unpkg.com/@pragmasoft-ukraine/kite-chat/dist/kite-chat.js"
