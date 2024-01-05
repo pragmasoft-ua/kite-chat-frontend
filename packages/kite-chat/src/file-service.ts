@@ -1,11 +1,4 @@
-export class HttpError extends Error {
-  constructor(
-    message: string,
-    readonly status: number
-  ) {
-    super(message);
-  }
-}
+import {HttpError} from "./kite-types";
 
 export async function downloadUrl(url: string): Promise<File> {
   const response = await fetch(url);

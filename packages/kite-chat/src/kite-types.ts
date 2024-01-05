@@ -1,3 +1,5 @@
+import {MsgStatus} from '@pragmasoft-ukraine/kite-chat-component';
+
 export class HttpError extends Error {
   constructor(
     message: string,
@@ -5,18 +7,6 @@ export class HttpError extends Error {
   ) {
     super(message);
   }
-}
-
-/**
- * need to duplicate the same type declaration from kite-chat-component/src/kite-payload
- * otherwise kite-worker is packaged incorrectly (includes entire chat component module)
- * */
-export enum MsgStatus {
-  unknown = 0,
-  sent = 1,
-  delivered = 2,
-  read = 3,
-  failed = 4,
 }
 
 export enum MsgType {
