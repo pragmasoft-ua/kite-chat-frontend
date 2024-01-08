@@ -2,7 +2,9 @@
 
 [Stable version](https://www.k1te.chat/)
 
-[Test version](https://www.k1te.chat/test/)
+[Test version](https://www.k1te.chat/test/) 
+
+**Note:** Set the custom channel by including the c parameter. (https://www.k1te.chat/test?c=k1te_test)
 
 This project includes **kite-chat** docs static site built with Astro Starlight template and Tailwind CSS.
 
