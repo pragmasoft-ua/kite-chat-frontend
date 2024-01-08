@@ -1,5 +1,7 @@
 # 1. Move on from Shared Web Workers to Main Thread for WebSocket Management using BroadcastChannel
 
+Date: 2024-01-02
+
 ## Status
 
 Accepted
@@ -34,17 +36,21 @@ After thorough consideration, we have decided to transition from Shared Web Work
      - Ensures compatibility across all browsers.
      - Eliminates the need for a separate worker build process.
    - *Cons:*
-     - Requires additional lifecycle logic to manage the active tab.
-     - Increased number of reconnections due to individual tab management.
+     - Increased number of WebSocket connections.
+     - Data duplication.
 
 ## Chosen Solution
 
-We opt for managing WebSocket connections at the main thread and utilizing the BroadcastChannel API for inter-tab communication. This decision simplifies the codebase, mitigates same-origin issues, ensures compatibility across all browsers, and eliminates the need for a separate worker build process.
+We opt for managing single WebSocket connection across the tabs and utilizing the BroadcastChannel API for inter-tab communication. This decision simplifies the codebase, mitigates same-origin issues, ensures compatibility across all browsers, and eliminates the need for a separate worker build process.
 Additional reconnections shouldn`t affect the user experience.
 
 ## Consequences
 
-Introducing individual tab management requires implementing additional reconnection logic.
-Since tab becomes active on visibilitychange, we should set the timeout to limit the reconnections while changing the tabs.
+Required additional lifecycle logic to manage the active tab.
+Increased number of reconnections due to active tab management.
 
+## Follow-Up Actions
+
+Maintain single connection across the tabs. The last active tab should hold the connection.
+Since tab becomes active on visibilitychange, we should set the timeout to limit the reconnection frequency while changing the tabs.
 Also we probably need shared messages queue and consider scenario when multiple tabs is active (implement the tab sync or notify that chat is open in other tab).
