@@ -48,6 +48,7 @@ const DEFAULT_OPTS: Partial<KiteChatOptions> = {
 };
 
 const KITE_USER_ID_STORE_KEY = 'KITE_USER_ID';
+const KITE_RECONNECT_TIMEOUT = 1000;
 
 export class KiteChat {
   protected readonly opts: KiteChatOptions;
@@ -57,6 +58,7 @@ export class KiteChat {
   private db: KiteDB | null;
   public notificationTitle: string;
   public notificationOptions: NotificationOptions;
+  private connectionTimeout: ReturnType<typeof setInterval> | null = null;
 
   constructor(opts: KiteChatOptions) {
     this.opts = Object.assign({}, DEFAULT_OPTS, opts);
@@ -86,18 +88,16 @@ export class KiteChat {
     const kiteChannel = new BroadcastChannel(CHANNEL_NAME);
     kiteChannel.onmessage = this.onChannelMessage.bind(this);
 
-    kiteChannel.postMessage({type: MsgType.CONNECTED});
-    this.connect();
+    this.kiteChannel = kiteChannel;
+
+    this.initClient();
 
     addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        kiteChannel.postMessage({type: MsgType.CONNECTED});
-        !this.kiteWebsocket && this.connect();
+        this.initClient();
         this.restore();
       }
     });
-
-    this.kiteChannel = kiteChannel;
 
     addEventListener('click', this.handleUserInteraction.bind(this));
   }
@@ -106,6 +106,15 @@ export class KiteChat {
     removeEventListener('click', this.handleUserInteraction.bind(this));
   
     Notification.requestPermission();
+  }
+  
+  private initClient() {
+    this.kiteChannel.postMessage({type: MsgType.JOIN});
+
+    this.connectionTimeout = setTimeout(() => {
+      this.kiteChannel.postMessage({type: MsgType.CONNECTED});
+      setTimeout(() => {!this.kiteWebsocket && this.connect();});
+    }, KITE_RECONNECT_TIMEOUT);
   }
 
   public connect() {
@@ -155,6 +164,9 @@ export class KiteChat {
     switch(data.type) {
       case MsgType.CONNECTED:
         this.disconnect();
+        break;
+      case MsgType.JOIN:
+        this.connectionTimeout && clearTimeout(this.connectionTimeout);
     }
   }
 

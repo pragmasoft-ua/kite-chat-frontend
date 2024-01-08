@@ -98,7 +98,6 @@ export type BinaryMsg = {
 
 export type Connected = {
   type: MsgType.CONNECTED;
-  messageHistory: Array<ContentMsg>;
 };
 
 export type Disconnected = {
