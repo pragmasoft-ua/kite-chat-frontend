@@ -32,99 +32,106 @@ interface KiteDBSchema extends DBSchema {
     };
 }
 
-/**
- * The type for the IndexedDB database instance.
- */
-export type KiteDB = IDBPDatabase<KiteDBSchema>;
+export class KiteDBManager {
+  private db: IDBPDatabase<KiteDBSchema>;
+  public onopen?: () => void;
+  public onclosed?: () => void;
 
-/**
- * Function to opens the IndexedDB database.
- */
-export async function openDatabase() {
-    return await openDB<KiteDBSchema>(DB_NAME, DB_VERSION, {
-        upgrade(db) {
-            const store = db.createObjectStore(MESSAGES_STORE_NAME, {
-                autoIncrement: true,
-            });
-            store.createIndex(MESSAGES_KEY, MESSAGES_KEY, { unique: true });
-        },
+  constructor() {
+    this.initDatabase();
+  }
+
+  private async initDatabase() {
+    this.db = await openDB<KiteDBSchema>(DB_NAME, DB_VERSION, {
+      upgrade: (db) => {
+        const store = db.createObjectStore(MESSAGES_STORE_NAME, {
+          autoIncrement: true,
+        });
+        store.createIndex(MESSAGES_KEY, MESSAGES_KEY, { unique: true });
+      },
     });
-}
+    this.onopen?.();
+  }
 
-/**
- * Function to add a new message to the database.
- */
-export async function addMessage(message: ContentMsg, db: KiteDB) {
-    const tx = db.transaction(MESSAGES_STORE_NAME, 'readwrite');
+  /**
+   * Add a new message to the database.
+   */
+  public async addMessage(message: ContentMsg) {
+    const tx = this.db.transaction(MESSAGES_STORE_NAME, 'readwrite');
     const store = tx.objectStore(MESSAGES_STORE_NAME);
     await store.add(message);
     await tx.done;
-}
+  }
 
-/**
- * Function to retrieve and return chat messages.
- */
-export async function getMessages(db: KiteDB, lastMessageId?: string) {
-    const tx = db.transaction(MESSAGES_STORE_NAME, 'readonly');
+  /**
+   * Retrieve and return chat messages.
+   */
+  public async getMessages(lastMessageId?: string) {
+    const tx = this.db.transaction(MESSAGES_STORE_NAME, 'readonly');
     const store = tx.objectStore(MESSAGES_STORE_NAME);
-    const primaryKey = lastMessageId && await store.index(MESSAGES_KEY).getKey(lastMessageId);
+    const primaryKey = lastMessageId && (await store.index(MESSAGES_KEY).getKey(lastMessageId));
 
     if (primaryKey) {
-        // Retrieve only new messages based on the lastMessageId        
-        const cursor = await store.openCursor(IDBKeyRange.lowerBound(primaryKey), 'next');
-        const result: ContentMsg[] = [];
+      const cursor = await store.openCursor(IDBKeyRange.lowerBound(primaryKey), 'next');
+      const result: ContentMsg[] = [];
 
-        const iterateCursor = async (cursor: IDBPCursorWithValue<KiteDBSchema> | null) => {
-            if (cursor) {
-                result.push(cursor.value);
-                await iterateCursor(await cursor.continue());
-            }
-        };
+      const iterateCursor = async (cursor: IDBPCursorWithValue<KiteDBSchema> | null) => {
+        if (cursor) {
+          result.push(cursor.value);
+          await iterateCursor(await cursor.continue());
+        }
+      };
 
-        await iterateCursor(await cursor?.continue() ?? null);
+      await iterateCursor(await cursor?.continue() ?? null);
 
-        return result;
+      return result;
     } else {
-        // Retrieve all messages
-        const messages = await store.getAll();
-        return messages;
+      const messages = await store.getAll();
+      return messages;
     }
-}
+  }
 
-/**
- * Function to retrieve a message by its messageId.
- */
-export async function messageById(messageId: string, db: KiteDB) {
-    const tx = db.transaction(MESSAGES_STORE_NAME, 'readonly');
+  /**
+   * Retrieve a message by its messageId.
+   */
+  public async messageById(messageId: string) {
+    const tx = this.db.transaction(MESSAGES_STORE_NAME, 'readonly');
     const store = tx.objectStore(MESSAGES_STORE_NAME);
     const message = await store.index(MESSAGES_KEY).get(messageId);
     return message;
-}
+  }
 
-/**
- * Function to modify an existing message in the database.
- */
-export async function modifyMessage(messageId: string, modifiedMessage: ContentMsg, db: KiteDB) {
-    const oldMessage = await messageById(messageId, db);
+  /**
+   * Modify an existing message in the database.
+   */
+  public async modifyMessage(messageId: string, modifiedMessage: ContentMsg) {
+    const oldMessage = await this.messageById(messageId);
 
-    const tx = db.transaction(MESSAGES_STORE_NAME, 'readwrite');
+    const tx = this.db.transaction(MESSAGES_STORE_NAME, 'readwrite');
     const store = tx.objectStore(MESSAGES_STORE_NAME);
 
     const primaryKey = await store.index(MESSAGES_KEY).getKey(messageId);
-    await store.put({...oldMessage, ...modifiedMessage}, primaryKey);
+    await store.put({ ...oldMessage, ...modifiedMessage }, primaryKey);
     await tx.done;
-}
+  }
 
-/**
- * Function to delete a message by its messageId.
- */
-export async function deleteMessage(messageId: string, db: KiteDB) {
-    const tx = db.transaction(MESSAGES_STORE_NAME, 'readwrite');
+  /**
+   * Delete a message by its messageId.
+   */
+  public async deleteMessage(messageId: string) {
+    const tx = this.db.transaction(MESSAGES_STORE_NAME, 'readwrite');
     const store = tx.objectStore(MESSAGES_STORE_NAME);
 
     const primaryKey = await store.index(MESSAGES_KEY).getKey(messageId);
     if (primaryKey) {
-        await store.delete(primaryKey);
+      await store.delete(primaryKey);
     }
     await tx.done;
+  }
+
+  public async closeDatabase() {
+    this.db.close();
+
+    this.onclosed?.();
+  }
 }

@@ -19,15 +19,7 @@ import {
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 import {assert} from './assert';
-import {
-  KiteDB, 
-  openDatabase, 
-  getMessages, 
-  addMessage,
-  modifyMessage,
-  deleteMessage,
-  messageById
-} from './kite-storage';
+import {KiteDBManager} from './kite-storage';
 import {KiteWebsocket} from './kite-websocket';
 import {CHANNEL_NAME} from './shared-constants';
 
@@ -54,7 +46,7 @@ export class KiteChat {
   protected kiteWebsocket: KiteWebsocket | null;
   protected kiteChannel: BroadcastChannel;
   readonly element: KiteChatElement | null;
-  private db: KiteDB | null;
+  private kiteDB: KiteDBManager;
   public notificationTitle: string;
   public notificationOptions: NotificationOptions;
   private connectionTimeout: ReturnType<typeof setInterval> | null = null;
@@ -77,12 +69,10 @@ export class KiteChat {
       icon: this.getFaviconURL(),
     };
 
-    openDatabase().then((db: KiteDB) => {
-      this.db = db;
-      this.restore();
-    }).catch((e: Error) => {
-      console.error("Failed to open indexedDB:", e.message);
-    })
+    const kiteDB = new KiteDBManager();
+    kiteDB.onopen = this.restore.bind(this);
+
+    this.kiteDB = kiteDB;
 
     const kiteChannel = new BroadcastChannel(CHANNEL_NAME);
     kiteChannel.onmessage = this.onChannelMessage.bind(this);
@@ -189,8 +179,7 @@ export class KiteChat {
 
     this.kiteChannel.postMessage({type: BroadcastType.APPEND, msg});
 
-    if(!this.db) return;
-    addMessage(msg, this.db);
+    this.kiteDB.addMessage(msg);
   }
 
   private update(messageId: string, updatedMsg: ContentMsg) {
@@ -198,10 +187,9 @@ export class KiteChat {
 
     this.kiteChannel.postMessage({type: BroadcastType.EDIT, messageId, updatedMsg});
 
-    if(!this.db) return;
-    messageById(messageId, this.db).then(originalMessage => {
-      if(!this.db || !originalMessage) return;
-      modifyMessage(messageId, {...originalMessage, ...updatedMsg}, this.db);
+    this.kiteDB.messageById(messageId).then(originalMessage => {
+      if(!originalMessage) return;
+      this.kiteDB.modifyMessage(messageId, {...originalMessage, ...updatedMsg});
     });
   }
 
@@ -210,14 +198,11 @@ export class KiteChat {
 
     this.kiteChannel.postMessage({type: BroadcastType.REMOVE, messageId});
 
-    if(!this.db) return;
-
-    deleteMessage(messageId, this.db);
+    this.kiteDB.deleteMessage(messageId);
   }
 
   private restore() {
-    if(!this.db) return;
-    getMessages(this.db).then((messages: ContentMsg[]) => {
+    this.kiteDB.getMessages().then((messages: ContentMsg[]) => {
       console.debug("getMessages", messages);
       for (const msg of messages) {
         this.element?.appendMsg(msg, false);
@@ -247,18 +232,13 @@ export class KiteChat {
     const outgoing = msg.detail as ContentMsg;
     console.debug('outgoing', outgoing);
 
-    if(!this.db) {
-      return;
-    }
     if(!outgoing.edited) {
-      addMessage(outgoing, this.db).then(() => {
-        this.send(outgoing);
-      });
+      this.kiteDB.addMessage(outgoing);
     } else {
-      modifyMessage(outgoing.messageId, outgoing, this.db).then(() => {
-        this.send(outgoing);
-      });
+      this.kiteDB.modifyMessage(outgoing.messageId, outgoing);
     }
+  
+    this.send(outgoing);
     //TODO backend message editing
   }
 
