@@ -50,7 +50,7 @@ export class NotificationContainerController {
                 } else if (el.state === NotificationState.NEW) {
                     const {message, type} = el;
             
-                    if (message === currentElement?.message && type === currentElement?.type) {
+                    if (currentElement?.nextElementSibling?.isSameNode(el) && message === currentElement?.message && type === currentElement?.type) {
                         currentElement && currentElement.collapsedCount++;
                         this.host.removeChild(el);
                     } else {
