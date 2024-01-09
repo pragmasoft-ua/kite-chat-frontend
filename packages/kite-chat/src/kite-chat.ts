@@ -30,6 +30,7 @@ export type KiteChatOptions = {
   open?: boolean;
   userId?: string;
   userName?: string;
+  notificationIconUrl?: string;
 };
 
 const DEFAULT_OPTS: Partial<KiteChatOptions> = {
@@ -285,7 +286,7 @@ export class KiteChat {
     if (Notification.permission === 'granted') {  
       const title = this.element?.heading || '';
       const options = {
-        icon: this.getFaviconURL(),
+        icon: this.opts.notificationIconUrl ?? this.getFaviconURL(),
       };
       const notification = new Notification(title, {
         ...options,
