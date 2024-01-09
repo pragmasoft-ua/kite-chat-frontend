@@ -45,10 +45,8 @@ export class KiteChat {
   protected readonly opts: KiteChatOptions;
   protected kiteWebsocket: KiteWebsocket | null;
   protected kiteChannel: BroadcastChannel;
+  protected kiteDB: KiteDBManager;
   readonly element: KiteChatElement | null;
-  private kiteDB: KiteDBManager;
-  public notificationTitle: string;
-  public notificationOptions: NotificationOptions;
   private connectionTimeout: ReturnType<typeof setInterval> | null = null;
 
   constructor(opts: KiteChatOptions) {
@@ -63,11 +61,6 @@ export class KiteChat {
     this.element = this.findOrCreateElement(
       this.opts.createIfMissing as boolean
     );
-
-    this.notificationTitle = this.element?.heading || '';
-    this.notificationOptions = {
-      icon: this.getFaviconURL(),
-    };
 
     const kiteDB = new KiteDBManager();
     kiteDB.onopen = this.restore.bind(this);
@@ -95,7 +88,7 @@ export class KiteChat {
   
     Notification.requestPermission();
   }
-  
+
   private initClient() {
     this.kiteChannel.postMessage({type: BroadcastType.ACTIVE});
 
@@ -290,8 +283,12 @@ export class KiteChat {
   protected msgNotification(msg: ContentMsg) {
     // Use the Notification API to show a system notification
     if (Notification.permission === 'granted') {  
-      const notification = new Notification(this.notificationTitle, {
-        ...this.notificationOptions,
+      const title = this.element?.heading || '';
+      const options = {
+        icon: this.getFaviconURL(),
+      };
+      const notification = new Notification(title, {
+        ...options,
         image: isFileMsg(msg) ? URL.createObjectURL(msg.file) : undefined,
       });
       notification.onclick = this.onNotificationClick.bind(this);
