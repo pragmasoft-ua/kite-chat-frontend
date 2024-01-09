@@ -1,18 +1,17 @@
 import type {
   JoinOptions,
-  KiteMsg,
   ContentMsg,
+  BroadcastMsg,
 } from './kite-types';
 
-import {MsgType} from './kite-types';
+import {
+  BroadcastType,
+} from './kite-types';
 
 import {
   KiteChatElement,
-  KiteMsgElement,
-  KiteFileElement,
   KiteMsg as KiteChatMsg,
   randomStringId,
-  isPlaintextMsg,
   MsgStatus,
   isFileMsg,
   NotificationType,
@@ -95,7 +94,6 @@ export class KiteChat {
     addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         this.initClient();
-        this.restore();
       }
     });
 
@@ -109,10 +107,10 @@ export class KiteChat {
   }
   
   private initClient() {
-    this.kiteChannel.postMessage({type: MsgType.JOIN});
+    this.kiteChannel.postMessage({type: BroadcastType.ACTIVE});
 
     this.connectionTimeout = setTimeout(() => {
-      this.kiteChannel.postMessage({type: MsgType.CONNECTED});
+      this.kiteChannel.postMessage({type: BroadcastType.CONNECTED});
       setTimeout(() => {!this.kiteWebsocket && this.connect();});
     }, KITE_RECONNECT_TIMEOUT);
   }
@@ -158,20 +156,38 @@ export class KiteChat {
     this.kiteWebsocket = null;
   }
 
-  private onChannelMessage(e: MessageEvent<KiteMsg>) {
+  private onChannelMessage(e: MessageEvent<BroadcastMsg>) {
     const data = e.data;
 
     switch(data.type) {
-      case MsgType.CONNECTED:
+      case BroadcastType.CONNECTED:
         this.disconnect();
         break;
-      case MsgType.JOIN:
+      case BroadcastType.ACTIVE:
         this.connectionTimeout && clearTimeout(this.connectionTimeout);
+        break;
+      case BroadcastType.APPEND:
+        this.element?.appendMsg(data.msg, false);
+        break;
+      case BroadcastType.EDIT:
+        this.element?.editMsg(data.messageId, data.updatedMsg);
+        break;
+      case BroadcastType.REMOVE:
+        this.element?.removeMsg(data.messageId);
+        break;
+      case BroadcastType.SEND:
+        !data.msg.edited 
+          ? this.element?.appendMsg(data.msg, false) 
+          : this.element?.editMsg(data.msg.messageId, data.msg);
+        this.kiteWebsocket?.send(data.msg);
+        break;
     }
   }
 
   private create(msg: ContentMsg) {
     this.element?.appendMsg(msg);
+
+    this.kiteChannel.postMessage({type: BroadcastType.APPEND, msg});
 
     if(!this.db) return;
     addMessage(msg, this.db);
@@ -179,6 +195,8 @@ export class KiteChat {
 
   private update(messageId: string, updatedMsg: ContentMsg) {
     this.element?.editMsg(messageId, updatedMsg);
+
+    this.kiteChannel.postMessage({type: BroadcastType.EDIT, messageId, updatedMsg});
 
     if(!this.db) return;
     messageById(messageId, this.db).then(originalMessage => {
@@ -188,10 +206,9 @@ export class KiteChat {
   }
 
   private delete(messageId: string) {
-    const msgElement = document.querySelector(
-      `${KiteMsgElement.TAG}[messageId="${messageId}"]`
-    ) as KiteFileElement | undefined;
-    msgElement?.remove();
+    this.element?.removeMsg(messageId);
+
+    this.kiteChannel.postMessage({type: BroadcastType.REMOVE, messageId});
 
     if(!this.db) return;
 
@@ -200,13 +217,7 @@ export class KiteChat {
 
   private restore() {
     if(!this.db) return;
-    const msgElements = document.querySelectorAll(
-      `${KiteMsgElement.TAG}`
-    )
-    const lastElement = msgElements.length > 0 
-      ? (msgElements[msgElements.length - 1] as KiteMsgElement).messageId 
-      : undefined;
-    getMessages(this.db, lastElement).then((messages: ContentMsg[]) => {
+    getMessages(this.db).then((messages: ContentMsg[]) => {
       console.debug("getMessages", messages);
       for (const msg of messages) {
         this.element?.appendMsg(msg, false);
@@ -227,13 +238,9 @@ export class KiteChat {
   }
 
   private send(outgoing: ContentMsg) {
-    if (isPlaintextMsg(outgoing)) {
-      this.kiteWebsocket?.sendPlaintextMessage(outgoing);
-    } else if (isFileMsg(outgoing)) {
-      this.kiteWebsocket?.sendFileMessage(outgoing);
-    } else {
-      throw new Error('Unexpected payload type ' + JSON.stringify(outgoing));
-    }
+    this.kiteChannel.postMessage({type: BroadcastType.SEND, msg: outgoing});
+
+    this.kiteWebsocket?.send(outgoing);
   }
 
   protected onOutgoingMessage(msg: CustomEvent<KiteChatMsg>) {
@@ -305,7 +312,7 @@ export class KiteChat {
     if (Notification.permission === 'granted') {  
       const notification = new Notification(this.notificationTitle, {
         ...this.notificationOptions,
-        image: isPlaintextMsg(msg) ? undefined : URL.createObjectURL(msg.file),
+        image: isFileMsg(msg) ? URL.createObjectURL(msg.file) : undefined,
       });
       notification.onclick = this.onNotificationClick.bind(this);
     }

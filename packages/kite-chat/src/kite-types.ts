@@ -1,4 +1,8 @@
-import {MsgStatus} from '@pragmasoft-ukraine/kite-chat-component';
+import {
+  MsgStatus,
+  PlaintextMsg as PlaintextMsgPayload,
+  FileMsg as FileMsgPayload,
+} from '@pragmasoft-ukraine/kite-chat-component';
 
 export class HttpError extends Error {
   constructor(
@@ -16,6 +20,7 @@ export enum MsgType {
   ACK = 'ACK',
   PLAINTEXT = 'TXT',
   FILE = 'FILE',
+  DELETE = 'DELETE',
   BIN = 'BIN',
   UPLOAD = 'UPL',
   CONNECTED = 'TAB+',
@@ -52,21 +57,18 @@ export type ErrorMsg = {
 export type PlaintextMsg = {
   type: MsgType.PLAINTEXT;
   messageId: string;
-  text: string;
   timestamp: Date;
-  status?: MsgStatus;
-  edited?: boolean;
-};
+} & PlaintextMsgPayload;
 
 export type FileMsg = {
   type: MsgType.FILE;
   messageId: string;
-  file: File;
   timestamp: Date;
-  status?: MsgStatus;
-  batchId?: string;
-  totalFiles?: number;
-  edited?: boolean;
+} & FileMsgPayload;
+
+export type DeleteMsg = {
+  type: MsgType.DELETE;
+  messageId: string;
 };
 
 export type UploadRequest = {
@@ -150,3 +152,49 @@ export type KiteMsg =
   | Ping
   | Pong
   | FailedMsg;
+
+export enum BroadcastType {
+  CONNECTED = 'ONLINE',
+  ACTIVE = 'VISIBLE',
+  APPEND = 'ADD',
+  EDIT = 'EDIT',
+  REMOVE = 'REMOVE',
+  SEND = 'SEND',
+}
+
+export type ConnectedTab = {
+  type: BroadcastType.CONNECTED;
+}
+
+export type ActiveTab = {
+  type: BroadcastType.ACTIVE;
+}
+
+export type AppendMsg = {
+  type: BroadcastType.APPEND;
+  msg: ContentMsg;
+};
+
+export type EditMsg = {
+  type: BroadcastType.EDIT;
+  messageId: string;
+  updatedMsg: ContentMsg;
+};
+
+export type RemoveMsg = {
+  type: BroadcastType.REMOVE;
+  messageId: string;
+};
+
+export type OutgoingMsg = {
+  type: BroadcastType.SEND;
+  msg: ContentMsg;
+};
+
+export type BroadcastMsg =
+  | ConnectedTab
+  | ActiveTab
+  | AppendMsg
+  | EditMsg
+  | RemoveMsg
+  | OutgoingMsg;

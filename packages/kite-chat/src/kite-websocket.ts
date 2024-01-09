@@ -28,6 +28,11 @@ import {
 import {decodeKiteMsg, encodeKiteMsg} from './serialization';
 import {SUBPROTOCOL} from './shared-constants';
 
+import {
+  isPlaintextMsg,
+  isFileMsg,
+} from '@pragmasoft-ukraine/kite-chat-component';
+
 const CHANNEL_NAME = 'k1te channel';
 
 const WS_CLOSE_REASON_NORMAL = 1000;
@@ -97,6 +102,16 @@ export class KiteWebsocket {
 
   private messageById = (messageId: string) =>
     this.messageCache.findLast((msg) => msg.messageId === messageId);
+
+  public send(msg: ContentMsg) {
+    if (isPlaintextMsg(msg)) {
+      this.sendPlaintextMessage(msg);
+    } else if (isFileMsg(msg)) {
+      this.sendFileMessage(msg);
+    } else {
+      throw new Error('Unexpected payload type ' + JSON.stringify(msg));
+    }
+  }
 
   public sendPlaintextMessage(msg: PlaintextMsg) {
     const payload: PlaintextMsg = {
