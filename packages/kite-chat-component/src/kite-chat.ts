@@ -136,6 +136,7 @@ function getMessageActions(actions: MsgActionType[]): ContextMenuAction[] {
  * @fires {CustomEvent} kite-chat.select - Chat message is selected
  * @fires {CustomEvent} kite-chat.screenshot - Tab screenshot
  * @attr {Boolean} open - displays chat window if true or only toggle button if false or missing
+ * @attr {Boolean} editing - disables message editing actions if set to false 
  * @attr {"light" | "dark"} theme - defines kite chat theme, using prefers-color-scheme by default
  * @attr {string} heading - Chat dialog heading
  * @slot {"kite-msg" | "p"} - kite-chat component contains chat messages as nested subcomponents, allowing server-side rendering
@@ -160,6 +161,9 @@ export class KiteChatElement extends
   ) {
   @property()
   heading = '🪁Kite chat';
+
+  @property({type: Boolean})
+  editing = true;
 
   @query('kite-chat-footer')
   private footer!: KiteChatFooterElement;
@@ -259,7 +263,7 @@ export class KiteChatElement extends
             this.unselectAll();
           }}
           @kite-chat-header.close=${this._toggleOpen}
-          .editable=${this.selectedElements.length === 1 && this.isSent(this.selectedElements[0])}
+          .editable=${this.editing && this.selectedElements.length === 1 && this.isSent(this.selectedElements[0])}
           .selectedElementsCount=${this.selectedElements.length}
           .heading=${this.heading}
         >
@@ -445,7 +449,7 @@ export class KiteChatElement extends
       MsgActionType.DELETE,
       ...(!data.files || this.webShareController.isSupportedFiles(data.files) ? [MsgActionType.SHARE] : []),
       ...(!data.files || this.clipboardController.isWriteSupported ? [MsgActionType.COPY] : []),
-      ...(this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
+      ...(this.editing && this.isSent(msgElement) ? [MsgActionType.EDIT] : []),
       ...(data.files ? [MsgActionType.DOWNLOAD] : []),
       ...(msgElement.selected ? [MsgActionType.UNSELECT] : [MsgActionType.SELECT]),
       MsgActionType.SELECT_ALL,

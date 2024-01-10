@@ -28,6 +28,7 @@ export type KiteChatOptions = {
   eagerlyConnect?: boolean;
   createIfMissing?: boolean;
   open?: boolean;
+  editing?: boolean;
   userId?: string;
   userName?: string;
   notificationIconUrl?: string;
@@ -37,6 +38,7 @@ const DEFAULT_OPTS: Partial<KiteChatOptions> = {
   eagerlyConnect: false,
   createIfMissing: true,
   open: false,
+  editing: true,
 };
 
 const KITE_USER_ID_STORE_KEY = 'KITE_USER_ID';
@@ -255,6 +257,7 @@ export class KiteChat {
       }
       element = new KiteChatElement();
       this.opts.open ? element.show() : element.hide();
+      element.editing = !!this.opts.editing;
       document.body.appendChild(element);
     }
     element.addEventListener(
