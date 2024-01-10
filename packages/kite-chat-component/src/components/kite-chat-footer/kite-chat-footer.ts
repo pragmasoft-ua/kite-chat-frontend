@@ -5,7 +5,7 @@
  */
 
 import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
-import {customElement, query, state} from 'lit/decorators.js';
+import {query, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {ifDefined} from 'lit/directives/if-defined.js';
 import {sharedStyles} from '../../shared-styles';
@@ -47,7 +47,6 @@ export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
  * @fires {CustomEvent} kite-chat-footer.change
  * @fires {CustomEvent} kite-chat-footer.cancel
  */
-@customElement('kite-chat-footer')
 export class KiteChatFooterElement extends LitElement {
   @query('textarea')
   private textarea!: HTMLTextAreaElement;

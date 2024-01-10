@@ -1,5 +1,5 @@
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, state} from 'lit/decorators.js';
+import {state} from 'lit/decorators.js';
 import {VisibilityMixin} from '../../mixins';
 import kiteContextmenuStyles from './kite-context-menu.css?inline';
 import {sharedStyles} from '../../shared-styles';
@@ -23,7 +23,6 @@ export type ContextMenuClick = {
   action: ContextMenuAction;
 }
 
-@customElement('kite-context-menu')
 export class KiteContextMenuElement extends 
   VisibilityMixin(
     LitElement, {show: 'kite-context-menu.show', hide: 'kite-context-menu.hide'}

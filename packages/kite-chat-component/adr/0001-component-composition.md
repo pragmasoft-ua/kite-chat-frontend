@@ -45,5 +45,8 @@ We have chosen to use custom components inside the main component for KiteChat, 
 
 ## Future Considerations
 
-Using scoped elements:
-https://open-wc.org/docs/development/scoped-elements/
+Using [scoped elements](https://open-wc.org/docs/development/scoped-elements/).
+
+**UPDATE: Scoped Elements Registry Implementation:**
+
+Scoped Elements Registry is now used to define internal components within the KiteChat element. This enhances code isolation by scoping custom element names to the KiteChat context. [Scoped Custom Element Registry](https://www.npmjs.com/package/@webcomponents/scoped-custom-element-registry) polyfill is used.

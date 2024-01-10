@@ -1,3 +1,4 @@
+import '@webcomponents/scoped-custom-element-registry';
 import type {
   KiteChatElement, 
   KiteMsgSend, 
@@ -33,6 +34,7 @@ declare global {
   }
 }
 
+export * from './components/kite-date-divider';
 export * from './components/kite-toast-notification';
 export * from './kite-chat';
 export * from './kite-msg';

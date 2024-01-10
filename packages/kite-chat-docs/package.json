@@ -22,7 +22,7 @@
     "@pragmasoft-ukraine/kite-chat": "*"
   },
   "devDependencies": {
-    "@astrojs/lit": "^4.0.0",
+    "@astrojs/lit": "^4.0.1",
     "@astrojs/starlight": "^0.15.1",
     "@astrojs/starlight-tailwind": "^2.0.1",
     "@astrojs/tailwind": "^5.0.4",

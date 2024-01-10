@@ -8,6 +8,7 @@ import {LitElement, html, css, unsafeCSS} from 'lit';
 import {customElement, property, query, queryAssignedElements, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
+import {ScopedElementsMixin} from '@open-wc/scoped-elements/html-element.js';
 
 import kiteChatStyles from './kite-chat.css?inline';
 import {randomStringId} from './random-string-id';
@@ -150,15 +151,25 @@ export class KiteChatElement extends
     NotificationContainerMixin(
       VisibilityMixin(
         SelectionContainerMixin(
-            LitElement, 
-            KiteMsgElement,
-            {select: 'kite-chat.select'}
-          ), 
+          ScopedElementsMixin(
+            LitElement 
+          ),
+          KiteMsgElement,
+          {select: 'kite-chat.select'}
+        ), 
         {show: 'kite-chat.show', hide: 'kite-chat.hide'}
       )
     ),
     {screenshot: 'kite-chat.screenshot'}
   ) {
+  static scopedElements = {
+    'kite-chat-header': KiteChatHeaderElement,
+    'kite-chat-footer': KiteChatFooterElement,
+    'kite-chat-main': KiteChatMainElement,
+    'kite-pointer-anchor': KitePointerAnchorElement,
+    'kite-context-menu': KiteContextMenuElement,
+  };
+  
   @property()
   heading = '🪁Kite chat';
 
@@ -527,14 +538,6 @@ export class KiteChatElement extends
 
   static override styles = [...[super.styles?? []], sharedStyles, componentStyles];
 }
-
-export {
-  KiteChatFooterElement, 
-  KiteChatHeaderElement, 
-  KiteContextMenuElement,
-  KitePointerAnchorElement,
-  KiteChatMainElement,
-};
 
 export type {
   KiteMsgSend,

@@ -1,5 +1,4 @@
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement} from 'lit/decorators.js';
 import kiteAnchorStyles from './kite-pointer-anchor.css?inline';
 
 const componentStyles = css`
@@ -11,7 +10,6 @@ type AnchorPosition = {
   y: number;
 }
 
-@customElement('kite-pointer-anchor')
 export class KitePointerAnchorElement extends LitElement {
   targetElement?: HTMLElement;
 

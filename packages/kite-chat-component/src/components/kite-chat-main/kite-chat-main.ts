@@ -1,5 +1,4 @@
 import {LitElement, html} from 'lit';
-import {customElement} from 'lit/decorators.js';
 import {randomStringId} from '../../random-string-id';
 import {DragAngDropController} from '../../controllers';
 
@@ -20,7 +19,6 @@ export type KiteChatMainDrop = DropFile;
 /**
  * @fires {CustomEvent} kite-chat-main.drop
  */
-@customElement('kite-chat-main')
 export class KiteChatMainElement extends LitElement {
   protected dragAndDropController = new DragAngDropController(this, this.handleDrop.bind(this));
 

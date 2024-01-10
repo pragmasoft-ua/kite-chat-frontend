@@ -5,7 +5,7 @@
  */
 
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, property, state} from 'lit/decorators.js';
+import {property, state} from 'lit/decorators.js';
 import {sharedStyles} from '../../shared-styles';
 
 import headerStyles from './kite-chat-header.css?inline';
@@ -32,7 +32,6 @@ type HeaderActions = 'cancel' | 'edit' | 'delete' | 'close' | 'copy';
  * @fires {CustomEvent} kite-chat-header.close
  * @fires {CustomEvent} kite-chat-header.copy
  */
-@customElement('kite-chat-header')
 export class KiteChatHeaderElement extends LitElement {
   @property()
   heading = '🪁Kite chat';
