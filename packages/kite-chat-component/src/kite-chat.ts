@@ -8,7 +8,7 @@ import {LitElement, html, css, unsafeCSS} from 'lit';
 import {customElement, property, query, queryAssignedElements, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
-import {ScopedElementsMixin} from '@open-wc/scoped-elements/html-element.js';
+import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
 
 import kiteChatStyles from './kite-chat.css?inline';
 import {randomStringId} from './random-string-id';
