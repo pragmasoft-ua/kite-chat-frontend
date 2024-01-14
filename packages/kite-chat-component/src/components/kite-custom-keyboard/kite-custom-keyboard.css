@@ -18,21 +18,14 @@
 }
 
 :host {
-  --gap: 0.5rem;
-  --buttons-border-radius: 0.125rem;
-  --buttons-background: white;
-  --buttons-active-background: theme('colors.gray.200');
-  --buttons-hover-background: theme('colors.gray.300');
-  --buttons-tap-highlight-color: var(--buttons-hover-background);
-  --buttons-min-height: 2.5rem;
   display: grid;
-  gap: var(--gap);
+  gap: var(--gap, 0.5rem);
   overflow-y: auto;
 }
 
 :host([open]) {
   --kite-custom-keyboard-height: 10rem;
-  height: var(--kite-custom-keyboard-height);
+  height: var(--kite-custom-keyboard-height, 2.5rem);
 }
 
 :host([open][resize]) {
@@ -50,18 +43,18 @@ button {
   min-height: var(--buttons-min-height);
   height: 100%;
   width: 100%;
-  border-radius: var(--buttons-border-radius);
+  border-radius: var(--buttons-border-radius, 0.125rem);
   font-size: inherit;
-  background: var(--buttons-background);
-  -webkit-tap-highlight-color: var(--buttons-tap-highlight-color);
+  background: var(--buttons-background, white);
+  -webkit-tap-highlight-color: var(--buttons-tap-highlight-color, var(--buttons-hover-background, theme('colors.gray.300')));
 }
 
 @media (hover: hover) and (pointer: fine) {
   button:hover {
-    background: var(--buttons-hover-background);
+    background: var(--buttons-hover-background, theme('colors.gray.300'));
   }
 }
 
 button:active {
-  background: var(--buttons-active-background);
+  background: var(--buttons-active-background, theme('colors.gray.200'));
 }
