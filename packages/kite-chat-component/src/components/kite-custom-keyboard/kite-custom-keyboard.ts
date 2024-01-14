@@ -1,4 +1,4 @@
-import {LitElement, PropertyValues, html, css, unsafeCSS} from 'lit';
+import {LitElement, html, css, unsafeCSS} from 'lit';
 import {property} from 'lit/decorators.js';
 import kiteKeyboardStyles from './kite-custom-keyboard.css?inline';
 import {sharedStyles} from '../../shared-styles';
