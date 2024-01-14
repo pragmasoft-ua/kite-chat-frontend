@@ -5,10 +5,13 @@
  */
 
 import {LitElement, html, css, unsafeCSS, PropertyValues} from 'lit';
-import {query, state} from 'lit/decorators.js';
+import {query, state, property} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {ifDefined} from 'lit/directives/if-defined.js';
 import {sharedStyles} from '../../shared-styles';
+import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
+import {KiteCustomKeyboardElement} from '../kite-custom-keyboard';
+import type {KeyboardMarkup} from '../../kite-payload';
 
 import footerStyles from './kite-chat-footer.css?inline';
 
@@ -17,6 +20,7 @@ import {randomStringId} from '../../random-string-id';
 
 import {
   ClipboardController,
+  CustomKeyboardController,
 } from '../../controllers';
 
 const CUSTOM_EVENT_INIT = {
@@ -47,7 +51,11 @@ export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
  * @fires {CustomEvent} kite-chat-footer.change
  * @fires {CustomEvent} kite-chat-footer.cancel
  */
-export class KiteChatFooterElement extends LitElement {
+export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
+  static scopedElements = {
+    'kite-custom-keyboard': KiteCustomKeyboardElement,
+  };
+
   @query('textarea')
   private textarea!: HTMLTextAreaElement;
 
@@ -57,10 +65,15 @@ export class KiteChatFooterElement extends LitElement {
   @state()
   private sendEnabled = false;
 
-  @state()
+  @property({type: Object})
+  customKeyboardMarkup: KeyboardMarkup|null = null;
+
+  @property()
   editMessage: KiteMsgElement|null = null;
 
   protected clipboardController = new ClipboardController(this);
+
+  protected keyboardController = new CustomKeyboardController(this);
 
   private get editMessageFile() {
     return this.editMessage?.querySelector('kite-file');
@@ -111,6 +124,15 @@ export class KiteChatFooterElement extends LitElement {
     this._handleEnabled();
   }
 
+  private _sendAction(e: CustomEvent) {
+    const {text} = e.detail;
+    this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
+      ...CUSTOM_EVENT_INIT,
+      detail: {text}
+    }))
+    this.customKeyboardMarkup?.one_time_keyboard && this._switchKeyboard();
+  }
+
   private _onFileInput(event: Event) {
     const target = event.target as HTMLInputElement;
     const files = Array.from(target.files || []).filter(file => file);
@@ -125,7 +147,7 @@ export class KiteChatFooterElement extends LitElement {
         }
       }))
     });
-}
+  }
 
   private _renderFileInput() {
     const isActive = !this.editMessage || !!this.editMessageFile;
@@ -175,7 +197,7 @@ export class KiteChatFooterElement extends LitElement {
         autocomplete="on"
         spellcheck="true"
         wrap="soft"
-        placeholder="Type a message"
+        placeholder=${this.customKeyboardMarkup?.input_field_placeholder ?? "Type a message"}
         class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
         @input=${this._handleEnabled}
         @keyup=${this._handleKeyUp}
@@ -252,12 +274,62 @@ export class KiteChatFooterElement extends LitElement {
     this.dispatchEvent(new CustomEvent('kite-chat-footer.cancel'));
   }
 
+  private _switchKeyboard() {
+    this.keyboardController.toggle();
+  }
+
   override render() {
     return html`
       ${this._renderEdited()}
       <div class="flex items-start gap-1 rounded-b p-2">
         ${this._renderFileInput()}
         ${this._renderTextInput()}
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          class="icon icon-tabler icon-tabler-layout-grid" 
+          viewBox="0 0 24 24" 
+          stroke-width="2" 
+          stroke="currentColor" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          class="opacity-50 hover:opacity-100 ${classMap({
+            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.is_persistent || this.keyboardController.defaultKeyboard,
+          })} h-6 w-6"
+          @pointerdown=${(event: Event) => event.preventDefault()}
+          @pointerup=${this._switchKeyboard}
+        >
+          <title>Use reply keyboard</title>
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+          <path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+          <path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+          <path d="M14 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
+        </svg>
+        <svg 
+          xmlns="http://www.w3.org/2000/svg" 
+          stroke-width="2" 
+          stroke="currentColor" 
+          fill="none" 
+          stroke-linecap="round" 
+          stroke-linejoin="round"
+          class="opacity-50 hover:opacity-100 ${classMap({
+            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.is_persistent || !this.keyboardController.defaultKeyboard,
+          })} h-6 w-6"
+          @pointerdown=${(event: Event) => event.preventDefault()}
+          @pointerup=${this._switchKeyboard}
+        >
+          <title>Use default keyboard</title>
+          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+          <path d="M2 6m0 2a2 2 0 0 1 2 -2h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2z" />
+          <path d="M6 10l0 .01" />
+          <path d="M10 10l0 .01" />
+          <path d="M14 10l0 .01" />
+          <path d="M18 10l0 .01" />
+          <path d="M6 14l0 .01" />
+          <path d="M18 14l0 .01" />
+          <path d="M10 14l4 .01" />
+        </svg>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -281,6 +353,11 @@ export class KiteChatFooterElement extends LitElement {
           />
         </svg>
       </div>
+      <kite-custom-keyboard
+        .keyboard=${this.customKeyboardMarkup?.keyboard ?? []}
+        .resize=${this.customKeyboardMarkup?.resize_keyboard}
+        @kite-custom-keyboard.click=${this._sendAction}
+      ></kite-custom-keyboard>
     `;
   }
 

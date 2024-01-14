@@ -66,6 +66,8 @@ kite-chat-main::-webkit-scrollbar-thumb {
 }
 
 :host {
+  -webkit-tap-highlight-color: transparent;
+
   --kite-gap: 1rem;
   --kite-dialog-width: 20rem;
   --kite-dialog-height: 30rem;

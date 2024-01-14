@@ -35,3 +35,19 @@ span.edit-message_file::after {
   content: 'Replace file';
   @apply cursor-pointer;
 }
+
+kite-custom-keyboard[open] {
+  @apply p-2;
+
+  --kite-custom-keyboard-gap: 0.4rem;
+  --kite-custom-keyboard-buttons-border-radius: 0.125rem;
+  --kite-custom-keyboard-buttons-background: theme('colors.gray.400');
+  --kite-custom-keyboard-buttons-hover-background: theme('colors.gray.300'); 
+
+  --gap: var(--kite-custom-keyboard-gap);
+  --buttons-border-radius: var(--kite-custom-keyboard-buttons-border-radius);
+  --buttons-background: var(--kite-custom-keyboard-buttons-background);
+  --buttons-hover-background: var(--kite-custom-keyboard-buttons-hover-background);
+
+  --kite-custom-keyboard-height: 10rem;
+}

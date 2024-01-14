@@ -1,0 +1,49 @@
+@config "../../../tailwind.config.lit.cjs";
+
+:host {
+  --gap: 0.5rem;
+  --buttons-border-radius: 0.125rem;
+  --buttons-background: white;
+  --buttons-active-background: theme('colors.gray.200');
+  --buttons-hover-background: theme('colors.gray.300');
+  --buttons-tap-highlight-color: var(--buttons-hover-background);
+  --buttons-min-height: 2.5rem;
+  display: grid;
+  gap: var(--gap);
+}
+
+:host([open]) {
+  --kite-custom-keyboard-height: 10rem;
+  height: var(--kite-custom-keyboard-height);
+}
+
+:host([open][resize]) {
+  height: fit-content;
+}
+
+.row {
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--gap);
+  grid-template-columns: repeat(var(--max-row-length,1),1fr);
+}
+
+button {
+  min-height: var(--buttons-min-height);
+  height: 100%;
+  width: 100%;
+  border-radius: var(--buttons-border-radius);
+  font-size: inherit;
+  background: var(--buttons-background);
+  -webkit-tap-highlight-color: var(--buttons-tap-highlight-color);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:hover {
+    background: var(--buttons-hover-background);
+  }
+}
+
+button:active {
+  background: var(--buttons-active-background);
+}
