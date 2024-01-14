@@ -258,14 +258,15 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           @keyup=${this._handleKeyUp}
           @paste=${this._handlePaste}
           @click=${() => this.keyboardController.setMode(true)}
+          @pointerup=${(event: Event) => event.stopPropagation()}
           .disabled=${!isTextareaActive}
         ></textarea>
         <kite-icon
           icon=${this.keyboardController.defaultKeyboard ? "layout-grid" : "keyboard"}
           title=${this.keyboardController.defaultKeyboard ? "Use reply keyboard" : "Use default keyboard"}
           class="icon active-icon ${classMap({'hidden': isKeyboardSwitchHidden})}"
-          @pointerdown=${(event: Event) => event.preventDefault()}
-          @pointerup=${this._switchKeyboard}
+          @click=${this._switchKeyboard}
+          @pointerup=${(event: Event) => event.stopPropagation()}
         ></kite-icon>
         <kite-icon
           icon="send"
