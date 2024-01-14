@@ -105,6 +105,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
 
   private _handleEnabled() {
     this.sendEnabled = this.textarea.value.length > 0;
+    this.sendEnabled && this.keyboardController.setMode(true);
   }
 
   private _handleKeyUp(event: KeyboardEvent) {
@@ -187,6 +188,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
       clipboardData.text +
       currentText.substring(cursorPosition);
     this.textarea.value = newText;
+    this._handleEnabled();
     
     if(!clipboardData.files) return;
     for(const file of clipboardData.files) {
@@ -221,6 +223,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   override render() {
     const isAttachmentActive = !this.editMessage || !!this.editMessageFile;
     const isTextareaActive = !this.editMessageFile;
+    const isKeyboardSwitchHidden = this.sendEnabled || !!this.editMessage || !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent;
     return html`
       ${this._renderEdited()}
       <div class="flex items-start gap-1 rounded-b p-2">
@@ -254,14 +257,13 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           @input=${this._handleEnabled}
           @keyup=${this._handleKeyUp}
           @paste=${this._handlePaste}
+          @click=${() => this.keyboardController.setMode(true)}
           .disabled=${!isTextareaActive}
         ></textarea>
         <kite-icon
           icon=${this.keyboardController.defaultKeyboard ? "layout-grid" : "keyboard"}
           title=${this.keyboardController.defaultKeyboard ? "Use reply keyboard" : "Use default keyboard"}
-          class="icon active-icon ${classMap({
-            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent,
-          })}"
+          class="icon active-icon ${classMap({'hidden': isKeyboardSwitchHidden})}"
           @pointerdown=${(event: Event) => event.preventDefault()}
           @pointerup=${this._switchKeyboard}
         ></kite-icon>
