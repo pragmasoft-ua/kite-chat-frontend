@@ -2583,7 +2583,7 @@ packages:
     resolution: {integrity: sha512-MHOHSDGmlum66PP2a6ATLHHwTFvYl+s7R4NYBp8E1NqHDA5UEuEIA1o/E4NoDinc3Ow56yz9Cvh89DvFDif5Pg==}
     dependencies:
       '@lit/reactive-element': 2.0.3
-      lit: 2.8.0
+      lit: 3.1.1
       lit-html: 3.1.1
     dev: true
 
@@ -2616,7 +2616,6 @@ packages:
     resolution: {integrity: sha512-QuTgnG52Poic7uM1AN5yJ09QMe0O28e10XzSvWDz02TJiiKee4stsiownEIadWm8nYzyDAyT+gKzUoZmiWQtsQ==}
     dependencies:
       '@lit-labs/ssr-dom-shim': 1.1.2
-    dev: true
 
   /@lit/reactive-element@2.0.3:
     resolution: {integrity: sha512-e067EuTNNgOHm1tZcc0Ia7TCzD/9ZpoPegHKgesrGK6pSDRGkGDAQbYuQclqLPIoJ9eC8Kb9mYtGryWcM5AywA==}
@@ -8493,7 +8492,7 @@ packages:
     resolution: {integrity: sha512-XbeRxmTHubXENkV4h8RIPyr8lXc+Ff28rkcQzw3G6up2xg5E8Zu1IgOWIwBLEQsu3cOVFqdYwiVi0hv0SlpqUA==}
     dependencies:
       '@lit-labs/ssr-dom-shim': 1.1.2
-      '@lit/reactive-element': 1.6.1
+      '@lit/reactive-element': 1.6.3
       lit-html: 2.8.0
 
   /lit-element@4.0.3:
