@@ -35,7 +35,7 @@ export class KiteCustomKeyboardElement extends
             ${row.map(button =>
               html`<button 
                 @pointerdown=${(event: Event) => event.preventDefault()}
-                @pointerup=${() => {
+                @click=${() => {
                   this.handleButtonClick(button);
                 }}
               >${button}</button>`
