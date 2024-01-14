@@ -71,8 +71,8 @@ export type KiteNotification = {
 
 export type KeyboardMarkup = {
   keyboard: string[][];
-  is_persistent?: boolean;
-  resize_keyboard?: boolean;
-  one_time_keyboard?: boolean;
-  input_field_placeholder?: string;
+  isPersistent?: boolean;
+  resizeKeyboard?: boolean;
+  oneTimeKeyboard?: boolean;
+  inputFieldPlaceholder?: string;
 };

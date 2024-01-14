@@ -130,7 +130,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
       ...CUSTOM_EVENT_INIT,
       detail: {text}
     }))
-    this.customKeyboardMarkup?.one_time_keyboard && this._switchKeyboard();
+    this.customKeyboardMarkup?.oneTimeKeyboard && this._switchKeyboard();
   }
 
   private _onFileInput(event: Event) {
@@ -197,7 +197,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
         autocomplete="on"
         spellcheck="true"
         wrap="soft"
-        placeholder=${this.customKeyboardMarkup?.input_field_placeholder ?? "Type a message"}
+        placeholder=${this.customKeyboardMarkup?.inputFieldPlaceholder ?? "Type a message"}
         class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
         @input=${this._handleEnabled}
         @keyup=${this._handleKeyUp}
@@ -294,7 +294,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           stroke-linecap="round" 
           stroke-linejoin="round"
           class="opacity-50 hover:opacity-100 ${classMap({
-            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.is_persistent || this.keyboardController.defaultKeyboard,
+            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent || this.keyboardController.defaultKeyboard,
           })} h-6 w-6"
           @pointerdown=${(event: Event) => event.preventDefault()}
           @pointerup=${this._switchKeyboard}
@@ -314,7 +314,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           stroke-linecap="round" 
           stroke-linejoin="round"
           class="opacity-50 hover:opacity-100 ${classMap({
-            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.is_persistent || !this.keyboardController.defaultKeyboard,
+            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent || !this.keyboardController.defaultKeyboard,
           })} h-6 w-6"
           @pointerdown=${(event: Event) => event.preventDefault()}
           @pointerup=${this._switchKeyboard}
@@ -355,7 +355,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
       </div>
       <kite-custom-keyboard
         .keyboard=${this.customKeyboardMarkup?.keyboard ?? []}
-        .resize=${this.customKeyboardMarkup?.resize_keyboard}
+        .resize=${this.customKeyboardMarkup?.resizeKeyboard}
         @kite-custom-keyboard.click=${this._sendAction}
       ></kite-custom-keyboard>
     `;
