@@ -4,3 +4,7 @@
 :host {
   @apply bg-primary-color flex h-12 select-none flex-row items-center justify-between rounded-t p-2 text-secondary-color;
 }
+
+.icon {
+  @apply h-full p-1.5 aspect-square rounded-full cursor-pointer bg-white bg-opacity-0 hover:bg-opacity-30;
+}

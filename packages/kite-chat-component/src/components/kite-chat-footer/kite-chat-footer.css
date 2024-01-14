@@ -51,3 +51,15 @@ kite-custom-keyboard[open] {
 
   --kite-custom-keyboard-height: 10rem;
 }
+
+.icon {
+  @apply w-6 h-6;
+}
+
+.active-icon {
+  @apply opacity-50 hover:opacity-100 cursor-pointer;
+}
+
+.inactive-icon {
+  @apply opacity-30 pointer-events-none;
+}

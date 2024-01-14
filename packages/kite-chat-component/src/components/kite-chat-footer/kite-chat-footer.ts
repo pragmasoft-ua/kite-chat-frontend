@@ -10,6 +10,7 @@ import {classMap} from 'lit/directives/class-map.js';
 import {ifDefined} from 'lit/directives/if-defined.js';
 import {sharedStyles} from '../../shared-styles';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
+import {KiteIconElement} from '../kite-icon';
 import {KiteCustomKeyboardElement} from '../kite-custom-keyboard';
 import type {KeyboardMarkup} from '../../kite-payload';
 
@@ -53,6 +54,7 @@ export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
  */
 export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   static scopedElements = {
+    'kite-icon': KiteIconElement,
     'kite-custom-keyboard': KiteCustomKeyboardElement,
   };
 
@@ -149,64 +151,6 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
     });
   }
 
-  private _renderFileInput() {
-    const isActive = !this.editMessage || !!this.editMessageFile;
-    const mimeType = this.editMessageFile?.file?.type;
-    return html`
-        <label>
-            <input
-                type="file"
-                class="hidden"
-                aria-hidden="true"
-                multiple
-                @change=${this._onFileInput}
-                .disabled=${!isActive}
-                accept=${ifDefined(mimeType)}
-            />
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke-width="1.5"
-                stroke="currentColor"
-                class="h-6 w-6 ${classMap({
-                  'opacity-50': isActive,
-                  'cursor-pointer': isActive,
-                  'hover:opacity-100': isActive,
-                  'opacity-30': !isActive,
-                  'pointer-events-none': !isActive,
-                })}"
-            >
-                <title>Attach file</title>
-                <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13"
-                />
-            </svg>
-        </label>
-    `;
-  }
-
-  private _renderTextInput() {
-    const isActive = !this.editMessageFile;
-    return html`
-      <textarea
-        required
-        rows="1"
-        autocomplete="on"
-        spellcheck="true"
-        wrap="soft"
-        placeholder=${this.customKeyboardMarkup?.inputFieldPlaceholder ?? "Type a message"}
-        class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
-        @input=${this._handleEnabled}
-        @keyup=${this._handleKeyUp}
-        @paste=${this._handlePaste}
-        .disabled=${!isActive}
-      ></textarea>
-    `;
-  }
-
   private _renderEdited() {
     if(!this.editMessage) {
       return null;
@@ -220,17 +164,13 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
             @click="${() => this.fileInput.click()}"
           >${this.editMessageFile.name}</span>`
         }
-        <span
+        <kite-icon
           data-cancel
-          title="Cancel"
-          class="cursor-pointer py-2 px-2.5"
+          icon="arrow-back" 
+          title="Cancel" 
+          class="icon active-icon my-2 mx-2.5"
           @click="${this._cancelEdit}"
-          >
-          <svg xmlns="http://www.w3.org/2000/svg" class="opacity-30 pointer-events-none  h-6 w-6" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 14l-4 -4l4 -4" /><path d="M5 10h11a4 4 0 1 1 0 8h-1" />
-          </svg>
-          </span
-        >
+        ></kite-icon>
       </div>
     `;
   }
@@ -279,79 +219,61 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   }
 
   override render() {
+    const isAttachmentActive = !this.editMessage || !!this.editMessageFile;
+    const isTextareaActive = !this.editMessageFile;
     return html`
       ${this._renderEdited()}
       <div class="flex items-start gap-1 rounded-b p-2">
-        ${this._renderFileInput()}
-        ${this._renderTextInput()}
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          class="icon icon-tabler icon-tabler-layout-grid" 
-          viewBox="0 0 24 24" 
-          stroke-width="2" 
-          stroke="currentColor" 
-          fill="none" 
-          stroke-linecap="round" 
-          stroke-linejoin="round"
-          class="opacity-50 hover:opacity-100 ${classMap({
-            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent || this.keyboardController.defaultKeyboard,
-          })} h-6 w-6"
-          @pointerdown=${(event: Event) => event.preventDefault()}
-          @pointerup=${this._switchKeyboard}
-        >
-          <title>Use reply keyboard</title>
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M4 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-          <path d="M14 4m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-          <path d="M4 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-          <path d="M14 14m0 1a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v4a1 1 0 0 1 -1 1h-4a1 1 0 0 1 -1 -1z" />
-        </svg>
-        <svg 
-          xmlns="http://www.w3.org/2000/svg" 
-          stroke-width="2" 
-          stroke="currentColor" 
-          fill="none" 
-          stroke-linecap="round" 
-          stroke-linejoin="round"
-          class="opacity-50 hover:opacity-100 ${classMap({
-            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent || !this.keyboardController.defaultKeyboard,
-          })} h-6 w-6"
-          @pointerdown=${(event: Event) => event.preventDefault()}
-          @pointerup=${this._switchKeyboard}
-        >
-          <title>Use default keyboard</title>
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M2 6m0 2a2 2 0 0 1 2 -2h16a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2z" />
-          <path d="M6 10l0 .01" />
-          <path d="M10 10l0 .01" />
-          <path d="M14 10l0 .01" />
-          <path d="M18 10l0 .01" />
-          <path d="M6 14l0 .01" />
-          <path d="M18 14l0 .01" />
-          <path d="M10 14l4 .01" />
-        </svg>
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-          stroke="currentColor"
-          class="${classMap({
-            'opacity-50': this.sendEnabled,
-            'hover:opacity-100': this.sendEnabled,
-            'cursor-pointer': this.sendEnabled,
-            'opacity-30': !this.sendEnabled,
-            'pointer-events-none': !this.sendEnabled,
-          })} h-6 w-6"
-          @click=${this._sendText}
-        >
-          <title>Send (Ctrl+↩)</title>
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"
+        <label>
+          <input
+            type="file"
+            class="hidden"
+            aria-hidden="true"
+            multiple
+            @change=${this._onFileInput}
+            .disabled=${!isAttachmentActive}
+            accept=${ifDefined(this.editMessageFile?.file?.type)}
           />
-        </svg>
+          <kite-icon
+            icon="attachment"
+            title="Attach file"
+            class="icon ${classMap({
+              'active-icon': isAttachmentActive,
+              'inactive-icon': !isAttachmentActive,
+            })}"
+          ></kite-icon>
+        </label>
+        <textarea
+          required
+          rows="1"
+          autocomplete="on"
+          spellcheck="true"
+          wrap="soft"
+          placeholder=${this.customKeyboardMarkup?.inputFieldPlaceholder ?? "Type a message"}
+          class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
+          @input=${this._handleEnabled}
+          @keyup=${this._handleKeyUp}
+          @paste=${this._handlePaste}
+          .disabled=${!isTextareaActive}
+        ></textarea>
+        <kite-icon
+          icon=${this.keyboardController.defaultKeyboard ? "layout-grid" : "keyboard"}
+          title=${this.keyboardController.defaultKeyboard ? "Use reply keyboard" : "Use default keyboard"}
+          class="icon active-icon ${classMap({
+            'hidden': !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent,
+          })}"
+          @pointerdown=${(event: Event) => event.preventDefault()}
+          @pointerup=${this._switchKeyboard}
+        ></kite-icon>
+        <kite-icon
+          icon="send"
+          title="Send (Ctrl+↩)"
+          class="icon ${classMap({
+            'active-icon': this.sendEnabled,
+            'inactive-icon': !this.sendEnabled,
+          })}"
+          @click=${this._sendText}
+        ></kite-icon>
       </div>
       <kite-custom-keyboard
         .keyboard=${this.customKeyboardMarkup?.keyboard ?? []}

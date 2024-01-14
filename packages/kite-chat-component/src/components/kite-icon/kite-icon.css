@@ -1,0 +1,9 @@
+@config "../../../tailwind.config.lit.cjs";
+
+:host {
+    @apply block;
+}
+
+svg {
+    @apply w-full h-full;
+}
