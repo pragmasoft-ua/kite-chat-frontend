@@ -25,15 +25,6 @@ export class KiteCustomKeyboardElement extends
   @property({type: Boolean, reflect: true})
   resize = false;
 
-  override updated(changedProperties: PropertyValues<this>): void {
-    super.updated(changedProperties);
-
-    if (changedProperties.has('keyboard')) {
-      const maxRowLength = this.keyboard.length && Math.max(...this.keyboard.map(row => row.length));
-      this.style.setProperty('--max-row-length', maxRowLength.toString());
-    }
-  }
-
   override render() {
     if(!this.open) return;
 

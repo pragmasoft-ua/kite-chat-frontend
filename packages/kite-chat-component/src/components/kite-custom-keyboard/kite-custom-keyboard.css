@@ -1,6 +1,23 @@
 @config "../../../tailwind.config.lit.cjs";
 
 :host {
+  scrollbar-width: thin;
+}
+
+:host::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+}
+
+:host::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+:host::-webkit-scrollbar-thumb {
+  @apply bg-neutral-500;
+}
+
+:host {
   --gap: 0.5rem;
   --buttons-border-radius: 0.125rem;
   --buttons-background: white;
@@ -10,6 +27,7 @@
   --buttons-min-height: 2.5rem;
   display: grid;
   gap: var(--gap);
+  overflow-y: auto;
 }
 
 :host([open]) {
@@ -25,7 +43,7 @@
   display: grid;
   grid-auto-flow: column;
   gap: var(--gap);
-  grid-template-columns: repeat(var(--max-row-length,1),1fr);
+  grid-template-columns: auto;
 }
 
 button {

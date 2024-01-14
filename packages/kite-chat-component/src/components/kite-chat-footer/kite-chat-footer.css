@@ -37,7 +37,7 @@ span.edit-message_file::after {
 }
 
 kite-custom-keyboard[open] {
-  @apply p-2;
+  @apply my-2 px-2;
 
   --kite-custom-keyboard-gap: 0.4rem;
   --kite-custom-keyboard-buttons-border-radius: 0.125rem;
