@@ -1,13 +1,17 @@
 @config "../tailwind.config.lit.cjs";
 
 :host {
-  @apply flex flex-col items-start w-full relative px-2 select-none py-1.5 box-border;
+  @apply flex flex-col items-start w-full relative px-2 select-none py-1.5 box-border snap-end;
 }
 
 .message-container {
-  @apply relative max-w-[80%] block whitespace-pre-line break-words rounded px-2 py-1 text-left shadow;
+  @apply relative max-w-[80%] block break-words rounded px-2 py-1 text-left shadow;
   @apply select-text selection:bg-primary-color selection:text-white;
-  @apply snap-end scroll-my-1;
+  @apply scroll-my-1;
+}
+
+slot:not([name]) {
+  @apply whitespace-pre-line;
 }
 
 :host(:not([status])) .message-container {
@@ -84,4 +88,13 @@ span {
 
 :host([selected])::before {
   @apply absolute !content-[''] bottom-0 left-0 w-full h-full bg-primary-color opacity-40;
+}
+
+::slotted(kite-custom-keyboard) {
+  --gap: var(--kite-inline-keyboard-gap, 0.25rem);
+  --buttons-border-radius: var(--kite-inline-keyboard-buttons-border-radius, 0.125rem);
+  --buttons-background: var(--kite-inline-keyboard-buttons-background, rgba(0, 0, 0, 0.4));
+  --buttons-hover-background: var(--kite-inline-keyboard-buttons-hover-background, rgba(0, 0, 0, 0.3));
+  --buttons-active-background: var(--kite-inline-keyboard-buttons-active-background, rgba(0, 0, 0, 0.2));
+  @apply mt-1 w-full h-fit;
 }

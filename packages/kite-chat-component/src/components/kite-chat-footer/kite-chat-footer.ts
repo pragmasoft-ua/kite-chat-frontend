@@ -12,7 +12,7 @@ import {sharedStyles} from '../../shared-styles';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
 import {KiteIconElement} from '../kite-icon';
 import {KiteCustomKeyboardElement} from '../kite-custom-keyboard';
-import type {KeyboardMarkup} from '../../kite-payload';
+import type {ReplyKeyboardMarkup as KeyboardMarkup} from '../../kite-payload';
 
 import footerStyles from './kite-chat-footer.css?inline';
 
@@ -282,7 +282,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
       </div>
       <kite-custom-keyboard
         .keyboard=${this.customKeyboardMarkup?.keyboard ?? []}
-        .resize=${this.customKeyboardMarkup?.resizeKeyboard}
+        .resize=${!!this.customKeyboardMarkup?.resizeKeyboard}
         @kite-custom-keyboard.click=${this._sendAction}
       ></kite-custom-keyboard>
     `;

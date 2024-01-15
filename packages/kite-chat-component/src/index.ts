@@ -8,6 +8,7 @@ import type {
 import {KiteFileElement} from './kite-file';
 import type {KiteMsgElement} from './kite-msg';
 import type {KiteNotificationElement} from './components';
+import {KiteCustomKeyboardElement} from './components';
 import "@oddbird/popover-polyfill";
 
 declare global {
@@ -16,6 +17,7 @@ declare global {
     'kite-msg': KiteMsgElement;
     'kite-file': KiteFileElement;
     'kite-toast-notification': KiteNotificationElement;
+    'kite-custom-keyboard': KiteCustomKeyboardElement;
   }
   interface HTMLElementEventMap {
     'kite-chat.hide': CustomEvent;

@@ -11,6 +11,7 @@ export type BaseMsg = {
   timestamp?: Date;
   status?: MsgStatus;
   edited?: boolean; 
+  replyMarkup?: InlineKeyboardMarkup;
 };
 
 export type PlaintextMsg = BaseMsg & {
@@ -69,10 +70,24 @@ export type KiteNotification = {
   duration?: number | 'auto';
 }
 
-export type KeyboardMarkup = {
-  keyboard: string[][];
+export type ReplyKeyboardButton = {
+  text: string;
+};
+
+export type ReplyKeyboardMarkup = {
+  keyboard: (ReplyKeyboardButton|string)[][];
   isPersistent?: boolean;
   resizeKeyboard?: boolean;
   oneTimeKeyboard?: boolean;
   inputFieldPlaceholder?: string;
 };
+
+export type InlineKeyboardButton = ReplyKeyboardButton & {
+  callbackData?: string;  
+};
+
+export type InlineKeyboardMarkup = {
+  keyboard: InlineKeyboardButton[][];
+};
+
+export type KeyboardButton = string | (InlineKeyboardButton & ReplyKeyboardButton);

@@ -9,7 +9,7 @@ import {customElement, property, query, queryAssignedElements, state} from 'lit/
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
-import {KeyboardMarkup} from './kite-payload';
+import {ReplyKeyboardMarkup as KeyboardMarkup} from './kite-payload';
 
 import kiteChatStyles from './kite-chat.css?inline';
 import {randomStringId} from './random-string-id';
@@ -514,7 +514,7 @@ export class KiteChatElement extends
   * @param {boolean} eagerShow - If true, automatically shows the new message. Defaults to true.
   */
   appendMsg(msg: KiteMsg, eagerShow: boolean = true) {
-    const {messageId = randomStringId(), timestamp = new Date(), status, edited} = msg;
+    const {messageId = randomStringId(), timestamp = new Date(), status, edited, replyMarkup} = msg;
     const msgElement = document.createElement('kite-msg');
     msgElement.messageId = messageId;
     msgElement.timestamp = timestamp;
@@ -526,6 +526,12 @@ export class KiteChatElement extends
       const fileElement = document.createElement('kite-file');
       fileElement.file = msg.file;
       msgElement.appendChild(fileElement);
+    }
+    if(replyMarkup) {
+      const inlineKeyboardElement = document.createElement('kite-custom-keyboard');
+      inlineKeyboardElement.slot = "inline-keyboard";
+      inlineKeyboardElement.keyboard = replyMarkup.keyboard;
+      msgElement.appendChild(inlineKeyboardElement);
     }
     this.appendChild(msgElement);
     eagerShow && this.show();

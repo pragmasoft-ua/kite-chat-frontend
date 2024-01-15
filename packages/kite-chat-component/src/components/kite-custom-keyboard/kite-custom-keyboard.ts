@@ -1,8 +1,9 @@
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {property} from 'lit/decorators.js';
+import {customElement, property} from 'lit/decorators.js';
 import kiteKeyboardStyles from './kite-custom-keyboard.css?inline';
 import {sharedStyles} from '../../shared-styles';
 import {VisibilityMixin} from '../../mixins';
+import {KeyboardButton} from '../../kite-payload';
 
 const componentStyles = css`
   ${unsafeCSS(kiteKeyboardStyles)}
@@ -14,13 +15,14 @@ const CUSTOM_EVENT_INIT = {
   cancelable: false,
 };
 
+@customElement('kite-custom-keyboard')
 export class KiteCustomKeyboardElement extends  
   VisibilityMixin(
     LitElement,
     {show: 'kite-custom-keyboard.show', hide: 'kite-custom-keyboard.hide'}
   ) {
   @property({type: Array})
-  keyboard: string[][] = [];
+  keyboard: KeyboardButton[][] = [];
 
   @property({type: Boolean, reflect: true})
   resize = false;
@@ -36,9 +38,11 @@ export class KiteCustomKeyboardElement extends
               html`<button 
                 @pointerdown=${(event: Event) => event.preventDefault()}
                 @click=${() => {
-                  this.handleButtonClick(button);
+                  typeof button === 'string'
+                    ? this.handleButtonClick(button)
+                    : this.handleButtonClick(button.text, button.callbackData);
                 }}
-              >${button}</button>`
+              >${typeof button === 'string' ? button : button.text}</button>`
             )}
           </div>
         `
@@ -46,8 +50,8 @@ export class KiteCustomKeyboardElement extends
     `;
   }
 
-  protected handleButtonClick(text: string) {
-    this.dispatchEvent(new CustomEvent('kite-custom-keyboard.click', {...CUSTOM_EVENT_INIT, detail: {text}}));
+  protected handleButtonClick(text: string, callbackData?: string) {
+    this.dispatchEvent(new CustomEvent('kite-custom-keyboard.click', {...CUSTOM_EVENT_INIT, detail: {text, callbackData}}));
   }
 
   static override styles = [sharedStyles, componentStyles];

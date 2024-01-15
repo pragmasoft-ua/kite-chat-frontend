@@ -34,6 +34,10 @@ kite-chat-main::-webkit-scrollbar-thumb {
   
   --kite-custom-keyboard-buttons-background: theme('colors.gray.200');
   --kite-custom-keyboard-buttons-hover-background: theme('colors.gray.300'); 
+
+  --kite-inline-keyboard-buttons-background: rgba(214, 211, 209, 0.6);
+  --kite-inline-keyboard-buttons-hover-background: rgba(214, 211, 209, 0.4);
+  --kite-inline-keyboard-buttons-active-background: rgba(184, 186, 188, 0.5);
 }
 
 :host([theme="dark"]) {
@@ -43,6 +47,13 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-msg-sent-border: theme('colors.stone.600');
   --kite-notification-bg: theme('colors.neutral.600');
   --date-divider-bg: rgba(0, 0, 0, 0.5);
+
+  --kite-custom-keyboard-buttons-background: theme('colors.gray.400');
+  --kite-custom-keyboard-buttons-hover-background: theme('colors.gray.300'); 
+
+  --kite-inline-keyboard-buttons-background: rgba(38 ,38 , 38, 0.6);
+  --kite-inline-keyboard-buttons-hover-background: rgba(38 ,38 , 38, 0.4);
+  --kite-inline-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
 }
 
 :host(:not([theme="dark"])) .kite-dialog {
@@ -64,6 +75,10 @@ kite-chat-main::-webkit-scrollbar-thumb {
 
     --kite-custom-keyboard-buttons-background: theme('colors.gray.400');
     --kite-custom-keyboard-buttons-hover-background: theme('colors.gray.300'); 
+
+    --kite-inline-keyboard-buttons-background: rgba(38 ,38 , 38, 0.6);
+    --kite-inline-keyboard-buttons-hover-background: rgba(38 ,38 , 38, 0.4);
+    --kite-inline-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
   }
 
   :host(:not([theme="light"])) .kite-dialog {

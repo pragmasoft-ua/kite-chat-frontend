@@ -36,11 +36,11 @@
   display: grid;
   grid-auto-flow: column;
   gap: var(--gap);
-  grid-template-columns: auto;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 }
 
 button {
-  min-height: var(--buttons-min-height);
+  min-height: var(--buttons-min-height, 2rem);
   height: 100%;
   width: 100%;
   border-radius: var(--buttons-border-radius, 0.125rem);
