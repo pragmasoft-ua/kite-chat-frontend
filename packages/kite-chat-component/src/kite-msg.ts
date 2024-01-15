@@ -141,7 +141,7 @@ export class KiteMsgElement extends ScopedElementsMixin(LitElement) {
       </div>
       <slot 
         name="inline-keyboard" 
-        @click=${(event: Event) => event.preventDefault()} 
+        @click=${(event: Event) => event.stopPropagation()} 
         @slotchange="${this.handleKeyboardSlotChange}"
       ></slot>
     `;

@@ -39,7 +39,15 @@
   grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 }
 
-button {
+a {
+  @apply flex items-center justify-center text-center relative;
+}
+
+[icon="arrow-left"] {
+  @apply absolute top-1 right-0 w-4 h-4 transform rotate-[135deg];
+}
+
+button, a {
   min-height: var(--buttons-min-height, 2rem);
   height: 100%;
   width: 100%;
@@ -50,11 +58,11 @@ button {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  button:hover {
+  button:hover, a:hover {
     background: var(--buttons-hover-background, theme('colors.gray.300'));
   }
 }
 
-button:active {
+button:active, a:active {
   background: var(--buttons-active-background, theme('colors.gray.200'));
 }

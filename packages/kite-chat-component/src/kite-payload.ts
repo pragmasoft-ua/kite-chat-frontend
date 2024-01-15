@@ -70,9 +70,11 @@ export type KiteNotification = {
   duration?: number | 'auto';
 }
 
-export type ReplyKeyboardButton = {
+export type BaseKeyboardButton = {
   text: string;
 };
+
+export type ReplyKeyboardButton = BaseKeyboardButton;
 
 export type ReplyKeyboardMarkup = {
   keyboard: (ReplyKeyboardButton|string)[][];
@@ -82,8 +84,9 @@ export type ReplyKeyboardMarkup = {
   inputFieldPlaceholder?: string;
 };
 
-export type InlineKeyboardButton = ReplyKeyboardButton & {
+export type InlineKeyboardButton = BaseKeyboardButton & {
   callbackData?: string;  
+  url?: string;
 };
 
 export type InlineKeyboardMarkup = {
