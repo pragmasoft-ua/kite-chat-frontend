@@ -150,7 +150,7 @@ export class KiteMsgElement extends ScopedElementsMixin(LitElement) {
   private handleKeyboardSlotChange(event: Event) {
     const slot = event.target as HTMLSlotElement;
     const keyboardElement = slot.assignedElements()[0] as KiteCustomKeyboardElement|null;
-    keyboardElement?.show();
+    keyboardElement?.setAttribute('open', 'true');
   }
 
   private _renderStatus() {

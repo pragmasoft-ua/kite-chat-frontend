@@ -2,6 +2,7 @@
 
 :host {
   scrollbar-width: thin;
+  @apply select-none;
 }
 
 :host::-webkit-scrollbar {

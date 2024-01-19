@@ -7,6 +7,7 @@
     --color-info: var(--kite-notification-info, theme('colors.primary-color'));
     --color-warning: var(--kite-notification-warning, theme('colors.yellow.500'));
     @apply flex !border !border-solid !border-[var(--color-info)] !my-1.5 rounded shadow-md overflow-hidden snap-end scroll-my-1;
+    @apply select-text selection:bg-primary-color selection:text-white;
 }
 
 .wrapper {

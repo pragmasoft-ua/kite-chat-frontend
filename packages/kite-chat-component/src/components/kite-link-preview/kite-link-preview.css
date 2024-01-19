@@ -2,6 +2,7 @@
 
 :host {
     display: block;
+    @apply select-text selection:bg-primary-color selection:text-white;
 }
 
 a {

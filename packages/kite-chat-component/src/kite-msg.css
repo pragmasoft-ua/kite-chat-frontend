@@ -2,16 +2,20 @@
 
 :host {
   @apply flex flex-col items-start w-full relative px-2 select-none py-1.5 box-border snap-end;
+  @apply select-text selection:bg-primary-color selection:text-white;
 }
 
 .message-container {
   @apply relative max-w-[80%] block break-words rounded px-2 py-1 text-left shadow;
-  @apply select-text selection:bg-primary-color selection:text-white;
   @apply scroll-my-1;
 }
 
 slot:not([name]) {
   @apply whitespace-pre-line;
+}
+
+::slotted(:not([slot])) {
+  @apply whitespace-normal my-2;
 }
 
 :host(:not([status])) .message-container {
@@ -90,7 +94,7 @@ span {
   @apply absolute !content-[''] bottom-0 left-0 z-10 w-full h-full bg-primary-color opacity-40;
 }
 
-::slotted(kite-custom-keyboard) {
+::slotted([slot='inline-keyboard']) {
   --gap: var(--kite-inline-keyboard-gap, 0.25rem);
   --buttons-border-radius: var(--kite-inline-keyboard-buttons-border-radius, 0.125rem);
   --buttons-background: var(--kite-inline-keyboard-buttons-background, rgba(0, 0, 0, 0.4));
