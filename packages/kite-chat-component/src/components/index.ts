@@ -6,3 +6,5 @@ export * from './kite-context-menu';
 export * from './kite-chat-main';
 export * from './kite-custom-keyboard';
 export * from './kite-icon';
+export * from './kite-link-preview';
+export * from './kite-markdown';

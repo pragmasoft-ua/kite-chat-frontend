@@ -1,0 +1,57 @@
+@config "../../../tailwind.config.lit.cjs";
+
+:host {
+    display: block;
+    @apply p-0 m-0 ;
+    @apply select-text selection:bg-primary-color selection:text-white;
+}
+
+* {
+    margin: 0;
+}
+
+h1, h2, h3, h4, h5, h6, p {
+    @apply no-underline normal-case font-normal;
+}
+
+h1 {
+    @apply text-2xl;
+}
+
+h2 {
+    @apply text-xl;
+}
+
+h3 {
+    @apply text-lg ;
+}
+
+h4 {
+    @apply text-base;
+}
+
+h5 {
+    @apply text-sm;
+}
+
+h6 {
+    @apply text-xs;
+}
+
+details {
+    display: inline;
+    cursor: pointer;
+    padding: 0;
+}
+
+summary {
+    display: block;
+}
+
+details[open] summary {
+    display: none;
+}
+
+summary::-webkit-details-marker {
+    display: none;
+}

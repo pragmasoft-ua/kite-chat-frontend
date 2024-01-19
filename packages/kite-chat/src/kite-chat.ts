@@ -255,7 +255,7 @@ export class KiteChat {
       if (!createIfMissing) {
         return null;
       }
-      element = new KiteChatElement();
+      element = document.createElement('kite-chat') as KiteChatElement;
       this.opts.open ? element.show() : element.hide();
       element.editing = !!this.opts.editing;
       document.body.appendChild(element);
