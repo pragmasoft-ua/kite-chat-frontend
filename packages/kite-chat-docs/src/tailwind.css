@@ -16,7 +16,34 @@
 }
 
 main kite-toast-notification {
-    --kite-notification-bg: var(--sl-color-gray-7);
+    --kite-notification-bg: var(--sl-color-gray-5);
+}
+
+main kite-msg {
+    width: min(100%, 25rem);
+    --kite-msg-bg: var(--sl-color-gray-5);
+    --kite-msg-border: var(--sl-color-gray-5);
+    --kite-md-background-color: var(--sl-color-gray-6);
+}
+
+:root[data-theme="light"] main kite-msg {
+    --kite-md-text-color: #333333;
+    --kite-md-comment-color: #6a737d;
+    --kite-md-keyword-color: #0018a8;
+    --kite-md-variable-color: #0018a8;
+    --kite-md-number-color: #00593c;
+    --kite-md-string-color: #00743f;
+    --kite-md-title-color: #d93f0b;
+}
+
+:root[data-theme="dark"] main kite-msg {
+    --kite-md-text-color: #d4d4d4;
+    --kite-md-comment-color: #6a737d;
+    --kite-md-keyword-color: #6b80f8;
+    --kite-md-variable-color: #9cdcfe;
+    --kite-md-number-color: #67a07d;
+    --kite-md-string-color: #98c379;
+    --kite-md-title-color: #efe161;
 }
 
 @layer base {

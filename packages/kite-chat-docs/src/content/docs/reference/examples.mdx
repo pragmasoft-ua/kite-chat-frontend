@@ -2,6 +2,117 @@
 title: Elements Examples
 description: An example of Kite Chat elements.
 ---
+import ImageFileExample from '@components/ImageFileExample.astro';
+import TextFileExample from '@components/TextFileExample.astro';
+
+### Kite Message
+
+##### Text
+
+<kite-msg>Hello World!</kite-msg>
+```html
+<kite-msg>Hello World!</kite-msg>
+```
+
+##### Formatted Text
+
+<kite-msg>
+\*bold\*  
+\_italic\_  
+\_\_underline\_\_  
+\~strikethrough\~
+||spoiler||
+</kite-msg>
+```html
+<kite-msg>
+*bold* 
+_italic_  
+__underline__ 
+~strikethrough~
+||spoiler||
+</kite-msg>
+```
+
+##### Links
+
+<kite-msg>
+http://www.example.com/
+\[inline URL\](http://www.example.com/)
+</kite-msg>
+```html
+<kite-msg>
+http://www.example.com/
+[inline URL](http://www.example.com/)
+</kite-msg>
+```
+
+##### Code
+
+<kite-msg>
+\`\`\`javascript
+function addNumbers(a, b) \{
+&nbsp;&nbsp;&nbsp;&nbsp;return a + b;
+}
+const result = addNumbers(5, 3);    
+console.log(result);    
+\`\`\`
+</kite-msg>
+````html
+<kite-msg>
+```javascript
+function addNumbers(a, b) {
+    return a + b;
+}
+const result = addNumbers(5, 3);
+console.log(result);
+```
+</kite-msg>
+````
+
+##### Blockquote
+
+<kite-msg>
+\>Block quotation
+\>
+normal text
+</kite-msg>
+````html
+<kite-msg>
+>Block quotation
+
+normal text
+</kite-msg>
+````
+
+##### File
+
+<kite-msg>
+    <TextFileExample/>
+</kite-msg>
+````html
+<kite-msg>
+    <kite-file
+        slot="file"
+        name="kite-chat.txt"
+        src="data:text/plain;base64,........."
+    />
+</kite-msg>
+````
+
+##### Image
+
+<kite-msg>
+    <ImageFileExample/>
+</kite-msg>
+````html
+<kite-msg>
+    <kite-file
+        slot="file"
+        name="kite-chat.jpg"
+        src="data:image/webp;base64,........."
+    />
+</kite-msg>
+````
 
 ### Kite Toast Notification
 
