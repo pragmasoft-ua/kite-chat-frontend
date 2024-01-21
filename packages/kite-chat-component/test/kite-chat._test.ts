@@ -36,7 +36,7 @@ describe('kite-chat', () => {
 
     const messages: NodeListOf<KiteMsgElement> = el.querySelectorAll('kite-msg');
     assert.equal(messages.length, 2);
-    assert.equal(messages[0].innerText, 'Test Message 1');
-    assert.equal(messages[1].innerText, 'Test Message 2');
+    assert.equal(messages[0].textContent, 'Test Message 1');
+    assert.equal(messages[1].textContent, 'Test Message 2');
   });
 });

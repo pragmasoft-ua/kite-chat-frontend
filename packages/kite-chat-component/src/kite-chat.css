@@ -38,6 +38,15 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-inline-keyboard-buttons-background: rgba(214, 211, 209, 0.6);
   --kite-inline-keyboard-buttons-hover-background: rgba(214, 211, 209, 0.4);
   --kite-inline-keyboard-buttons-active-background: rgba(184, 186, 188, 0.5);
+
+  --kite-md-background-color: #f5f5f5;
+  --kite-md-text-color: #333333;
+  --kite-md-comment-color: #6a737d;
+  --kite-md-keyword-color: #0018a8;
+  --kite-md-variable-color: #0018a8;
+  --kite-md-number-color: #00593c;
+  --kite-md-string-color: #00743f;
+  --kite-md-title-color: #d93f0b;
 }
 
 :host([theme="dark"]) {
@@ -54,6 +63,15 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-inline-keyboard-buttons-background: rgba(38 ,38 , 38, 0.6);
   --kite-inline-keyboard-buttons-hover-background: rgba(38 ,38 , 38, 0.4);
   --kite-inline-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
+
+  --kite-md-background-color: #1e1e1e;
+  --kite-md-text-color: #d4d4d4;
+  --kite-md-comment-color: #6a737d;
+  --kite-md-keyword-color: #6b80f8;
+  --kite-md-variable-color: #9cdcfe;
+  --kite-md-number-color: #67a07d;
+  --kite-md-string-color: #98c379;
+  --kite-md-title-color: #efe161;
 }
 
 :host(:not([theme="dark"])) .kite-dialog {
@@ -79,6 +97,15 @@ kite-chat-main::-webkit-scrollbar-thumb {
     --kite-inline-keyboard-buttons-background: rgba(38 ,38 , 38, 0.6);
     --kite-inline-keyboard-buttons-hover-background: rgba(38 ,38 , 38, 0.4);
     --kite-inline-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
+
+    --kite-md-background-color: #1e1e1e;
+    --kite-md-text-color: #d4d4d4;
+    --kite-md-comment-color: #6a737d;
+    --kite-md-keyword-color: #6b80f8;
+    --kite-md-variable-color: #9cdcfe;
+    --kite-md-number-color: #67a07d;
+    --kite-md-string-color: #98c379;
+    --kite-md-title-color: #efe161;
   }
 
   :host(:not([theme="light"])) .kite-dialog {

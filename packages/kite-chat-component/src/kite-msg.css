@@ -10,12 +10,8 @@
   @apply scroll-my-1;
 }
 
-slot:not([name]) {
+slot {
   @apply whitespace-pre-line;
-}
-
-::slotted(:not([slot])) {
-  @apply whitespace-normal my-2;
 }
 
 :host(:not([status])) .message-container {
@@ -101,4 +97,171 @@ span {
   --buttons-hover-background: var(--kite-inline-keyboard-buttons-hover-background, rgba(0, 0, 0, 0.3));
   --buttons-active-background: var(--kite-inline-keyboard-buttons-active-background, rgba(0, 0, 0, 0.2));
   @apply mt-1 w-full h-fit;
+}
+
+p {
+  @apply inline;
+}
+
+blockquote::before, pre::before {
+  @apply content-[''] absolute top-0 left-0 w-0.5 h-full bg-primary-color;
+}
+
+blockquote, pre {
+  @apply relative p-2 text-xs my-2;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply no-underline normal-case font-normal;
+}
+
+a {
+  @apply text-primary-color;
+}
+
+code:not(pre code) {
+  @apply text-primary-color text-opacity-70 font-medium text-base;
+}
+
+h1 {
+  @apply text-2xl;
+}
+
+h2 {
+  @apply text-xl;
+}
+
+h3 {
+  @apply text-lg ;
+}
+
+h4 {
+  @apply text-base;
+}
+
+h5 {
+  @apply text-sm;
+}
+
+h6 {
+  @apply text-xs;
+}
+
+details {
+  display: inline;
+  cursor: pointer;
+  padding: 0;
+}
+
+summary {
+  display: block;
+}
+
+details[open] summary {
+  display: none;
+}
+
+summary::-webkit-details-marker {
+  display: none;
+}
+
+:host {
+  --background-color: var(--kite-md-background-color, #6e6a6a);
+  --text-color: var(--kite-md-text-color, #696969);
+  --comment-color: var(--kite-md-comment-color, #696969);
+  --keyword-color: var(--kite-md-keyword-color, #7928a1);
+  --variable-color: var(--kite-md-variable-color, #d91e18);
+  --number-color: var(--kite-md-number-color, #d91e18);
+  --string-color: var(--kite-md-string-color, #008000);
+  --title-color: var(--kite-md-title-color, #007faa);
+  --emphasis-style: var(--kite-md-emphasis-style, italic); 
+  --strong-weight: var(--kite-md-strong-weight, bold); 
+  --highlight-color: var(--kite-md-highlight-color, highlight); 
+}
+
+blockquote, pre {
+  background: var(--background-color);
+}
+
+pre {
+  tab-size: 2;
+  @apply whitespace-pre-wrap;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--comment-color);
+}
+
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-attr,
+.hljs-property,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+  color: var(--variable-color);
+}
+
+.hljs-number,
+.hljs-built_in,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+  color: var(--number-color);
+}
+
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: var(--string-color);
+}
+
+.hljs-title,
+.hljs-section {
+  color: var(--title-color);
+}
+
+.hljs-keyword,
+.hljs-selector-tag {
+  color: var(--keyword-color);
+}
+
+.hljs-emphasis {
+  font-style: var(--emphasis-style);
+}
+
+.hljs-strong {
+  font-weight: var(--strong-weight);
+}
+
+@media screen and (-ms-high-contrast: active) {
+  .hljs-addition,
+  .hljs-attr,
+  .hljs-property,
+  .hljs-built_in,
+  .hljs-bullet,
+  .hljs-comment,
+  .hljs-link,
+  .hljs-literal,
+  .hljs-meta,
+  .hljs-number,
+  .hljs-params,
+  .hljs-string,
+  .hljs-symbol,
+  .hljs-type,
+  .hljs-quote {
+    color: var(--highlight-color);
+  }
+  
+  .hljs-keyword,
+  .hljs-selector-tag {
+    font-weight: var(--strong-weight);
+  }
 }

@@ -5,12 +5,12 @@ import type {
   KiteMsgDelete, 
   KiteMsgSelect,
 } from './kite-chat';
-import {KiteFileElement} from './kite-file';
+import type {KiteFileElement} from './kite-file';
 import type {KiteMsgElement} from './kite-msg';
-import type {KiteNotificationElement} from './components';
-import {KiteCustomKeyboardElement} from './components';
-import {KiteLinkPreviewElement} from './components';
-import {KiteMarkdownElement} from './components';
+import type {
+  KiteNotificationElement,
+  KiteCustomKeyboardElement
+} from './components';
 import "@oddbird/popover-polyfill";
 
 declare global {
@@ -20,8 +20,6 @@ declare global {
     'kite-file': KiteFileElement;
     'kite-toast-notification': KiteNotificationElement;
     'kite-custom-keyboard': KiteCustomKeyboardElement;
-    'kite-link-preview': KiteLinkPreviewElement;
-    'kite-markdown': KiteMarkdownElement;
   }
   interface HTMLElementEventMap {
     'kite-chat.hide': CustomEvent;
@@ -40,8 +38,7 @@ declare global {
   }
 }
 
-export * from './components/kite-date-divider';
-export * from './components/kite-toast-notification';
+export * from './components';
 export * from './kite-chat';
 export * from './kite-msg';
 export * from './kite-file';

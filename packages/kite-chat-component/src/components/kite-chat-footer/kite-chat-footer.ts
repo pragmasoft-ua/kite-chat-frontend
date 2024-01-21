@@ -87,7 +87,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
     if (changedProperties.has('editMessage') && this.editMessage) {
       this.editMessage.unselect();
       if(!this.editMessage.querySelector('kite-file')) {
-        this.textarea.value = this.editMessage.innerText;
+        this.textarea.value = this.editMessage.textContent ?? '';
         this.textarea.focus();
       } else {
         this.fileInput.click();

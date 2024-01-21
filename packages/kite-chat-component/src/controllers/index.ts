@@ -8,3 +8,4 @@ export * from './drag-and-drop-controller';
 export * from './screenshot-controller';
 export * from './web-share-controller';
 export * from './custom-keyboard-controller';
+export * from './md-parser-controller';

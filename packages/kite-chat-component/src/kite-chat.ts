@@ -396,7 +396,7 @@ export class KiteChatElement extends
     msgElement.status = status ?? msgElement.status;
     msgElement.edited = edited ?? msgElement.edited;
     if (isPlaintextMsg(msg)) {
-      msgElement.innerText = msg.text;
+      msgElement.textContent = msg.text;
     } else {
       const fileElement = msgElement.querySelector('kite-file');
       if(!fileElement) {
@@ -521,10 +521,11 @@ export class KiteChatElement extends
     msgElement.status = status;
     msgElement.edited = edited;
     if (isPlaintextMsg(msg)) {
-      msgElement.innerText = msg.text;
+      msgElement.textContent = msg.text;
     } else {
       const fileElement = document.createElement('kite-file');
       fileElement.file = msg.file;
+      fileElement.slot = "file";
       msgElement.appendChild(fileElement);
     }
     if(replyMarkup) {
