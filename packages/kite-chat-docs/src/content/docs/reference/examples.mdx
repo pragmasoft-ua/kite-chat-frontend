@@ -4,6 +4,7 @@ description: An example of Kite Chat elements.
 ---
 import ImageFileExample from '@components/ImageFileExample.astro';
 import TextFileExample from '@components/TextFileExample.astro';
+import InlineKeyboardExample from '@components/InlineKeyboardExample.astro';
 
 ### Kite Message
 
@@ -114,6 +115,33 @@ normal text
 </kite-msg>
 ````
 
+##### Inline Keyboard
+
+<kite-msg>
+    Did you know they have a youtube channel? \[Check it out!\](https://www.youtube.com/)
+    <kite-custom-keyboard  class="custom-keyboard-example" slot="inline-keyboard"></kite-custom-keyboard>
+</kite-msg>
+<InlineKeyboardExample id="custom-keyboard-example"/>
+````html
+<kite-msg>
+    Did you know they have a youtube channel? \[Check it out!\](https://www.youtube.com/)
+    <kite-custom-keyboard slot="inline-keyboard"></kite-custom-keyboard>
+</kite-msg>
+<script>
+    document.querySelector(`kite-custom-keyboard`).keyboard = [
+        [
+            {text: 'Yes', callbackData: 'YES'}, 
+            {text: 'No', callbackData: 'NO'},
+        ], 
+        [
+            {text: 'Google', callbackData: 'SEARCH', url: 'https://www.google.com/'}, 
+            {text: 'Not sure', callbackData: 'NOT_SURE'}, 
+            {text: 'Cancel', callbackData: 'BACK'},
+        ], 
+    ];
+</script>
+````
+
 ### Kite Toast Notification
 
 ##### Warning
@@ -168,8 +196,8 @@ normal text
 </kite-notification-container>
 ```html
 <kite-notification-container>
-    <kite-toast-notification duration="50000" message="Connected to host." type="success"></kite-toast-notification>
-    <kite-toast-notification duration="80000" message="You are using the demo version!" type="warning"></kite-toast-notification>
-    <kite-toast-notification duration="100000" message="An unexpected error occurred. Please try again later." type="error"></kite-toast-notification>
+    <kite-toast-notification duration="500" message="Connected to host." type="success"></kite-toast-notification>
+    <kite-toast-notification duration="800" message="You are using the demo version!" type="warning"></kite-toast-notification>
+    <kite-toast-notification duration="1000" message="An unexpected error occurred. Please try again later." type="error"></kite-toast-notification>
 </kite-notification-container>
 ```

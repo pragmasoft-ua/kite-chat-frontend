@@ -3,6 +3,7 @@ const {
     textboxPlaceholder="Type message",
     textboxLabel="Type message to send:",
     colorpickerLabel="Change color",
+    customKeyboard="Custom Keyboard",
     outgoingLabel="Outgoing messages:",
     sendLabel="Send to chat",
     openLabel="Open",
@@ -35,6 +36,10 @@ const {
     <label for="colorpicker"
         >{colorpickerLabel}: <input type="color" id="colorpicker"
     /></label>
+    <label>
+        {customKeyboard}:
+        <input checked type="checkbox" id="enableCustomKeyboard" class="p-2 !m-0 cursor-pointer"/>
+    </label>
     <label for="outgoing">{outgoingLabel}</label>
     <section id="outgoing"></section>
 </div>
@@ -64,6 +69,7 @@ const {
         const closeBtn = requiredElement('#close');
         const colorpicker = requiredElement('#colorpicker');
         const outgoing = requiredElement('section#outgoing');
+        const customKeyboardSwitch = requiredElement('#enableCustomKeyboard');
         const root = document.documentElement;
         const fileInfo = file => (file.name + ' ' + prettyBytes(file.size));
         
@@ -88,5 +94,19 @@ const {
         });
         colorpicker.value = getComputedStyle(document.documentElement)
             .getPropertyValue('--kite-primary-color');
+
+        customKeyboardSwitch.addEventListener('change', () => {
+            const customKeyboardEnabled = customKeyboardSwitch.checked;
+
+            kiteChat.customKeyboardMarkup = customKeyboardEnabled
+                ? {
+                    keyboard: [
+                        ['Hello', 'Hi'], 
+                        ['Goodbye', 'See you'], 
+                    ],
+                    resizeKeyboard: true,
+                }
+                : null;
+        });
     });
 </script>

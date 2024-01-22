@@ -1,0 +1,10 @@
+---
+const {id} = Astro.props;
+---
+<script define:vars={{id}}>
+    let inlineKeyboard = document.querySelector(`kite-custom-keyboard.${id}`);
+    inlineKeyboard.keyboard = [
+        [{text: 'Yes', callbackData: 'YES'}, {text: 'No', callbackData: 'NO'}], 
+        [{text: 'Google', callbackData: 'SEARCH', url: 'https://www.google.com/'}, {text: 'Not sure', callbackData: 'NOT_SURE'}, {text: 'Cancel', callbackData: 'BACK'}], 
+    ];
+</script>
