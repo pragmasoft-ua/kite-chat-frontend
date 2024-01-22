@@ -134,6 +134,116 @@ const KITE_ICONS = {
     <line x1="18" y1="6" x2="6" y2="18" />
     <line x1="6" y1="6" x2="18" y2="18" />
   </svg>`,
+  'italic': html`<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    stroke-width="2" 
+    stroke="currentColor" 
+    fill="none" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M11 5l6 0" />
+    <path d="M7 19l6 0" />
+    <path d="M14 5l-4 14" />
+  </svg>`,
+  'bold': html`<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    stroke-width="2" 
+    stroke="currentColor" 
+    fill="none" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M7 5h6a3.5 3.5 0 0 1 0 7h-6z" />
+    <path d="M13 12h1a3.5 3.5 0 0 1 0 7h-7v-7" />
+  </svg>`,
+  'underline': html`<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    stroke-width="2" 
+    stroke="currentColor" 
+    fill="none" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M7 5v5a5 5 0 0 0 10 0v-5" />
+    <path d="M5 19h14" />
+  </svg>`,
+  'strikethrough': html`<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    stroke-width="2" 
+    stroke="currentColor" 
+    fill="none" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M5 12l14 0" />
+    <path d="M16 6.5a4 2 0 0 0 -4 -1.5h-1a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-1.5a4 2 0 0 1 -4 -1.5" />
+  </svg>`,
+  'spoiler': html`<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    stroke-width="2" 
+    stroke="currentColor" 
+    fill="none" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M8 8a3.5 3 0 0 1 3.5 -3h1a3.5 3 0 0 1 3.5 3a3 3 0 0 1 -2 3a3 4 0 0 0 -2 4" />
+    <path d="M12 19l0 .01" />
+  </svg>`,
+  'link': html`<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    stroke-width="2" 
+    stroke="currentColor" 
+    fill="none" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M9 15l6 -6" />
+    <path d="M11 6l.463 -.536a5 5 0 0 1 7.071 7.072l-.534 .464" />
+    <path d="M13 18l-.397 .534a5.068 5.068 0 0 1 -7.127 0a4.972 4.972 0 0 1 0 -7.071l.524 -.463" />
+  </svg>`,
+  'quote': html`<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    stroke-width="2" 
+    stroke="currentColor" 
+    fill="none" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M10 11h-4a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v6c0 2.667 -1.333 4.333 -4 5" />
+    <path d="M19 11h-4a1 1 0 0 1 -1 -1v-3a1 1 0 0 1 1 -1h3a1 1 0 0 1 1 1v6c0 2.667 -1.333 4.333 -4 5" />
+  </svg>`,
+  'formatting': html`<svg 
+    xmlns="http://www.w3.org/2000/svg" 
+    viewBox="0 0 24 24" 
+    stroke-width="2" 
+    stroke="currentColor" 
+    fill="none" 
+    stroke-linecap="round" 
+    stroke-linejoin="round"
+  >
+    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+    <path d="M3 7v-2h13v2" />
+    <path d="M10 5v14" />
+    <path d="M12 19h-4" />
+    <path d="M15 13v-1h6v1" />
+    <path d="M18 12v7" />
+    <path d="M17 19h2" />
+  </svg>`,
 };
 
 export class KiteIconElement extends LitElement {

@@ -75,10 +75,12 @@ kite-chat-main::-webkit-scrollbar-thumb {
 }
 
 :host(:not([theme="dark"])) .kite-dialog {
+  --kite-menu-background: white;
   @apply border-neutral-200 bg-white text-black;
 }
 
 :host([theme="dark"]) .kite-dialog {
+  --kite-menu-background: theme('colors.neutral.800');
   @apply border-neutral-600 bg-neutral-800 text-white/95;
 }
 
@@ -109,6 +111,7 @@ kite-chat-main::-webkit-scrollbar-thumb {
   }
 
   :host(:not([theme="light"])) .kite-dialog {
+    --kite-menu-background: theme('colors.neutral.800');
     @apply border-neutral-600 bg-neutral-800 text-white/95;
   }
 }
@@ -129,20 +132,6 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --element-height: var(--kite-dialog-height)!important;
   right: auto;
   bottom: auto;
-}
-
-:host(:not([theme="dark"])) kite-context-menu {
-  @apply bg-neutral-300 border border-white;
-}
-
-:host([theme="dark"]) kite-context-menu {
-  @apply bg-neutral-800 border border-black;
-}
-
-@media(prefers-color-scheme: dark) {
-  :host(:not([theme="light"])) kite-context-menu {
-    @apply bg-neutral-800 border border-black;
-  }
 }
 
 .fallback-1 {
@@ -178,6 +167,7 @@ span.edit-message_file::after {
 }
 
 kite-context-menu {
+  @apply bg-[var(--kite-menu-background)] border border-[var(--kite-menu-background)];
   position: absolute;
   width: 10rem;
   --gap: 2px;

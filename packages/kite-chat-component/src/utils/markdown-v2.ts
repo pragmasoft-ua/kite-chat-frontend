@@ -3,13 +3,26 @@ import type MarkdownIt from 'markdown-it';
 type StateInline = InstanceType<MarkdownIt["inline"]["State"]>;
 type Delimiter = StateInline["delimiters"][0];
 
+enum EmphasisStyle {
+  bold = 'bold',
+  italic = 'italic',
+  underline = 'underline',
+  strikethrough = 'strikethrough',
+  spoiler = 'spoiler',
+}
+
+type Link = 'link';
+type Quote = 'quote';
+
+export type TextStyle = keyof typeof EmphasisStyle | Link | Quote;
+
 const TERMINATOR_RE = /[\n!#$%&*+\-:<=>@[\\\]^_`{}~|]/;
 const EMPHASIS_ARRAY = [
-  { code: 0x2A /* * */, tagName: 'strong', count: 1 },
-  { code: 0x5F /* _ */, tagName: 'em', count: 1 },
-  { code: 0x5F /* _ */, tagName: 'u', count: 2 },
-  { code: 0x7E /* ~ */, tagName: 's', count: 1 },
-  { code: 0x7C /* | */, tagName: 'details', count: 2 }, // spoiler
+  { code: 0x2A /* * */, tagName: 'strong', count: 1, style: EmphasisStyle.bold },
+  { code: 0x5F /* _ */, tagName: 'em', count: 1, style: EmphasisStyle.italic },
+  { code: 0x5F /* _ */, tagName: 'u', count: 2, style: EmphasisStyle.underline },
+  { code: 0x7E /* ~ */, tagName: 's', count: 1, style: EmphasisStyle.strikethrough },
+  { code: 0x7C /* | */, tagName: 'details', count: 2, style: EmphasisStyle.spoiler },
 ];
 
 // It costs 10% of performance, but allows extend terminators list
@@ -155,4 +168,23 @@ export function markdownV2(md: MarkdownIt) {
     const nextToken = tokens[idx + 1];
     return `<${token.tag}><summary>${'*'.repeat(nextToken.content.length)}</summary>`;
   };
+}
+
+export function formatText(inputString: string, style: TextStyle) {
+  switch (style) {
+    case 'link':
+      return `[${inputString}](https://)`;
+    case 'quote':
+      return `>${inputString}\n\n`;
+    default: {
+      const emphasis = EMPHASIS_ARRAY.find((item) => item.style === style);
+      if (emphasis) {
+        const { code, count } = emphasis;
+        const markup = String.fromCharCode(code).repeat(count);
+        return `${markup}${inputString}${markup}`;
+      } else {
+        return inputString;
+      }
+    }
+  }
 }

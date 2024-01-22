@@ -13,6 +13,7 @@ import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
 import {KiteIconElement} from '../kite-icon';
 import {KiteCustomKeyboardElement} from '../kite-custom-keyboard';
 import type {ReplyKeyboardMarkup as KeyboardMarkup} from '../../kite-payload';
+import {formatText, TextStyle} from '../../utils';
 
 import footerStyles from './kite-chat-footer.css?inline';
 
@@ -66,6 +67,9 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
 
   @state()
   private sendEnabled = false;
+
+  @state()
+  private formattingOptions = false;
 
   @property({type: Object})
   customKeyboardMarkup: KeyboardMarkup|null = null;
@@ -220,7 +224,24 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
     this.keyboardController.toggle();
   }
 
+  private _handleFormatText(style: TextStyle) {
+    const textarea = this.textarea;
+    const selectedText = textarea.value.substring(
+      textarea.selectionStart,
+      textarea.selectionEnd
+    );
+
+    if (selectedText.length > 0) {
+      const beforeSelection = textarea.value.substring(0, textarea.selectionStart);
+      const afterSelection = textarea.value.substring(textarea.selectionEnd);
+      textarea.value = `${beforeSelection}${formatText(selectedText, style)}${afterSelection}`;
+    } else {
+      textarea.value = formatText(textarea.value, style);
+    }
+  }
+
   override render() {
+    const textStyles: TextStyle[] = ["bold", "italic", "underline", "strikethrough", "spoiler", "link", "quote"];
     const isAttachmentActive = !this.editMessage || !!this.editMessageFile;
     const isTextareaActive = !this.editMessageFile;
     const isKeyboardSwitchHidden = this.sendEnabled || !!this.editMessage || !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent;
@@ -254,12 +275,41 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           wrap="soft"
           placeholder=${this.customKeyboardMarkup?.inputFieldPlaceholder ?? "Type a message"}
           class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
-          @input=${this._handleEnabled}
+          @blur=${() => {this.formattingOptions = false;}}
+          @input=${() => {
+            this.formattingOptions = false;
+            this._handleEnabled();
+          }}
           @keyup=${this._handleKeyUp}
           @paste=${this._handlePaste}
           @click=${() => this.shadowRoot?.activeElement === this.textarea && this.keyboardController.setMode(true)}
           .disabled=${!isTextareaActive}
         ></textarea>
+        <div class="relative ${classMap({'hidden': !isKeyboardSwitchHidden})}">
+          <div class="flex flex-col gap-1 p-2 absolute bg-[var(--kite-menu-background)] 
+            -left-2 bottom-[calc(100%+0.5rem)] shadow-md rounded transition-all duration-3000 ease-in-out overflow-hidden origin-bottom
+            ${classMap({'scale-y-100': this.formattingOptions, 'scale-y-0': !this.formattingOptions})}"
+          >
+          ${textStyles.map(formattingOption => html`
+            <kite-icon
+              icon=${formattingOption}
+              title=${formattingOption.charAt(0).toUpperCase() + formattingOption.slice(1)} 
+              class="icon active-icon"
+              @pointerdown=${(event: Event) => event.preventDefault()}
+              @click=${() => this._handleFormatText(formattingOption)}
+            ></kite-icon>
+          `)}
+          </div>
+          <kite-icon
+            icon="formatting"
+            title="Format text"
+            class="icon active-icon"
+            @pointerdown=${(event: Event) => event.preventDefault()}
+            @click=${() => {
+              this.formattingOptions = !this.formattingOptions;
+            }}
+          ></kite-icon>
+        </div>
         <kite-icon
           icon=${this.keyboardController.defaultKeyboard ? "layout-grid" : "keyboard"}
           title=${this.keyboardController.defaultKeyboard ? "Use reply keyboard" : "Use default keyboard"}
