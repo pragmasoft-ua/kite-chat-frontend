@@ -36,17 +36,6 @@ span.edit-message_file::after {
   @apply cursor-pointer;
 }
 
-kite-custom-keyboard[open] {
-  @apply my-2 px-2;
-
-  --gap: var(--kite-custom-keyboard-gap, 0.4rem);
-  --buttons-border-radius: var(--kite-custom-keyboard-buttons-border-radius, 0.125rem);
-  --buttons-background: var(--kite-custom-keyboard-buttons-background, theme('colors.gray.400'));
-  --buttons-hover-background: var(--kite-custom-keyboard-buttons-hover-background, theme('colors.gray.300'));
-
-  --kite-custom-keyboard-height: 10rem;
-}
-
 .icon {
   @apply w-6 h-6;
 }

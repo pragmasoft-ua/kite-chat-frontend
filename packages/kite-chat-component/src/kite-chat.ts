@@ -9,7 +9,6 @@ import {customElement, property, query, queryAssignedElements, state} from 'lit/
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
-import {ReplyKeyboardMarkup as KeyboardMarkup} from './kite-payload';
 
 import kiteChatStyles from './kite-chat.css?inline';
 import {randomStringId} from './random-string-id';
@@ -174,9 +173,6 @@ export class KiteChatElement extends
   @property()
   heading = '🪁Kite chat';
 
-  @property({type: Object})
-  customKeyboardMarkup: KeyboardMarkup|null = null;
-
   @property({type: Boolean})
   editing = true;
 
@@ -297,7 +293,6 @@ export class KiteChatElement extends
           @kite-chat-footer.change=${this._handleChange}
           @kite-chat-footer.cancel=${() => this._edit(null)}
           .editMessage=${this.editMessage}
-          .customKeyboardMarkup=${this.customKeyboardMarkup}
         >
         </kite-chat-footer>
         <kite-pointer-anchor>

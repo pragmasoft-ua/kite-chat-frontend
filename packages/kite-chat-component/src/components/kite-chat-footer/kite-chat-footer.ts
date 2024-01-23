@@ -11,8 +11,6 @@ import {ifDefined} from 'lit/directives/if-defined.js';
 import {sharedStyles} from '../../shared-styles';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
 import {KiteIconElement} from '../kite-icon';
-import {KiteCustomKeyboardElement} from '../kite-custom-keyboard';
-import type {ReplyKeyboardMarkup as KeyboardMarkup} from '../../kite-payload';
 import {formatText, TextStyle} from '../../utils';
 
 import footerStyles from './kite-chat-footer.css?inline';
@@ -22,7 +20,6 @@ import {randomStringId} from '../../random-string-id';
 
 import {
   ClipboardController,
-  CustomKeyboardController,
 } from '../../controllers';
 
 const CUSTOM_EVENT_INIT = {
@@ -56,7 +53,6 @@ export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
 export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   static scopedElements = {
     'kite-icon': KiteIconElement,
-    'kite-custom-keyboard': KiteCustomKeyboardElement,
   };
 
   @query('textarea')
@@ -71,15 +67,10 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   @state()
   private formattingOptions = false;
 
-  @property({type: Object})
-  customKeyboardMarkup: KeyboardMarkup|null = null;
-
   @property()
   editMessage: KiteMsgElement|null = null;
 
   protected clipboardController = new ClipboardController(this);
-
-  protected keyboardController = new CustomKeyboardController(this);
 
   private get editMessageFile() {
     return this.editMessage?.querySelector('kite-file');
@@ -109,7 +100,6 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
 
   private _handleEnabled() {
     this.sendEnabled = this.textarea.value.length > 0;
-    this.sendEnabled && this.keyboardController.setMode(true);
   }
 
   private _handleKeyUp(event: KeyboardEvent) {
@@ -129,15 +119,6 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
     this.textarea.value = '';
     this.textarea.focus();
     this._handleEnabled();
-  }
-
-  private _sendAction(e: CustomEvent) {
-    const {text} = e.detail;
-    this.dispatchEvent(new CustomEvent<KiteChatFooterChange>('kite-chat-footer.change', {
-      ...CUSTOM_EVENT_INIT,
-      detail: {text}
-    }))
-    this.customKeyboardMarkup?.oneTimeKeyboard && this._switchKeyboard();
   }
 
   private _onFileInput(event: Event) {
@@ -220,10 +201,6 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
     this.dispatchEvent(new CustomEvent('kite-chat-footer.cancel'));
   }
 
-  private _switchKeyboard() {
-    this.keyboardController.toggle();
-  }
-
   private _handleFormatText(style: TextStyle) {
     const textarea = this.textarea;
     const selectedText = textarea.value.substring(
@@ -244,7 +221,6 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
     const textStyles: TextStyle[] = ["bold", "italic", "underline", "strikethrough", "spoiler", "link", "quote"];
     const isAttachmentActive = !this.editMessage || !!this.editMessageFile;
     const isTextareaActive = !this.editMessageFile;
-    const isKeyboardSwitchHidden = this.sendEnabled || !!this.editMessage || !this.customKeyboardMarkup || !!this.customKeyboardMarkup.isPersistent;
     return html`
       ${this._renderEdited()}
       <div class="flex items-start gap-1 rounded-b p-2">
@@ -273,7 +249,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           autocomplete="on"
           spellcheck="true"
           wrap="soft"
-          placeholder=${this.customKeyboardMarkup?.inputFieldPlaceholder ?? "Type a message"}
+          placeholder="Type a message"
           class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
           @blur=${() => {this.formattingOptions = false;}}
           @input=${() => {
@@ -282,10 +258,10 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           }}
           @keyup=${this._handleKeyUp}
           @paste=${this._handlePaste}
-          @click=${() => this.shadowRoot?.activeElement === this.textarea && this.keyboardController.setMode(true)}
+          @click=${() => this.shadowRoot?.activeElement === this.textarea}
           .disabled=${!isTextareaActive}
         ></textarea>
-        <div class="relative ${classMap({'hidden': !isKeyboardSwitchHidden})}">
+        <div class="relative">
           <div class="flex flex-col gap-1 p-2 absolute bg-[var(--kite-menu-background)] 
             -left-2 bottom-[calc(100%+0.5rem)] shadow-md rounded transition-all duration-3000 ease-in-out overflow-hidden origin-bottom
             ${classMap({'scale-y-100': this.formattingOptions, 'scale-y-0': !this.formattingOptions})}"
@@ -305,21 +281,9 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
             title="Format text"
             class="icon active-icon"
             @pointerdown=${(event: Event) => event.preventDefault()}
-            @click=${() => {
-              this.formattingOptions = !this.formattingOptions;
-            }}
+            @click=${() => {this.formattingOptions = !this.formattingOptions;}}
           ></kite-icon>
         </div>
-        <kite-icon
-          icon=${this.keyboardController.defaultKeyboard ? "layout-grid" : "keyboard"}
-          title=${this.keyboardController.defaultKeyboard ? "Use reply keyboard" : "Use default keyboard"}
-          class="icon active-icon ${classMap({'hidden': isKeyboardSwitchHidden})}"
-          @pointerdown=${(event: Event) => event.preventDefault()}
-          @click=${() => {
-            this.shadowRoot?.activeElement !== this.textarea && this.textarea.focus();
-            this._switchKeyboard();
-          }}
-        ></kite-icon>
         <kite-icon
           icon="send"
           title="Send (Ctrl+↩)"
@@ -330,11 +294,6 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           @click=${this._sendText}
         ></kite-icon>
       </div>
-      <kite-custom-keyboard
-        .keyboard=${this.customKeyboardMarkup?.keyboard ?? []}
-        .resize=${!!this.customKeyboardMarkup?.resizeKeyboard}
-        @kite-custom-keyboard.click=${this._sendAction}
-      ></kite-custom-keyboard>
     `;
   }
 
