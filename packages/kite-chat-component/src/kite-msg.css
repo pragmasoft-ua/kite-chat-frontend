@@ -90,15 +90,6 @@ span {
   @apply absolute !content-[''] bottom-0 left-0 z-10 w-full h-full bg-primary-color opacity-40;
 }
 
-::slotted([slot='inline-keyboard']) {
-  --gap: var(--kite-inline-keyboard-gap, 0.25rem);
-  --buttons-border-radius: var(--kite-inline-keyboard-buttons-border-radius, 0.125rem);
-  --buttons-background: var(--kite-inline-keyboard-buttons-background, rgba(0, 0, 0, 0.4));
-  --buttons-hover-background: var(--kite-inline-keyboard-buttons-hover-background, rgba(0, 0, 0, 0.3));
-  --buttons-active-background: var(--kite-inline-keyboard-buttons-active-background, rgba(0, 0, 0, 0.2));
-  @apply !mt-1 w-full h-fit;
-}
-
 p {
   @apply inline;
 }

@@ -32,9 +32,9 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-msg-sent-border: theme('colors.stone.300');
   --kite-notification-bg: theme('colors.stone.300');
 
-  --kite-inline-keyboard-buttons-background: rgba(214, 211, 209, 0.6);
-  --kite-inline-keyboard-buttons-hover-background: rgba(214, 211, 209, 0.4);
-  --kite-inline-keyboard-buttons-active-background: rgba(184, 186, 188, 0.5);
+  --kite-keyboard-buttons-background: rgba(214, 211, 209, 0.6);
+  --kite-keyboard-buttons-hover-background: rgba(214, 211, 209, 0.4);
+  --kite-keyboard-buttons-active-background: rgba(184, 186, 188, 0.5);
 
   --kite-md-background-color: #f5f5f5;
   --kite-md-text-color: #333333;
@@ -54,9 +54,9 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-notification-bg: theme('colors.neutral.600');
   --date-divider-bg: rgba(0, 0, 0, 0.5);
 
-  --kite-inline-keyboard-buttons-background: rgba(38 ,38 , 38, 0.6);
-  --kite-inline-keyboard-buttons-hover-background: rgba(38 ,38 , 38, 0.4);
-  --kite-inline-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
+  --kite-keyboard-buttons-background: rgba(38 ,38 , 38, 0.6);
+  --kite-keyboard-buttons-hover-background: rgba(38 ,38 , 38, 0.4);
+  --kite-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
 
   --kite-md-background-color: #1e1e1e;
   --kite-md-text-color: #d4d4d4;
@@ -87,9 +87,9 @@ kite-chat-main::-webkit-scrollbar-thumb {
     --kite-notification-bg: theme('colors.neutral.600');
     --date-divider-bg: rgba(0, 0, 0, 0.5);
 
-    --kite-inline-keyboard-buttons-background: rgba(38 ,38 , 38, 0.6);
-    --kite-inline-keyboard-buttons-hover-background: rgba(38 ,38 , 38, 0.4);
-    --kite-inline-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
+    --kite-keyboard-buttons-background: rgba(38 ,38 , 38, 0.6);
+    --kite-keyboard-buttons-hover-background: rgba(38 ,38 , 38, 0.4);
+    --kite-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
 
     --kite-md-background-color: #1e1e1e;
     --kite-md-text-color: #d4d4d4;
@@ -216,7 +216,8 @@ kite-context-menu {
   @apply !my-2;
 }
 
-::slotted(kite-toast-notification) {
+::slotted(kite-toast-notification ),
+::slotted(kite-custom-keyboard) {
   width: calc(100% - 1rem);
   @apply !mx-2;
 }

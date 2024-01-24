@@ -6,6 +6,8 @@ import {sharedStyles} from '../../shared-styles';
 import {VisibilityMixin} from '../../mixins';
 import {KeyboardButton} from '../../kite-payload';
 import {KiteIconElement} from '../kite-icon';
+import {KiteCustomKeyboardButtonElement} from './kite-custom-keyboard-button';
+import {KiteCustomKeyboardLinkElement} from './kite-custom-keyboard-link';
 
 const componentStyles = css`
   ${unsafeCSS(kiteKeyboardStyles)}
@@ -27,44 +29,59 @@ export class KiteCustomKeyboardElement extends
     'kite-icon': KiteIconElement,
   };
 
-  @property({type: Array})
-  keyboard: KeyboardButton[][] = [];
-
   @property({type: Boolean, reflect: true})
   resize = false;
+
+  appendButton(button: KeyboardButton) {
+    let btnElement: KiteCustomKeyboardButtonElement | KiteCustomKeyboardLinkElement;
+
+    if (typeof button === 'string') {
+      btnElement = this.createButtonElement(button);
+    } else if (button.url) {
+      btnElement = this.createLinkElement(button.text, button.url);
+      btnElement.callbackData = button.callbackData;
+    } else {
+      btnElement = this.createButtonElement(button.text);
+      btnElement.callbackData = button.callbackData;
+    }
+
+    this.appendChild(btnElement);
+}
+
+  private createButtonElement(text: string) {
+      const btnElement = document.createElement('kite-custom-keyboard-button') as KiteCustomKeyboardButtonElement;
+      btnElement.innerText = text;
+      return btnElement;
+  }
+
+  private createLinkElement(text: string, url: string) {
+      const btnElement = document.createElement('kite-custom-keyboard-link') as KiteCustomKeyboardLinkElement;
+      btnElement.innerText = text;
+      btnElement.url = url;
+      return btnElement;
+  }
+
+  appendDivider() {
+    const hrElement: HTMLHRElement = document.createElement('hr') as HTMLHRElement;
+    this.appendChild(hrElement);
+  }
 
   override render() {
     if(!this.open) return;
 
-    return html`
-      ${this.keyboard.map(row =>
-        html`
-          <div class="row">
-            ${row.map((button) => {
-              if(typeof button === 'string') {
-                return html`<button 
-                  @pointerdown=${(event: Event) => event.preventDefault()}
-                  @click=${() => this.handleButtonClick(button)}
-                  >${button}</button>`;
-              }
-              if(button.url) {
-                return html`<a href=${button.url} target="_blank" rel="noopener noreferrer" title=${button.url}
-                  >${button.text}<kite-icon icon="arrow-left"></kite-icon>
-                </a>`;
-              }
-              return html`<button 
-                @pointerdown=${(event: Event) => event.preventDefault()}
-                @click=${() => this.handleButtonClick(button.text, button.callbackData)}
-              >${button.text}</button>`
-            })}
-          </div>
-        `
-      )}
-    `;
+    return html`<slot @click=${this.handleButtonClick}></slot>`;
   }
 
-  protected handleButtonClick(text: string, callbackData?: string) {
-    this.dispatchEvent(new CustomEvent('kite-custom-keyboard.click', {...CUSTOM_EVENT_INIT, detail: {text, callbackData}}));
+  protected handleButtonClick(e: Event) {
+    const target = e.target as HTMLElement;
+    if(!(target instanceof KiteCustomKeyboardButtonElement) && !(target instanceof KiteCustomKeyboardLinkElement)) {
+      return;
+    }
+    const detail = {
+      text: target.innerText, 
+      callbackData: target.callbackData
+    };
+    this.dispatchEvent(new CustomEvent('kite-custom-keyboard.click', {...CUSTOM_EVENT_INIT, detail}));
   }
 
   static override styles = [sharedStyles, componentStyles];

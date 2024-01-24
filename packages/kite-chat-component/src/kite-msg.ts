@@ -138,11 +138,6 @@ export class KiteMsgElement extends LitElement {
         <slot name="file"></slot>
         <span class="info-container">${this._renderStatus()}${this._renderTimestamp()}</span>
       </div>
-      <slot 
-        name="inline-keyboard" 
-        @click=${(event: Event) => event.stopPropagation()} 
-        @slotchange="${this.handleKeyboardSlotChange}"
-      ></slot>
     `;
   }
 
@@ -152,13 +147,6 @@ export class KiteMsgElement extends LitElement {
 
   private handleSlotChange() {
     this.requestUpdate();
-  }
-
-
-  private handleKeyboardSlotChange(event: Event) {
-    const slot = event.target as HTMLSlotElement;
-    const keyboardElement = slot.assignedElements()[0] as KiteCustomKeyboardElement|null;
-    keyboardElement?.setAttribute('open', 'true');
   }
 
   private _renderStatus() {

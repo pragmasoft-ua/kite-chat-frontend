@@ -1,0 +1,10 @@
+@config "../../../tailwind.config.lit.cjs";
+
+
+a {
+  @apply flex items-center justify-center text-center relative;
+}
+
+[icon="arrow-left"] {
+  @apply absolute top-1 right-0 w-4 h-4 transform rotate-[135deg];
+}

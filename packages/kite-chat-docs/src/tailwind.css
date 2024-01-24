@@ -25,9 +25,9 @@ main kite-msg {
     --kite-msg-border: var(--sl-color-gray-5);
     --kite-md-background-color: var(--sl-color-gray-6);
 
-    --kite-inline-keyboard-buttons-background: var(--sl-color-gray-4);
-    --kite-inline-keyboard-buttons-hover-background: var(--sl-color-gray-5);
-    --kite-inline-keyboard-buttons-active-background: var(--sl-color-gray-6);
+    --kite-keyboard-buttons-background: var(--sl-color-gray-4);
+    --kite-keyboard-buttons-hover-background: var(--sl-color-gray-5);
+    --kite-keyboard-buttons-active-background: var(--sl-color-gray-6);
 
     --kite-md-text-color: #333333;
     --kite-md-comment-color: #6a737d;

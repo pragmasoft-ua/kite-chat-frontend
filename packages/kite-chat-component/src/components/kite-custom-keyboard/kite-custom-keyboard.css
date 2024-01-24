@@ -1,69 +1,22 @@
 @config "../../../tailwind.config.lit.cjs";
 
 :host {
-  scrollbar-width: thin;
-  @apply select-none;
-}
-
-:host::-webkit-scrollbar {
-  width: 3px;
-  height: 3px;
-}
-
-:host::-webkit-scrollbar-track {
-  @apply bg-transparent;
-}
-
-:host::-webkit-scrollbar-thumb {
-  @apply bg-neutral-500;
-}
-
-:host {
-  display: grid;
-  gap: var(--gap, 0.5rem);
-  overflow-y: auto;
+  --buttons-background: var(--kite-keyboard-buttons-background, rgba(0, 0, 0, 0.4));
+  --buttons-hover-background: var(--kite-keyboard-buttons-hover-background, rgba(0, 0, 0, 0.3));
+  --buttons-active-background: var(--kite-keyboard-buttons-active-background, rgba(0, 0, 0, 0.2));
 }
 
 :host([open]) {
-  --kite-custom-keyboard-height: 10rem;
-  height: var(--kite-custom-keyboard-height, 2.5rem);
+  @apply flex flex-wrap items-stretch !my-1 w-full snap-end scroll-my-1;
+  column-gap: var(--kite-keyboard-gap, 0.2rem);
+  row-gap: calc(var(--kite-keyboard-gap, 0.2rem) / 2);
+  align-items: stretch;
 }
 
-:host([open][resize]) {
-  height: fit-content;
+::slotted(*) {
+  @apply flex-1;
 }
 
-.row {
-  display: grid;
-  grid-auto-flow: column;
-  gap: var(--gap);
-  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
-}
-
-a {
-  @apply flex items-center justify-center text-center relative;
-}
-
-[icon="arrow-left"] {
-  @apply absolute top-1 right-0 w-4 h-4 transform rotate-[135deg];
-}
-
-button, a {
-  min-height: var(--buttons-min-height, 2rem);
-  height: 100%;
-  width: 100%;
-  border-radius: var(--buttons-border-radius, 0.125rem);
-  font-size: inherit;
-  background: var(--buttons-background, white);
-  -webkit-tap-highlight-color: var(--buttons-tap-highlight-color, var(--buttons-hover-background, theme('colors.gray.300')));
-}
-
-@media (hover: hover) and (pointer: fine) {
-  button:hover, a:hover {
-    background: var(--buttons-hover-background, theme('colors.gray.300'));
-  }
-}
-
-button:active, a:active {
-  background: var(--buttons-active-background, theme('colors.gray.200'));
+::slotted(hr) {
+  @apply h-0 !border-0 basis-full;
 }

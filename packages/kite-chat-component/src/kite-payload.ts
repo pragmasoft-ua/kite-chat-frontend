@@ -74,23 +74,17 @@ export type BaseKeyboardButton = {
   text: string;
 };
 
-export type ReplyKeyboardButton = BaseKeyboardButton;
-
-export type ReplyKeyboardMarkup = {
-  keyboard: (ReplyKeyboardButton|string)[][];
-  isPersistent?: boolean;
-  resizeKeyboard?: boolean;
-  oneTimeKeyboard?: boolean;
-  inputFieldPlaceholder?: string;
-};
-
-export type InlineKeyboardButton = BaseKeyboardButton & {
+export type CustomKeyboardButton = BaseKeyboardButton & {
   callbackData?: string;  
   url?: string;
 };
 
-export type InlineKeyboardMarkup = {
-  keyboard: InlineKeyboardButton[][];
-};
+export type KeyboardButton = string | CustomKeyboardButton;
 
-export type KeyboardButton = string | (InlineKeyboardButton & ReplyKeyboardButton);
+export type KeyboardDivider = {
+  divider: true;
+}
+
+export type CustomKeyboardMarkup = {
+  keyboard: (KeyboardButton|KeyboardDivider)[];
+};

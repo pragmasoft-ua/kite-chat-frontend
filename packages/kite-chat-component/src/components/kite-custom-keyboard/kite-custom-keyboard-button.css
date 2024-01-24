@@ -1,0 +1,29 @@
+@config "../../../tailwind.config.lit.cjs";
+
+:host {
+  @apply block w-full select-none;
+}
+
+a {
+  @apply flex items-center justify-center text-center relative;
+}
+
+button, a {
+  min-height: var(--buttons-min-height, 2rem);
+  height: 100%;
+  width: 100%;
+  border-radius: var(--buttons-border-radius, 0.125rem);
+  font-size: inherit;
+  background: var(--buttons-background, white);
+  -webkit-tap-highlight-color: var(--buttons-tap-highlight-color, var(--buttons-hover-background, theme('colors.gray.300')));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  button:hover, a:hover {
+    background: var(--buttons-hover-background, theme('colors.gray.300'));
+  }
+}
+
+button:active, a:active {
+  background: var(--buttons-active-background, theme('colors.gray.200'));
+}
