@@ -20,6 +20,7 @@ import {
   KiteMsgSend,
   KiteMsgDelete,
   KiteMsgEvent,
+  CustomKeyboardMarkup,
 } from './kite-payload';
 import {
   SelectionContainerMixin,
@@ -511,7 +512,7 @@ export class KiteChatElement extends
   * @param {boolean} eagerShow - If true, automatically shows the new message. Defaults to true.
   */
   appendMsg(msg: KiteMsg, eagerShow: boolean = true) {
-    const {messageId = randomStringId(), timestamp = new Date(), status, edited, replyMarkup} = msg;
+    const {messageId = randomStringId(), timestamp = new Date(), status, edited}: KiteMsg = msg;
     const msgElement = document.createElement('kite-msg');
     msgElement.messageId = messageId;
     msgElement.timestamp = timestamp;
@@ -525,16 +526,26 @@ export class KiteChatElement extends
       fileElement.slot = "file";
       msgElement.appendChild(fileElement);
     }
-    if(replyMarkup) {
-      const inlineKeyboardElement = document.createElement('kite-custom-keyboard');
-      inlineKeyboardElement.slot = "inline-keyboard";
-      inlineKeyboardElement.keyboard = replyMarkup.keyboard;
-      msgElement.appendChild(inlineKeyboardElement);
-    }
     this.appendChild(msgElement);
     eagerShow && this.show();
     requestAnimationFrame(() => {
       msgElement.scrollIntoView(false);
+    });
+  }
+
+
+  appendKeyboard(markup: CustomKeyboardMarkup) {
+    const {keyboard}: CustomKeyboardMarkup = markup;
+    const inlineKeyboardElement = document.createElement('kite-custom-keyboard');
+    keyboard.forEach((button) => {
+      (button instanceof Object) && ('divider' in button) 
+        ? inlineKeyboardElement.appendDivider() 
+        : inlineKeyboardElement.appendButton(button);
+    });
+    this.appendChild(inlineKeyboardElement);
+    inlineKeyboardElement.show();
+    requestAnimationFrame(() => {
+      inlineKeyboardElement.scrollIntoView(false);
     });
   }
 
