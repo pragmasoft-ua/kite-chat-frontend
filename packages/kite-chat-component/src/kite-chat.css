@@ -158,9 +158,8 @@ span.edit-message_file::after {
 }
 
 kite-context-menu {
-  @apply bg-[var(--kite-menu-background)] border border-[var(--kite-menu-background)];
   position: absolute;
-  width: 10rem;
+  width: max-content;
   --gap: 2px;
 }
 

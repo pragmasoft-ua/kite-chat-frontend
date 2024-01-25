@@ -11,6 +11,7 @@ import {ifDefined} from 'lit/directives/if-defined.js';
 import {sharedStyles} from '../../shared-styles';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
 import {KiteIconElement} from '../kite-icon';
+import {KiteContextMenuElement, ContextMenuAction, ContextMenuClick} from '../kite-context-menu';
 import {formatText, TextStyle} from '../../utils';
 
 import footerStyles from './kite-chat-footer.css?inline';
@@ -44,6 +45,26 @@ type ChangeFile = {
 
 export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
 
+const TEXT_STYLES: TextStyle[] = ["bold", "italic", "underline", "strikethrough", "spoiler", "link", "quote"];
+
+enum FooterActionType {
+  ATTACH = 'attach',
+  FORMAT = 'format',
+}
+
+const FOOTER_ACTION = {
+  [FooterActionType.ATTACH]: {label: 'Attach file'},
+  [FooterActionType.FORMAT]: {label: 'Format text', submenu: TEXT_STYLES.map(style => ({label: style, value: style}))},
+}
+
+function getFooterActions(actions: FooterActionType[]): ContextMenuAction[] {
+  return actions.map((action) => ({
+    ...FOOTER_ACTION[action],
+    value: action,
+  }));
+}
+
+
 /**
  * KiteChat component footer
  *
@@ -53,6 +74,7 @@ export type KiteChatFooterChange = ChangeTextarea | ChangeFile;
 export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   static scopedElements = {
     'kite-icon': KiteIconElement,
+    'kite-context-menu': KiteContextMenuElement,
   };
 
   @query('textarea')
@@ -64,11 +86,11 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   @query('#resizer')
   private resizer!: HTMLElement;
 
-  @state()
-  private sendEnabled = false;
+  @query('kite-context-menu')
+  private contextMenu!: KiteContextMenuElement;
 
   @state()
-  private formattingOptions = false;
+  private sendEnabled = false;
 
   @property()
   editMessage: KiteMsgElement|null = null;
@@ -248,8 +270,45 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
     this.textarea.style.height = `${newHeight}px`;
   }
 
+  private handleOuterClick(e: Event) {
+    if(e.defaultPrevented) return;
+    this.contextMenu.hide();
+  }
+
+  override connectedCallback(): void {
+    super.connectedCallback();
+    document.body.addEventListener('click', this.handleOuterClick.bind(this));
+  }
+
+  override disconnectedCallback(): void {
+    super.disconnectedCallback();
+    document.body.removeEventListener('click', this.handleOuterClick.bind(this));
+  }
+
+  private _contextMenu(event: MouseEvent) {
+    !this.contextMenu.open && event.preventDefault();
+    const actions = getFooterActions([
+      ...(!this.editMessage || !!this.editMessageFile ? [FooterActionType.ATTACH] : []), 
+      FooterActionType.FORMAT
+    ]);
+    this.contextMenu.setActions(actions);
+    this.contextMenu.show();
+  }
+
+  private _handleMenuClick(event: CustomEvent<ContextMenuClick>) {
+    const {action, subaction} = event.detail;
+
+    switch(action.value) {
+      case FooterActionType.ATTACH:
+        this.fileInput.click();
+        break;
+      case FooterActionType.FORMAT:
+        subaction && this._handleFormatText(subaction.value as TextStyle)
+        break;
+    }
+  }
+
   override render() {
-    const textStyles: TextStyle[] = ["bold", "italic", "underline", "strikethrough", "spoiler", "link", "quote"];
     const isAttachmentActive = !this.editMessage || !!this.editMessageFile;
     const isTextareaActive = !this.editMessageFile;
     return html`
@@ -263,8 +322,17 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
       </div>
       ${this._renderEdited()}
       <div class="flex items-start gap-1 rounded-b p-2">
-        <label>
-          <input
+        <div class="relative">
+        <kite-context-menu class="w-max -left-1 bottom-[calc(100%+0.5rem)]" @kite-context-menu.click=${this._handleMenuClick}></kite-context-menu>
+          <kite-icon
+            icon="dots-vertical"
+            title="Options"
+            class="icon active-icon"
+            @pointerdown=${(event: Event) => event.preventDefault()}
+            @click=${this._contextMenu}
+          ></kite-icon>
+        </div>
+        <input
             type="file"
             class="hidden"
             aria-hidden="true"
@@ -272,16 +340,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
             @change=${this._onFileInput}
             .disabled=${!isAttachmentActive}
             accept=${ifDefined(this.editMessageFile?.file?.type)}
-          />
-          <kite-icon
-            icon="attachment"
-            title="Attach file"
-            class="icon ${classMap({
-              'active-icon': isAttachmentActive,
-              'inactive-icon': !isAttachmentActive,
-            })}"
-          ></kite-icon>
-        </label>
+        />
         <textarea
           required
           rows="1"
@@ -290,9 +349,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           wrap="soft"
           placeholder="Type a message"
           class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-none border-none bg-transparent outline-none"
-          @blur=${() => {this.formattingOptions = false;}}
           @input=${() => {
-            this.formattingOptions = false;
             this._handleAutoResize();
             this._handleEnabled();
           }}
@@ -304,29 +361,6 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           @click=${() => this.shadowRoot?.activeElement === this.textarea}
           .disabled=${!isTextareaActive}
         ></textarea>
-        <div class="relative">
-          <div class="flex flex-col gap-1 p-2 absolute bg-[var(--kite-menu-background)] 
-            -left-2 bottom-[calc(100%+0.5rem)] shadow-md rounded transition-all duration-3000 ease-in-out overflow-hidden origin-bottom
-            ${classMap({'scale-y-100': this.formattingOptions, 'scale-y-0': !this.formattingOptions})}"
-          >
-          ${textStyles.map(formattingOption => html`
-            <kite-icon
-              icon=${formattingOption}
-              title=${formattingOption.charAt(0).toUpperCase() + formattingOption.slice(1)} 
-              class="icon active-icon"
-              @pointerdown=${(event: Event) => event.preventDefault()}
-              @click=${() => this._handleFormatText(formattingOption)}
-            ></kite-icon>
-          `)}
-          </div>
-          <kite-icon
-            icon="formatting"
-            title="Format text"
-            class="icon active-icon"
-            @pointerdown=${(event: Event) => event.preventDefault()}
-            @click=${() => {this.formattingOptions = !this.formattingOptions;}}
-          ></kite-icon>
-        </div>
         <kite-icon
           icon="send"
           title="Send (Ctrl+↩)"

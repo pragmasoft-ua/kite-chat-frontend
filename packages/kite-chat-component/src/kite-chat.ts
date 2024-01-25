@@ -5,7 +5,7 @@
  */
 
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, property, query, queryAssignedElements, state} from 'lit/decorators.js';
+import {customElement, eventOptions, property, query, queryAssignedElements, state} from 'lit/decorators.js';
 import {classMap} from 'lit/directives/class-map.js';
 import {sharedStyles} from './shared-styles';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
@@ -448,9 +448,11 @@ export class KiteChatElement extends
     return !e.defaultPrevented;
   }
 
+  @eventOptions({capture: true})
   private _contextMenu(wrapperEvent: CustomEvent<MsgOutsideClick>) {
     const event = wrapperEvent.detail;
     if(event.defaultPrevented || this.selectedElements.length > 0) return;
+    !this.contextMenu.open && event.preventDefault();
     const msgElement = (event.target as HTMLElement).closest(KiteMsgElement.TAG) as KiteMsgElement | null;
     if(!msgElement) {
       return;
