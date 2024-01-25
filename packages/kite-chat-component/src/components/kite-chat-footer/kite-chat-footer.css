@@ -19,7 +19,7 @@ textarea::-webkit-scrollbar-thumb {
 }
 
 :host {
-  @apply flex flex-col;
+  @apply flex flex-col relative;
 }
 
 span.edit-message {

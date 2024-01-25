@@ -61,6 +61,9 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   @query('input[type="file"]')
   private fileInput!: HTMLInputElement;
 
+  @query('#resizer')
+  private resizer!: HTMLElement;
+
   @state()
   private sendEnabled = false;
 
@@ -217,11 +220,47 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
     }
   }
 
+  private _handleAutoResize() {
+    this.textarea.style.height = 'auto';
+    this.textarea.style.height = this.textarea.scrollHeight + 'px';
+  }
+
+  private initialResizePosition: number|null = null;
+
+  private _startResize(event: PointerEvent) {
+    event.stopPropagation();
+    this.resizer.onpointermove = this._handleResize.bind(this);
+    this.resizer.setPointerCapture(event.pointerId);
+    document.body.style.cursor = 'ns-resize';
+    this.initialResizePosition = event.clientY;
+  }
+
+  private _stopResize(event: PointerEvent) {
+    this.resizer.releasePointerCapture(event.pointerId);
+    this.resizer.onpointermove = null;
+    document.body.style.cursor = 'auto';
+  }
+
+  private _handleResize(event: PointerEvent) {
+    if (!this.initialResizePosition || !this.textarea) return;
+    const newHeight = this.initialResizePosition - event.clientY + this.textarea.clientHeight;
+    this.initialResizePosition = event.clientY;
+    this.textarea.style.height = `${newHeight}px`;
+  }
+
   override render() {
     const textStyles: TextStyle[] = ["bold", "italic", "underline", "strikethrough", "spoiler", "link", "quote"];
     const isAttachmentActive = !this.editMessage || !!this.editMessageFile;
     const isTextareaActive = !this.editMessageFile;
     return html`
+      <div 
+        id="resizer"
+        class="absolute flex top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 touch-none
+        after:h-2 after:w-12 after:rounded after:bg-gray-300 after:shadow-sm after:self-center after:cursor-n-resize"
+        @pointerdown=${this._startResize}
+        @pointerup=${this._stopResize}
+      >
+      </div>
       ${this._renderEdited()}
       <div class="flex items-start gap-1 rounded-b p-2">
         <label>
@@ -250,14 +289,18 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
           spellcheck="true"
           wrap="soft"
           placeholder="Type a message"
-          class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-y border-none bg-transparent outline-none"
+          class="caret-primary-color w-full max-h-24 min-h-[1.5rem] flex-1 resize-none border-none bg-transparent outline-none"
           @blur=${() => {this.formattingOptions = false;}}
           @input=${() => {
             this.formattingOptions = false;
+            this._handleAutoResize();
             this._handleEnabled();
           }}
           @keyup=${this._handleKeyUp}
-          @paste=${this._handlePaste}
+          @paste=${async (event: Event) => {
+            await this._handlePaste(event as ClipboardEvent);
+            this._handleAutoResize();
+          }}
           @click=${() => this.shadowRoot?.activeElement === this.textarea}
           .disabled=${!isTextareaActive}
         ></textarea>
