@@ -49,6 +49,7 @@ import {
   KiteChatMainElement,
   KiteChatMainDrop,
   KeyboardClick,
+  KiteCustomKeyboardElement,
 } from './components';
 import {KiteMsgElement, MsgOutsideClick} from './kite-msg';
 
@@ -192,6 +193,9 @@ export class KiteChatElement extends
 
   @queryAssignedElements({selector: '[status]'})
   private sentMessageElements!: NodeListOf<KiteMsgElement>;
+
+  @queryAssignedElements({selector: 'kite-custom-keyboard'})
+  private keyboardElements!: NodeListOf<KiteCustomKeyboardElement>;
 
   private isSent(currentMsg: KiteMsgElement): boolean {
     return !![...this.sentMessageElements].find((msgElement) => (
@@ -510,7 +514,6 @@ export class KiteChatElement extends
 
   private _handleCustomKeyboard(e: CustomEvent<KeyboardClick>) {
     if (e.defaultPrevented) return;
-    (e.target as HTMLElement).remove();
     const {text} = e.detail;
     this._send({text});
   }
@@ -522,6 +525,7 @@ export class KiteChatElement extends
   * @param {boolean} eagerShow - If true, automatically shows the new message. Defaults to true.
   */
   appendMsg(msg: KiteMsg, eagerShow: boolean = true) {
+    this.keyboardElements.forEach(el => el.hide());
     const {messageId = randomStringId(), timestamp = new Date(), status, edited}: KiteMsg = msg;
     const msgElement = document.createElement('kite-msg');
     msgElement.messageId = messageId;
