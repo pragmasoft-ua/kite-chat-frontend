@@ -13,7 +13,6 @@ import {sharedStyles} from './shared-styles';
 import {randomStringId} from './random-string-id';
 import {MsgStatus} from './kite-payload';
 import {MdParserController} from './controllers';
-import type {KiteCustomKeyboardElement} from './components';
 
 const componentStyles = css`
   ${unsafeCSS(kiteMsgStyles)}
