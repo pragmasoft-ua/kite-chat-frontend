@@ -4,7 +4,7 @@ description: An example of Kite Chat elements.
 ---
 import ImageFileExample from '@components/ImageFileExample.astro';
 import TextFileExample from '@components/TextFileExample.astro';
-import InlineKeyboardExample from '@components/InlineKeyboardExample.astro';
+import KeyboardExample from '@components/KeyboardExample.astro';
 
 ### Kite Message
 
@@ -115,30 +115,32 @@ normal text
 </kite-msg>
 ````
 
-##### Inline Keyboard
+##### Inline Keyboard  
 
-<kite-msg>
-    Did you know they have a youtube channel? \[Check it out!\](https://www.youtube.com/)
-    <kite-custom-keyboard  class="custom-keyboard-example" slot="inline-keyboard"></kite-custom-keyboard>
-</kite-msg>
-<InlineKeyboardExample id="custom-keyboard-example"/>
+<kite-custom-keyboard class="custom-keyboard-example" open>
+    <kite-custom-keyboard-button>Yes</kite-custom-keyboard-button>
+    <kite-custom-keyboard-button>No</kite-custom-keyboard-button>
+    <hr/>
+    <kite-custom-keyboard-button>Ok</kite-custom-keyboard-button>
+    <kite-custom-keyboard-button>Cancel</kite-custom-keyboard-button>
+    <hr/>
+    <kite-custom-keyboard-link url='https://www.google.com/'>Google</kite-custom-keyboard-link>
+</kite-custom-keyboard>
+<KeyboardExample id="custom-keyboard-example"/>
 ````html
-<kite-msg>
-    Did you know they have a youtube channel? \[Check it out!\](https://www.youtube.com/)
-    <kite-custom-keyboard slot="inline-keyboard"></kite-custom-keyboard>
-</kite-msg>
+<kite-custom-keyboard open>
+    <kite-custom-keyboard-button>Yes</kite-custom-keyboard-button>
+    <kite-custom-keyboard-button>No</kite-custom-keyboard-button>
+    <hr/>
+    <kite-custom-keyboard-button>Ok</kite-custom-keyboard-button>
+    <kite-custom-keyboard-button>Cancel</kite-custom-keyboard-button>
+    <hr/>
+    <kite-custom-keyboard-link url='https://www.google.com/'>Google</kite-custom-keyboard-link>
+</kite-custom-keyboard>
 <script>
-    document.querySelector(`kite-custom-keyboard`).keyboard = [
-        [
-            {text: 'Yes', callbackData: 'YES'}, 
-            {text: 'No', callbackData: 'NO'},
-        ], 
-        [
-            {text: 'Google', callbackData: 'SEARCH', url: 'https://www.google.com/'}, 
-            {text: 'Not sure', callbackData: 'NOT_SURE'}, 
-            {text: 'Cancel', callbackData: 'BACK'},
-        ], 
-    ];
+    document.querySelector('kite-custom-keyboard')?.addEventListener('kite-custom-keyboard.click', (e) => {
+        alert(e.detail.value);
+    })
 </script>
 ````
 

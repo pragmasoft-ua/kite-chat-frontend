@@ -1,5 +1,5 @@
 import {LitElement, html, css, unsafeCSS} from 'lit';
-import {customElement, property} from 'lit/decorators.js';
+import {customElement} from 'lit/decorators.js';
 import {ScopedElementsMixin} from '@open-wc/scoped-elements/lit-element.js';
 import kiteKeyboardStyles from './kite-custom-keyboard.css?inline';
 import {sharedStyles} from '../../shared-styles';
@@ -19,6 +19,24 @@ const CUSTOM_EVENT_INIT = {
   cancelable: false,
 };
 
+export type KeyboardClick = {
+  text: string;
+  callbackData?: string;
+}
+
+
+/**
+ * Styled inline keyboard component.
+ * @attr status
+ * @attr timestamp
+ * @fires {CustomEvent} kite-chat.show - keyboard component opens
+ * @fires {CustomEvent} kite-chat.hide - keyboard component closes
+ * @fires {CustomEvent} kite-custom-keyboard.click - keyboard button clicked
+ * @attr  {Boolean} open - displays component if true or hidden if false or missing
+ * @slot {"kite-keyboard-link" | "kite-keyboard-button" | "hr"} - keyboard component contains buttons as nested subcomponents
+ * @cssvar --kite-keyboard-gap - gap between buttons
+ * @cssvar --kite-keyboard-buttons-background - buttons background color
+ */
 @customElement('kite-custom-keyboard')
 export class KiteCustomKeyboardElement extends  
   VisibilityMixin(
@@ -28,9 +46,6 @@ export class KiteCustomKeyboardElement extends
   static scopedElements = {
     'kite-icon': KiteIconElement,
   };
-
-  @property({type: Boolean, reflect: true})
-  resize = false;
 
   appendButton(button: KeyboardButton) {
     let btnElement: KiteCustomKeyboardButtonElement | KiteCustomKeyboardLinkElement;
@@ -77,7 +92,7 @@ export class KiteCustomKeyboardElement extends
     if(!(target instanceof KiteCustomKeyboardButtonElement) && !(target instanceof KiteCustomKeyboardLinkElement)) {
       return;
     }
-    const detail = {
+    const detail: KeyboardClick = {
       text: target.innerText, 
       callbackData: target.callbackData
     };

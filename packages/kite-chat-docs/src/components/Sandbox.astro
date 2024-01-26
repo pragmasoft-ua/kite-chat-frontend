@@ -69,7 +69,6 @@ const {
         const closeBtn = requiredElement('#close');
         const colorpicker = requiredElement('#colorpicker');
         const outgoing = requiredElement('section#outgoing');
-        const customKeyboardSwitch = requiredElement('#enableCustomKeyboard');
         const root = document.documentElement;
         const fileInfo = file => (file.name + ' ' + prettyBytes(file.size));
         
@@ -94,19 +93,5 @@ const {
         });
         colorpicker.value = getComputedStyle(document.documentElement)
             .getPropertyValue('--kite-primary-color');
-
-        customKeyboardSwitch.addEventListener('change', () => {
-            const customKeyboardEnabled = customKeyboardSwitch.checked;
-
-            kiteChat.customKeyboardMarkup = customKeyboardEnabled
-                ? {
-                    keyboard: [
-                        ['Hello', 'Hi'], 
-                        ['Goodbye', 'See you'], 
-                    ],
-                    resizeKeyboard: true,
-                }
-                : null;
-        });
     });
 </script>

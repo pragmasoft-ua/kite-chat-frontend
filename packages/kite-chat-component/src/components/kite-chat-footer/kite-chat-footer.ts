@@ -243,7 +243,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   }
 
   private _handleAutoResize() {
-    this.textarea.style.height = 'auto';
+    if (!this.initialResizePosition) return;
     this.textarea.style.height = this.textarea.scrollHeight + 'px';
   }
 
@@ -315,7 +315,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
       <div 
         id="resizer"
         class="absolute flex top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 p-4 touch-none
-        after:h-2 after:w-12 after:rounded after:bg-gray-300 after:shadow-sm after:self-center after:cursor-n-resize"
+        after:h-1 after:w-12 after:rounded after:bg-gray-300 after:shadow-sm after:self-center after:cursor-n-resize"
         @pointerdown=${this._startResize}
         @pointerup=${this._stopResize}
       >

@@ -17,13 +17,3 @@ button, a {
   background: var(--buttons-background, white);
   -webkit-tap-highlight-color: var(--buttons-tap-highlight-color, var(--buttons-hover-background, theme('colors.gray.300')));
 }
-
-@media (hover: hover) and (pointer: fine) {
-  button:hover, a:hover {
-    background: var(--buttons-hover-background, theme('colors.gray.300'));
-  }
-}
-
-button:active, a:active {
-  background: var(--buttons-active-background, theme('colors.gray.200'));
-}

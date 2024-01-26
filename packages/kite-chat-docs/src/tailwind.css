@@ -19,33 +19,34 @@ main kite-toast-notification {
     --kite-notification-bg: var(--sl-color-gray-5);
 }
 
+main kite-custom-keyboard {
+    width: min(100%, 25rem);
+    --kite-keyboard-buttons-background: var(--sl-color-gray-4);
+    --kite-keyboard-buttons-hover-background: var(--sl-color-gray-5);
+    --kite-keyboard-buttons-active-background: var(--sl-color-gray-6);
+}
+
 main kite-msg {
     width: min(100%, 25rem);
     --kite-msg-bg: var(--sl-color-gray-5);
     --kite-msg-border: var(--sl-color-gray-5);
     --kite-md-background-color: var(--sl-color-gray-6);
 
-    --kite-keyboard-buttons-background: var(--sl-color-gray-4);
-    --kite-keyboard-buttons-hover-background: var(--sl-color-gray-5);
-    --kite-keyboard-buttons-active-background: var(--sl-color-gray-6);
+    --kite-md-text-color-light: #333333;
+    --kite-md-comment-color-light: #6a737d;
+    --kite-md-keyword-color-light: #0018a8;
+    --kite-md-variable-color-light: #0018a8;
+    --kite-md-number-color-light: #00593c;
+    --kite-md-string-color-light: #00743f;
+    --kite-md-title-color-light: #d93f0b;
 
-    --kite-md-text-color: #333333;
-    --kite-md-comment-color: #6a737d;
-    --kite-md-keyword-color: #0018a8;
-    --kite-md-variable-color: #0018a8;
-    --kite-md-number-color: #00593c;
-    --kite-md-string-color: #00743f;
-    --kite-md-title-color: #d93f0b;
-}
-
-:root[data-theme="dark"] main kite-msg {
-    --kite-md-text-color: #d4d4d4;
-    --kite-md-comment-color: #6a737d;
-    --kite-md-keyword-color: #6b80f8;
-    --kite-md-variable-color: #9cdcfe;
-    --kite-md-number-color: #67a07d;
-    --kite-md-string-color: #98c379;
-    --kite-md-title-color: #efe161;
+    --kite-md-text-color-dark: #d4d4d4;
+    --kite-md-comment-color-dark: #6a737d;
+    --kite-md-keyword-color-dark: #6b80f8;
+    --kite-md-variable-color-dark: #9cdcfe;
+    --kite-md-number-color-dark: #67a07d;
+    --kite-md-string-color-dark: #98c379;
+    --kite-md-title-color-dark: #efe161;
 }
 
 @layer base {

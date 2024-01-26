@@ -2,5 +2,5 @@
 
 :host {
     background-color: var(--date-divider-bg, rgba(255, 255, 255, 0.7));
-    @apply self-center block text-center text-sm px-1.5 py-1 min-w-[4rem] rounded-full;
+    @apply self-center block text-center text-sm px-1.5 py-1 min-w-[4rem] rounded-full select-text selection:bg-primary-color;
 }

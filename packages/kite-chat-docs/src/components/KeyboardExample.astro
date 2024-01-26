@@ -1,0 +1,8 @@
+---
+const {id} = Astro.props;
+---
+<script define:vars={{id}}>
+    document.querySelector(`kite-custom-keyboard.${id}`)?.addEventListener('kite-custom-keyboard.click', (e) => {
+        alert(e.detail.text);
+    })
+</script>
