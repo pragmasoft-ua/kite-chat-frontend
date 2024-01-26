@@ -48,6 +48,7 @@ import {
   KitePointerAnchorElement,
   KiteChatMainElement,
   KiteChatMainDrop,
+  KeyboardClick,
 } from './components';
 import {KiteMsgElement, MsgOutsideClick} from './kite-msg';
 
@@ -287,7 +288,9 @@ export class KiteChatElement extends
           class="relative flex flex-1 overflow-hidden flex-col-reverse bg-slate-300/50 snap-y overflow-y-auto outline-none border-none"
         >
           <div class="flex min-h-min flex-col flex-wrap items-start">
-            <slot></slot>
+            <slot
+              @kite-custom-keyboard.click=${this._handleCustomKeyboard}
+            ></slot>
           </div>
         </kite-chat-main>
         <kite-chat-footer
@@ -503,6 +506,13 @@ export class KiteChatElement extends
         this.webShareController.share('Kite Chat', this.getMsgContent(msgElement));
         break;
     }
+  }
+
+  private _handleCustomKeyboard(e: CustomEvent<KeyboardClick>) {
+    if (e.defaultPrevented) return;
+    (e.target as HTMLElement).remove();
+    const {text} = e.detail;
+    this._send({text});
   }
 
   /**
