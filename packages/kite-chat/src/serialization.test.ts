@@ -37,4 +37,41 @@ describe('serialization', () => {
 
     expect(decoded).toStrictEqual(plaintext);
   });
+
+  it('should be able to encode kite message with inlineKeyboard', () => {
+    const plaintext: PlaintextMsg = {
+      type: MsgType.PLAINTEXT,
+      messageId: 'ui4bJAV0Jo',
+      text: 'hello',
+      timestamp: new Date('2023-11-23T13:19:07.255Z'),
+      status: 2,
+      inlineKeyboard: {
+        keyboard: [
+          {
+            text: 'Button 1',
+            callbackData: '1',
+          },
+          {
+            text: 'Button 2',
+            callbackData: '2',
+          },
+          {
+            divider: true,
+          },
+          {
+            text: 'Button 3',
+            callbackData: '3',
+          }
+        ],
+      },
+    };
+
+    const encoded = JSON.stringify(["TXT","ui4bJAV0Jo","hello","2023-11-23T13:19:07.255Z",2,{"keyboard":[{"text":"Button 1","callbackData":"1"},{"text":"Button 2","callbackData":"2"},{"divider":true},{"text":"Button 3","callbackData":"3"}]}]);
+    console.log(encoded);
+
+    const decoded = decodeKiteMsg(encoded);
+    console.log(decoded);
+
+    expect(decoded).toStrictEqual(plaintext);
+  });
 });

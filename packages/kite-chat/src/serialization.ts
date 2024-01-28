@@ -81,6 +81,7 @@ const BINARY_MESSAGE_FIELDS: Array<keyof BinaryMsg> = [
 const INCOMING_PLAINTEXT_MESSAGE_FIELDS: Array<keyof PlaintextMsg> = [
   ...PLAINTEXT_MESSAGE_FIELDS,
   'status',
+  'inlineKeyboard',
 ];
 
 const INCOMING_BINARY_MESSAGE_FIELDS: Array<keyof BinaryMsg> = [

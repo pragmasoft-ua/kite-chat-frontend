@@ -2,6 +2,7 @@ import {
   MsgStatus,
   PlaintextMsg as PlaintextMsgPayload,
   FileMsg as FileMsgPayload,
+  CustomKeyboardMarkup,
 } from '@pragmasoft-ukraine/kite-chat-component';
 
 export class HttpError extends Error {
@@ -58,6 +59,7 @@ export type PlaintextMsg = {
   type: MsgType.PLAINTEXT;
   messageId: string;
   timestamp: Date;
+  inlineKeyboard?: CustomKeyboardMarkup;
 } & PlaintextMsgPayload;
 
 export type FileMsg = {
