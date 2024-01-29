@@ -98,5 +98,8 @@ export class KiteNotificationElement extends LitElement {
     `;
   }
 
+  /**
+   * @ignore
+   */
   static override styles = [componentStyles, sharedStyles];
 }

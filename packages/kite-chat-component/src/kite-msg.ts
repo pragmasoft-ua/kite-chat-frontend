@@ -159,5 +159,9 @@ export class KiteMsgElement extends LitElement {
       ? html`<time>${hhmmLocalizedFormat.format(this.timestamp)}</time>`
       : null;
   }
+
+  /**
+   * @ignore
+   */
   static override styles = [sharedStyles, componentStyles];
 }

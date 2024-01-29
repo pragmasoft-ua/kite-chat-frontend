@@ -27,8 +27,6 @@ export type KeyboardClick = {
 
 /**
  * Styled inline keyboard component.
- * @attr status
- * @attr timestamp
  * @fires {CustomEvent} kite-chat.show - keyboard component opens
  * @fires {CustomEvent} kite-chat.hide - keyboard component closes
  * @fires {CustomEvent} kite-custom-keyboard.click - keyboard button clicked
@@ -36,6 +34,8 @@ export type KeyboardClick = {
  * @slot {"kite-keyboard-link" | "kite-keyboard-button" | "hr"} - keyboard component contains buttons as nested subcomponents
  * @cssvar --kite-keyboard-gap - gap between buttons
  * @cssvar --kite-keyboard-buttons-background - buttons background color
+ * @cssvar --kite-keyboard-buttons-hover-background - hover buttons background color (if pointer device support hover)
+ * @cssvar --kite-keyboard-buttons-active-background - active buttons background color
  */
 @customElement('kite-custom-keyboard')
 export class KiteCustomKeyboardElement extends  
@@ -43,6 +43,9 @@ export class KiteCustomKeyboardElement extends
     ScopedElementsMixin(LitElement),
     {show: 'kite-custom-keyboard.show', hide: 'kite-custom-keyboard.hide'}
   ) {
+  /**
+   * @ignore
+   */
   static scopedElements = {
     'kite-icon': KiteIconElement,
   };
@@ -99,5 +102,8 @@ export class KiteCustomKeyboardElement extends
     this.dispatchEvent(new CustomEvent('kite-custom-keyboard.click', {...CUSTOM_EVENT_INIT, detail}));
   }
 
+  /**
+   * @ignore
+   */
   static override styles = [sharedStyles, componentStyles];
 }

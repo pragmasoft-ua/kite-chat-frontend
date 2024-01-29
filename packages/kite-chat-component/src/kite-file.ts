@@ -117,5 +117,8 @@ export class KiteFileElement extends LitElement {
     }
   }
 
+  /**
+   * @ignore
+   */
   static override styles = componentStyles;
 }

@@ -165,6 +165,9 @@ export class KiteChatElement extends
     ),
     {screenshot: 'kite-chat.screenshot'}
   ) {
+  /**
+   * @ignore
+   */
   static scopedElements = {
     'kite-chat-header': KiteChatHeaderElement,
     'kite-chat-footer': KiteChatFooterElement,
@@ -570,6 +573,9 @@ export class KiteChatElement extends
     msgElement?.remove();
   }
 
+  /**
+   * @ignore
+   */
   static override styles = [...[super.styles?? []], sharedStyles, componentStyles];
 }
 
