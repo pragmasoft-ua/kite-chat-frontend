@@ -1,0 +1,35 @@
+---
+const {
+    variables,
+} = Astro.props;
+---
+<div class="flex flex-col gap-y-4 ">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+        {Object.entries(variables).map(([key, value]) => (
+            <label class="!m-0" for={key}><input type="color" id={key}/> - {value}</label>
+        ))}
+    </div>
+</div>
+
+<script is:inline>    
+    function standardize_color(str){
+        var ctx = document.createElement('canvas').getContext('2d');
+        ctx.fillStyle = str;
+        return ctx.fillStyle;
+    }
+    setTimeout(() => {
+        const kiteChat = document.querySelector('kite-chat');
+
+        const colorpickers = document.querySelectorAll('input[type="color"]');
+        colorpickers.forEach(colorpicker => {
+            colorpicker.addEventListener('input', () => {
+                kiteChat.style.setProperty(colorpicker.id, colorpicker.value);
+                document.documentElement.style.setProperty(colorpicker.id, colorpicker.value);
+            });
+        });
+        colorpickers.forEach(colorpicker => {
+            colorpicker.value = standardize_color(getComputedStyle(document.documentElement).getPropertyValue(colorpicker.id) 
+                || getComputedStyle(kiteChat).getPropertyValue(colorpicker.id));
+        });
+    }, 1000)
+</script>

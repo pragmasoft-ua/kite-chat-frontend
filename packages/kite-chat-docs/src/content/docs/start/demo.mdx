@@ -3,7 +3,24 @@ title: Chat Demo
 description: Demo of kite chat widget usage.
 ---
 import Sandbox from '@components/Sandbox.astro';
+import Colors from '@components/Colors.astro';
 
 <h2 class="!text-kite-primary-color"><span class="inline-block animate-wave origin-[30%_center]">🪁</span>Kite Sandbox</h2>
 
 <Sandbox/>
+<Colors 
+    variables={{
+        '--kite-primary-color': 'Primary Color',
+        '--kite-secondary-color': 'Secondary Color',
+    }}
+/>
+<Colors 
+    variables={{
+        '--kite-main-bg-dark': 'Dark Background Color of Chat',
+        '--kite-main-bg-light': 'Light Background Color of Chat',
+        '--kite-main-text-dark': 'Dark Text Color of Chat',
+        '--kite-main-text-light': 'Light Text Color of Chat',
+        '--kite-msg-bg': 'Background Color of Incoming Messages',
+        '--kite-msg-sent-bg': 'Background Color of Outgoing Messages',
+    }}
+/>

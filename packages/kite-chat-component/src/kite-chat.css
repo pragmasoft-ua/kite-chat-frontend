@@ -26,10 +26,11 @@ kite-chat-main::-webkit-scrollbar-thumb {
 }
 
 :host {
+  --kite-main-bg-light: white;
+  --kite-main-text-light: black;
+
   --kite-msg-bg-light: white;
-  --kite-msg-border-light: white;
   --kite-msg-sent-bg-light: theme('colors.stone.300');
-  --kite-msg-sent-border-light: theme('colors.stone.300');
   --kite-notification-bg-light: theme('colors.stone.300');
 
   --kite-keyboard-buttons-background-light: rgba(214, 211, 209, 0.6);
@@ -37,7 +38,6 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-keyboard-buttons-active-background-light: rgba(184, 186, 188, 0.5);
 
   --kite-md-background-color-light: #f5f5f5;
-  --kite-md-text-color-light: #333333;
   --kite-md-comment-color-light: #6a737d;
   --kite-md-keyword-color-light: #0018a8;
   --kite-md-variable-color-light: #0018a8;
@@ -45,10 +45,11 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-md-string-color-light: #00743f;
   --kite-md-title-color-light: #d93f0b;
 
+  --kite-main-bg-dark: theme('colors.neutral.800');
+  --kite-main-text-dark: white;
+
   --kite-msg-bg-dark: theme('colors.neutral.800');
-  --kite-msg-border-dark: theme('colors.stone.800');
   --kite-msg-sent-bg-dark: theme('colors.neutral.600');
-  --kite-msg-sent-border-dark: theme('colors.stone.600');
   --kite-notification-bg-dark: theme('colors.neutral.600');
   --date-divider-bg-dark: rgba(0, 0, 0, 0.5);
 
@@ -57,7 +58,6 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-keyboard-buttons-active-background-dark: rgba(38 ,38 , 38, 0.5);
 
   --kite-md-background-color-dark: #1e1e1e;
-  --kite-md-text-color-dark: #d4d4d4;
   --kite-md-comment-color-dark: #6a737d;
   --kite-md-keyword-color-dark: #6b80f8;
   --kite-md-variable-color-dark: #9cdcfe;
@@ -68,9 +68,7 @@ kite-chat-main::-webkit-scrollbar-thumb {
 
 :host(:not([theme="dark"])) {
   --kite-msg-bg: var(--kite-msg-bg-light);
-  --kite-msg-border: var(--kite-msg-border-light);
   --kite-msg-sent-bg: var(--kite-msg-sent-bg-light);
-  --kite-msg-sent-border: var(--kite-msg-sent-border-light);
   --kite-notification-bg: var(--kite-notification-bg-light);
 
   --kite-keyboard-buttons-background: var(--kite-keyboard-buttons-background-light);
@@ -78,7 +76,6 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-keyboard-buttons-active-background: var(--kite-keyboard-buttons-active-background-light);
 
   --kite-md-background-color: var(--kite-md-background-color-light);
-  --kite-md-text-color: var(--kite-md-text-color-light);
   --kite-md-comment-color: var(--kite-md-comment-color-light);
   --kite-md-keyword-color: var(--kite-md-keyword-color-light);
   --kite-md-variable-color: var(--kite-md-variable-color-light);
@@ -89,9 +86,7 @@ kite-chat-main::-webkit-scrollbar-thumb {
 
 :host([theme="dark"]) {
   --kite-msg-bg: var(--kite-msg-bg-dark);
-  --kite-msg-border: var(--kite-msg-border-dark);
   --kite-msg-sent-bg: var(--kite-msg-sent-bg-dark);
-  --kite-msg-sent-border: var(--kite-msg-sent-border-dark);
   --kite-notification-bg: var(--kite-notification-bg-dark);
   --date-divider-bg: var(--date-divider-bg-dark);
 
@@ -100,7 +95,6 @@ kite-chat-main::-webkit-scrollbar-thumb {
   --kite-keyboard-buttons-active-background: var(--kite-keyboard-buttons-active-background-dark);
 
   --kite-md-background-color: var(--kite-md-background-color-dark);
-  --kite-md-text-color: var(--kite-md-text-color-dark);
   --kite-md-comment-color: var(--kite-md-comment-color-dark);
   --kite-md-keyword-color: var(--kite-md-keyword-color-dark);
   --kite-md-variable-color: var(--kite-md-variable-color-dark);
@@ -111,20 +105,18 @@ kite-chat-main::-webkit-scrollbar-thumb {
 
 :host(:not([theme="dark"])) .kite-dialog {
   --kite-menu-background: white;
-  @apply border-neutral-200 bg-white text-black;
+  @apply border-neutral-200 bg-[var(--kite-main-bg-light)] text-[var(--kite-main-text-light)];
 }
 
 :host([theme="dark"]) .kite-dialog {
   --kite-menu-background: theme('colors.neutral.800');
-  @apply border-neutral-600 bg-neutral-800 text-white/95;
+  @apply border-neutral-600 bg-[var(--kite-main-bg-dark)] text-[var(--kite-main-text-dark)];
 }
 
 @media(prefers-color-scheme: dark) {
   :host(:not([theme="light"])) {
     --kite-msg-bg: theme('colors.neutral.800');
-    --kite-msg-border: theme('colors.stone.800');
     --kite-msg-sent-bg: theme('colors.neutral.600');
-    --kite-msg-sent-border: theme('colors.stone.600');
     --kite-notification-bg: theme('colors.neutral.600');
     --date-divider-bg: rgba(0, 0, 0, 0.5);
 
@@ -133,7 +125,6 @@ kite-chat-main::-webkit-scrollbar-thumb {
     --kite-keyboard-buttons-active-background: rgba(38 ,38 , 38, 0.5);
 
     --kite-md-background-color: #1e1e1e;
-    --kite-md-text-color: #d4d4d4;
     --kite-md-comment-color: #6a737d;
     --kite-md-keyword-color: #6b80f8;
     --kite-md-variable-color: #9cdcfe;
@@ -144,7 +135,7 @@ kite-chat-main::-webkit-scrollbar-thumb {
 
   :host(:not([theme="light"])) .kite-dialog {
     --kite-menu-background: theme('colors.neutral.800');
-    @apply border-neutral-600 bg-neutral-800 text-white/95;
+    @apply border-neutral-200 bg-[var(--kite-main-bg-dark)] text-[var(--kite-main-text-dark)];
   }
 }
 

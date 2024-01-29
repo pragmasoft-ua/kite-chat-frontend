@@ -5,15 +5,24 @@ description: An example of Kite Chat elements.
 import ImageFileExample from '@components/ImageFileExample.astro';
 import TextFileExample from '@components/TextFileExample.astro';
 import KeyboardExample from '@components/KeyboardExample.astro';
+import Colors from '@components/Colors.astro';
 
 ### Kite Message
 
 ##### Text
 
 <kite-msg>Hello World!</kite-msg>
+<kite-msg status="delivered">Hi!</kite-msg>
 ```html
 <kite-msg>Hello World!</kite-msg>
+<kite-msg status="delivered">Hi!</kite-msg>
 ```
+<Colors 
+    variables={{
+        '--kite-msg-bg': 'Background Color of Incoming Messages',
+        '--kite-msg-sent-bg': 'Background Color of Outgoing Messages',
+    }}
+/>
 
 ##### Formatted Text
 
@@ -51,6 +60,7 @@ http://www.example.com/
 
 <kite-msg>
 \`\`\`javascript
+\/\/ function to add two numbers
 function addNumbers(a, b) \{
 &nbsp;&nbsp;&nbsp;&nbsp;return a + b;
 }
@@ -61,6 +71,7 @@ console.log(result);
 ````html
 <kite-msg>
 ```javascript
+// function to add two numbers
 function addNumbers(a, b) {
     return a + b;
 }
@@ -69,6 +80,17 @@ console.log(result);
 ```
 </kite-msg>
 ````
+<Colors 
+    variables={{
+        '--kite-md-background-color': 'Background Color of code and quote',
+        '--kite-md-comment-color': 'Comment Color of syntax highlight',
+        '--kite-md-keyword-color': 'Keyword Color of syntax highlight',
+        '--kite-md-variable-color': 'Variable Color of syntax highlight',
+        '--kite-md-number-color': 'Number Color of syntax highlight',
+        '--kite-md-string-color': 'String Color of syntax highlight',
+        '--kite-md-title-color': 'Title Color of syntax highlight',
+    }}
+/>
 
 ##### Blockquote
 
@@ -126,6 +148,13 @@ normal text
     <hr/>
     <kite-custom-keyboard-link url='https://www.google.com/'>Google</kite-custom-keyboard-link>
 </kite-custom-keyboard>
+<Colors 
+    variables={{
+        '--kite-keyboard-buttons-background': 'Background Color of Keyboard Buttons',
+        '--kite-keyboard-buttons-hover-background': 'Background Color of Keyboard Buttons on Hover',
+        '--kite-keyboard-buttons-active-background': 'Background Color of Keyboard Buttons on Active',
+    }}
+/>
 <KeyboardExample id="custom-keyboard-example"/>
 ````html
 <kite-custom-keyboard open>
@@ -169,6 +198,16 @@ normal text
 ```html
 <kite-toast-notification message="Your messages have been restored." type="info"></kite-toast-notification>
 ```
+
+<Colors 
+    variables={{
+        '--kite-notification-bg': 'Background Color of Notifications',
+        '--kite-notification-success': 'Accent Color of success notifications',
+        '--kite-notification-warning': 'Accent Color of warning notifications',
+        '--kite-notification-error': 'Accent Color of error notifications',
+        '--kite-notification-info': 'Accent Color of info notifications',
+    }}
+/>
 
 ### Kite Notification Container
 

@@ -2,8 +2,6 @@
 const {
     textboxPlaceholder="Type message",
     textboxLabel="Type message to send:",
-    colorpickerLabel="Change color",
-    customKeyboard="Custom Keyboard",
     outgoingLabel="Outgoing messages:",
     sendLabel="Send to chat",
     openLabel="Open",
@@ -33,13 +31,6 @@ const {
         <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-110 dark:hover:brightness-75" id="open">{openLabel}</button>
         <button class="p-2 !m-0 cursor-pointer bg-kite-primary-color hover:brightness-110 dark:hover:brightness-75" id="close">{closeLabel}</button>
     </section>
-    <label for="colorpicker"
-        >{colorpickerLabel}: <input type="color" id="colorpicker"
-    /></label>
-    <label>
-        {customKeyboard}:
-        <input type="checkbox" id="enableCustomKeyboard" class="p-2 !m-0 cursor-pointer"/>
-    </label>
     <label for="outgoing">{outgoingLabel}</label>
     <section id="outgoing"></section>
 </div>
@@ -67,9 +58,7 @@ const {
         const sendToChatBtn = requiredElement('#send');
         const openBtn = requiredElement('#open');
         const closeBtn = requiredElement('#close');
-        const colorpicker = requiredElement('#colorpicker');
         const outgoing = requiredElement('section#outgoing');
-        const root = document.documentElement;
         const fileInfo = file => (file.name + ' ' + prettyBytes(file.size));
         
         kiteChat.addEventListener(
@@ -86,12 +75,5 @@ const {
         );
         openBtn.addEventListener('click', () => kiteChat.show());
         closeBtn.addEventListener('click', () => kiteChat.hide());
-        colorpicker.addEventListener('input', (e) => {
-            const target = e.target;
-            const color = target.value;
-            root.style.setProperty('--kite-primary-color', color);
-        });
-        colorpicker.value = getComputedStyle(document.documentElement)
-            .getPropertyValue('--kite-primary-color');
     });
 </script>

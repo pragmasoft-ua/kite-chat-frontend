@@ -3,15 +3,30 @@ title: Приклад використання
 description: Посібник використання віджету kite чату.
 ---
 import Sandbox from '@components/Sandbox.astro';
+import Colors from '@components/Colors.astro';
 
 <h2 class="!text-kite-primary-color"><span class="inline-block animate-wave origin-[30%_center]">🪁</span>Kite Cередовище</h2>
 
 <Sandbox
     textboxPlaceholder="Введіть текст"
     textboxLabel="Відправити повідомлення"
-    colorpickerLabel="Змінити колір"
     outgoingLabel="Отримані повідомлення"
     sendLabel="Відправити"
     openLabel="Відкрити"
     closeLabel="Закрити"
+/>
+<Colors
+    variables={{
+        '--kite-primary-color': 'Основний колір',
+        '--kite-secondary-color': 'Додатковий колір',
+    }}
+/>
+<Colors
+    variables={{
+        '--kite-msg-bg': 'Колір фону вхідних повідомлень',
+        '--kite-msg-sent-bg': 'Колір фону вихідних повідомлень',
+        '--kite-notification-bg': 'Колір фону сповіщень',
+        '--date-divider-bg': 'Колір фону роздільника дат',
+        '--buttons-background': 'Колір фону кнопок клавіатури',
+    }}
 />
