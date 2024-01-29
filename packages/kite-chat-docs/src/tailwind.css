@@ -47,8 +47,8 @@ main kite-custom-keyboard {
     width: min(100%, 25rem);
 }
 
-main kite-msg {
-    width: min(100%, 25rem);
+main kite-msg+kite-msg {
+    margin: 0 !important;
 }
 
 @layer base {
