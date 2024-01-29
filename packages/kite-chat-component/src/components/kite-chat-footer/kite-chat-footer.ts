@@ -243,7 +243,7 @@ export class KiteChatFooterElement extends ScopedElementsMixin(LitElement) {
   }
 
   private _handleAutoResize() {
-    if (!this.initialResizePosition) return;
+    if (this.initialResizePosition) return;
     this.textarea.style.height = this.textarea.scrollHeight + 'px';
   }
 
