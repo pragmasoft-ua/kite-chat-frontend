@@ -99,8 +99,12 @@ main::-webkit-scrollbar-thumb {
   }
 
   [popover] {
-    anchor-default: --toggle;
-    position-fallback: --flip;
+    position-anchor: --toggle;
+    bottom: calc(anchor(top) + var(--kite-gap));
+    top: auto;
+    left: auto;
+    right: anchor(right);
+    position-try: flip-block, flip-inline, flip-block flip-inline;
   }
 }
 

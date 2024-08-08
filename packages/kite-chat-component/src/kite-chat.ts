@@ -25,32 +25,6 @@ console.debug('kite-chat loaded');
 
 const componentStyles = css`
   ${unsafeCSS(kiteChatStyles)}
-  @position-fallback --flip {
-      @try {
-        bottom: calc(anchor(top) + var(--kite-gap));
-        top: auto;
-        left: auto;
-        right: anchor(right);
-      }
-      @try {
-        bottom: auto;
-        top: calc(anchor(bottom) + var(--kite-gap));
-        left: auto;
-        right: anchor(right);
-      }
-      @try {
-        bottom: calc(anchor(top) + var(--kite-gap));
-        top: auto;
-        left: anchor(left);
-        right: auto;
-      }
-      @try {
-        bottom: auto;
-        top: calc(anchor(bottom) + var(--kite-gap));
-        left: anchor(left);
-        right: auto;
-      }
-  }
 `;
 
 const CUSTOM_EVENT_INIT = {
