@@ -219,7 +219,6 @@ jobs:
         id: check-version
 
       - name: Build Kite Chat component
-        if: steps.check-version-component.outputs.equal != 'true'
         run: npm run build -w @pragmasoft-ukraine/kite-chat-component
 
       - name: Build Kite Chat
