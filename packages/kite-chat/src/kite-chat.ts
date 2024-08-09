@@ -294,7 +294,7 @@ export class KiteChat {
       const notification = new Notification(title, {
         ...options,
         image: isFileMsg(msg) ? URL.createObjectURL(msg.file) : undefined,
-      });
+      } as NotificationOptions);
       notification.onclick = this.onNotificationClick.bind(this);
     }
   }
